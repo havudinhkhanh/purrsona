@@ -30,10 +30,17 @@ Mở trình duyệt: <http://localhost:8765>. Trang thử động tác: <http://
 
 > Phải mở qua web server (không mở file trực tiếp bằng double-click) vì trình duyệt chặn ES modules từ `file://`.
 
-### Bước 2 – Mã nguồn trên GitHub
+### Bước 2 – Đưa lên GitHub
 
-Repo: `havudinhkhanh/purrsona` (nhánh `main`). Sửa trên máy rồi `git push` là Cloudflare tự đăng bản mới.
-Thư mục `raw/` (khung hình gốc chưa đóng gói, video AI) nằm trong `.gitignore` – không bị đẩy lên.
+1. Tạo repo mới trên GitHub, ví dụ `purrsona`.
+2. Trong thư mục dự án:
+   ```bash
+   git init && git add . && git commit -m "Purrsona 0.1"
+   git branch -M main
+   git remote add origin https://github.com/<tài-khoản>/purrsona.git
+   git push -u origin main
+   ```
+3. Thư mục `raw/` (khung hình gốc chưa đóng gói, video AI) đã nằm trong `.gitignore` – không bị đẩy lên.
 
 ### Bước 3 – Đăng web bằng Cloudflare Pages (miễn phí, có HTTPS → PWA cài được)
 
@@ -131,11 +138,18 @@ Cách mèo hiểu lịch (tự đoán, chạm vào nhãn của từng sự kiệ
 
 🔒 Chỉ đọc, chỉ 14 ngày tới, lưu trên máy người dùng, không gửi đi đâu. Ngắt kết nối bất cứ lúc nào.
 
-### Bước 11 – Lộ trình gợi ý
+### Bước 11 – Thay mèo vẽ tay bằng clip Google Flow
+
+1. Mở tài liệu **"Purrsona – Bộ prompt Google Flow cho chuyển động mèo"**, làm theo mục 1–2 để có ảnh nhân vật chuẩn.
+2. Tạo clip theo bảng mục 3–5, tải MP4, đặt tên đúng mã clip (`walk.mp4`, `headbutt.mp4`…).
+3. Gửi file cho Claude, hoặc chép vào `raw/<tên mèo>/` rồi chạy `tools/video-to-frames.sh` và `tools/pack-frames.mjs` (xem `docs/ANIMATION_SPEC.md`).
+4. Clip cận mặt giữ dạng video trong `assets/cats/<id>/closeups/` và khai báo `"closeups"` trong `cat.json`.
+
+### Bước 12 – Lộ trình gợi ý
 
 1. **Thanh toán thật** cho Plus/Pro (Stripe hoặc MoMo/VNPay qua 1 Cloudflare Worker) → xác thực xong ghi `save.plan`.
 2. **Đồng bộ đám mây** (Supabase / Cloudflare D1) để chơi trên nhiều máy.
-3. **Thông báo đẩy**: "na na đói rồi", "na na vừa check-in Ban công".
+3. **Thông báo đẩy**: "na na đói rồi", "na na đang gõ màn hình tìm bạn".
 4. **Nhiều mèo cùng lúc** trong nhà (kiến trúc đã tách thân / não theo từng mèo).
 5. **Nền phòng do AI vẽ**: mỗi phòng nhận `bgImage` thay SVG.
 

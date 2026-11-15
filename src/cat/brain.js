@@ -17,6 +17,13 @@ export function createBrain(game) {
   const SP = (r) => game.spotsOf(r);
   const qmod = (id) => game.quirks.reduce((v, q) => v * ((q.mod || {})[id] || 1), 1);
   const allowed = (r) => game.roomAllowed(r);
+  // hồi chiêu lưu trong save – mở lại app không bị "dụi đầu" liên tục
+  const cd = () => (game.save.cd ||= {});
+  const cool = (k, min) => Date.now() - (cd()[k] || 0) > min * 60e3;
+  const used = (k) => { cd()[k] = Date.now(); };
+  const at = (tier) => game.bond?.at(tier);
+  const att = () => game.attention?.();
+  const idleS = () => (Date.now() - (game.lastInput || Date.now())) / 1000;
 
   // ------------------------------------------------------------------ di chuyển cấp cao
   async function down() { if (B.h > 0) { const w = W(B.room); await B.jumpTo(clamp(B.x + (B.face > 0 ? 120 : -120), w.x0, w.x1), clamp(B.y + 36, w.y0, w.y1), 0, null); } }
@@ -118,6 +125,56 @@ export function createBrain(game) {
       async run() { await comeTo(game.scene.room); for (let i = 0; i < 3; i++) { say("dawn"); game.meow(2); await B.act("look_up", 2400); await B.act("idle_tail", 2200); if (game.save.house.bowl) return; } } },
     { id: "nightsong", score: () => { const h = game.scene.S.hour; return (h > 23 || h < 3) && game.quirks.some((q) => q.night) ? 0.9 : 0; },
       async run() { await down(); const p = randFloor(B.room); await B.walkTo(p.x, p.y); for (let i = 0; i < 2; i++) { say("nightsong"); game.meow(2); await B.act("look_up", 2600); } } },
+    // ---- QUẤN NGƯỜI: mở dần theo bậc gắn bó (cat/bond.js). Chỉ diễn khi bạn đang nhìn.
+    { id: "headbutt", score: () => (att() && at("friend") && !game.memory.angry && cool("headbutt", 25) ? 0.3 + (100 - N().social) / 110 + T().affectionate * 0.7 + (mood() === "clingy" ? 1.1 : 0) : 0),
+      async run() {
+        used("headbutt"); await comeTo(game.scene.room); await B.act("look_up", 700);
+        if (!att()) return; const r = await game.closeup.headbutt();
+        N().social = clamp(N().social + 16, 0, 100); game.bond.gain(0.5 + (r.back > 4 ? 1.2 : 0), "headbutt"); game.moment("headbutt", true);
+        await B.act("idle_tail", 3500);
+      } },
+    { id: "blinkat", score: () => (att() && at("friend") && !game.memory.angry && cool("blinkat", 35) ? 0.25 + T().affectionate * 0.5 + (mood() === "poet" ? 0.4 : 0) : 0),
+      async run() {
+        used("blinkat"); await comeTo(game.scene.room); await B.act("loaf", 1200); if (!att()) return;
+        const r = await game.closeup.slowblink(); if (r.back) { game.bond.gain(0.8, "blink"); game.moment("slowblink", true); }
+        await B.act("loaf", 5000);
+      } },
+    { id: "gift", score: () => (att() && at("friend") && cool("gift", 150) ? 0.35 + T().playful * 0.3 + game.memory.level("hunter") * 0.12 : 0),
+      async run() {
+        used("gift"); const home = game.scene.room, rooms = Object.keys(ROOMS).filter((r) => r !== home && allowed(r)); const hunt = pick(rooms); if (!hunt) return;
+        await goRoom(hunt, "walk"); await down(); const p = randFloor(hunt); await B.walkTo(p.x, p.y, { gait: "stalk" });
+        await B.act("crouch", 1400); await B.act("chase", 600); const g = game.carryGift();
+        try {
+          await goRoom(game.scene.room, "gift_carry"); await comeTo(game.scene.room, "gift_carry");
+          say("gift_bring"); game.meow(1); await B.act("gift_drop", 900);
+        } finally { game.dropGift(); }
+        st.giftWaiting = g.id; try { await B.act("idle_tail", 9000); } finally { st.giftWaiting = null; }
+      } },
+    { id: "knead", score: () => (att() && at("bestie") && cool("knead", 40) && !game.memory.angry ? 0.35 + T().affectionate * 0.5 + (mood() === "clingy" ? 0.8 : 0) + (N().energy < 50 ? 0.3 : 0) : 0),
+      async run() {
+        used("knead"); await comeTo(game.scene.room); say("knead"); B.knead = true; if (game.save.settings.sound) game.purr(true);
+        try { const end = Date.now() + rand(9, 15) * 1000; while (Date.now() < end) { await B.act("knead", 2000); game.hearts?.(1); } }
+        finally { B.knead = false; game.purr(false); }
+        game.bond.gain(0.4, "knead"); game.moment("knead", true); await B.act("loaf", 4000);
+      } },
+    { id: "bellyup", score: () => (att() && at("bestie") && cool("belly", 45) && !game.memory.angry ? 0.3 + T().playful * 0.4 + T().sassy * 0.2 : 0),
+      async run() {
+        used("belly"); await comeTo(game.scene.room); await B.act("lie", 800); game.belly = { t: Date.now() }; say("belly");
+        if (!game.save.cd.bellyHint) { game.save.cd.bellyHint = 1; game.emit("toast", { text: `${game.cat.name} khoe bụng… vuốt thử? (rủi ro tự chịu)` }); }
+        try { await B.act("belly_up", rand(8, 12) * 1000); } finally { game.belly = null; }
+      } },
+    { id: "pawtap", score: () => (game.ownerHome() && !document.hidden && at("bestie") && idleS() > 120 && cool("pawtap", 30) && N().social < 75 && !game.closeup?.busy ? 1.2 + T().affectionate * 0.6 : 0),
+      async run() {
+        used("pawtap"); await comeTo(game.scene.room); await B.act("look_up", 900); const r = await game.closeup.pawtap();
+        if (r.answered) { game.bond.gain(1, "pawtap"); N().social = clamp(N().social + 14, 0, 100); game.moment("pawtap", true); await B.act("idle_tail", 4000); }
+        else await B.act("loaf", 6000);
+      } },
+    { id: "sleepnear", score: () => { const h = game.scene.S.hour, late = h >= 21 || h < 2; return game.ownerHome() && !document.hidden && at(late ? "friend" : "soul") && idleS() > 150 && N().energy < 80 && cool("sleepnear", 60) ? 1.1 + T().lazy * 0.6 + (late ? 0.6 : 0) : 0; },
+      async run() {
+        used("sleepnear"); await comeTo(game.scene.room); say("sleepnear"); await B.act("loaf", 3500);
+        st.sleeping = true; game.moment("sleepnear"); try { await B.act("sleep", rand(60, 150) * 1000); } finally { st.sleeping = false; }
+        await B.act("stretch", 2400);
+      } },
     // ---- theo LỊCH CỦA CHỦ (chỉ nổi lên khi tới khối giờ tương ứng trong kế hoạch ngày)
     { id: "wakeowner", score: () => 0,
       async run() { await goSpot("bedroom", "bed"); for (let i = 0; i < 3; i++) { say("wakeup"); game.meow(2); await B.act("look_up", 2600); await B.act("loaf", 4000); if (planNow()?.act !== "wakeowner") return; } await B.act("loaf", 20000); } },
@@ -128,7 +185,11 @@ export function createBrain(game) {
     { id: "greet", score: () => 0,
       async run() {
         if (!game.ownerHome()) { await goSpot("living", "entry"); B.faceTo(1); say("waiting"); await B.act("loaf", 20000); return; }
-        await comeTo(game.scene.room); say("greet"); game.meow(2); B.wobble = 0.5; try { await B.act("idle_tail", 3500); } finally { B.wobble = 0; } await B.act("roll_play", 3000); N().social = clamp(N().social + 15, 0, 100);
+        const awayH = game.awayH || 0, big = at("friend") && awayH > 2;
+        await comeTo(game.scene.room, big ? "trot_tailup" : "walk"); game.moment("greetrun");
+        if (big) { await B.act("chirp", 900); say("miss"); game.meow(2); await B.act("rub", 2600); if (att()) { const r = await game.closeup.headbutt(); game.bond.gain(0.4 + (r.back > 4 ? 0.8 : 0), "greet"); } }
+        else { say("greet"); game.meow(2); }
+        B.wobble = 0.5; try { await B.act("idle_tail", 3500); } finally { B.wobble = 0; } await B.act("roll_play", 3000); N().social = clamp(N().social + 15, 0, 100);
       } },
     { id: "bedtime", score: () => 0,
       async run() { await goSpot("bedroom", "bed"); await B.act("groom", 4000); await B.act("loaf", 5000); st.sleeping = true; try { await B.act("sleep", rand(120, 300) * 1000); } finally { st.sleeping = false; } } },
@@ -146,12 +207,14 @@ export function createBrain(game) {
       async run() { await down(); const p = randFloor(B.room); await B.walkTo(p.x, p.y); await B.act(pick(["idle", "idle_tail", "loaf", "look_up"]), rand(4, 12) * 1000); } },
   ];
 
-  async function comeTo(room) {
+  async function comeTo(room, gait = "walk") {
     const r = ROOMS[room]; if (!allowed(room)) return;
-    if (B.room !== room) await goRoom(room, "walk");
+    if (B.room !== room) await goRoom(room, gait);
     await down();
-    const S = game.scene.S, cx = clamp(S.cam + S.viewW / 2 + rand(-80, 80), r.walk.x0, r.walk.x1);
-    await B.walkTo(cx, r.walk.y1 - 10); B.faceTo(Math.random() < 0.5 ? 1 : -1);
+    // đứng lệch khỏi giữa màn hình một chút – để thanh nút dưới không che mất mèo
+    const S = game.scene.S, mid = S.cam + S.viewW / 2, side = B.x < mid ? -1 : 1;
+    const cx = clamp(mid + side * S.viewW * rand(0.18, 0.28), r.walk.x0, r.walk.x1);
+    await B.walkTo(cx, r.walk.y1 - 30, { gait }); B.faceTo(mid - cx);
   }
 
   function planNow() { return game.schedule?.blockAt(); }

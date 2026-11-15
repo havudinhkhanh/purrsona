@@ -112,3 +112,18 @@ Thử trên console: `PURR.scares.fire("blackout")` · `"peek"` · `"shadow"` ·
 | Xếp loại sự kiện | `classify()` + `KW` | away / busy / trip / off / ignore theo từ khoá (Việt + Anh), địa điểm, link họp. Người dùng chạm để sửa → `calendar.overrides`. |
 | Trộn với lịch nền | `schedule.dayInfo()` | Lịch nền + đoạn từ lịch thật → nhiều đoạn đi vắng / họp online / đi xa trong 1 ngày; dậy sớm & ngủ muộn theo việc. `planFor`, `ownerState`, `busyNow` đều dùng `dayInfo`. |
 | Mèo phá họp online | brain `meeting` | Đúng giờ họp (đang ở nhà, app mở): mèo đi tới trước "camera", ngồi chiếm thanh nút. |
+
+## Bản 0.6 – giao diện mới & mèo "quấn người"
+
+| Phần | File | Ghi chú |
+|---|---|---|
+| Bộ icon nét | `src/ui/icons.js` | `icon(name)` trả SVG 24×24 theo `currentColor`. Emoji chỉ còn cho nội dung (tâm trạng, quà, phòng). |
+| Phông | `assets/fonts/` | Be Vietnam Pro 400–800, tự lưu (offline, không gọi Google Fonts). |
+| HUD kính tối | `styles/app.css` (lớp 0.6) | Token `--hud*`, viên trạng thái, đảo thông báo (toast + check-in nở ra từ viên tên phòng, chạy hàng đợi), thanh lối tắt 1 khối, thanh hành động 1 khối với nút chính gradient. |
+| Gắn bó | `src/cat/bond.js` | 5 bậc: Người lạ 0 · Quen mặt 12 · Bạn 28 · Bạn thân 50 · Tri kỷ 75. `bond.gain(n, why)` → sự kiện `bond-up`. Nguội dần khi bỏ bê > 3 ngày (không rơi quá 1 bậc). |
+| Hành vi quấn người | `src/cat/brain.js` | `headbutt`, `blinkat`, `gift` (Bạn) · `knead`, `bellyup`, `pawtap` (Bạn thân) · `sleepnear` (Tri kỷ; từ Bạn sau 21h) · đi theo bạn sang phòng (Quen mặt, `game.viewRoom`) · đón cửa có dụi đầu khi vắng > 2 giờ. Hồi chiêu lưu ở `save.cd`. Chỉ diễn khi `game.attention()`. |
+| Cận mặt | `src/ui/closeup.js` | `headbutt` / `pawtap` / `slowblink`. Có `closeups` trong `cat.json` → phát video Flow, tách nền xanh bằng canvas; không có → mặt mèo vector. Để lại vết mũi trên "kính", vuốt để lau. |
+| Quà | `src/meta/gifts.js` | 12 món, độ hiếm theo kỹ năng săn. Quà nằm trên sàn (`save.house.gift`) tới khi bạn chạm. Bộ sưu tập: Sổ khoảnh khắc → Quà. |
+| Thư mỗi sáng | `src/meta/letter.js` | Viết từ nhật ký hôm qua + tâm trạng + bậc gắn bó. Lưu 30 lá; đọc lại thư cũ = Plus (`letters.archive`). |
+| Cách mèo gọi bạn | `save.profile.nick` | Mặc định "Sen". Lời thoại dùng `{cat}` / `{sen}`, điền lúc chạy (`setNames`). |
+| Rung | `game.buzz()` | Chỉ rung sau khi người dùng đã chạm (tránh trình duyệt chặn), tắt được trong Cài đặt. |

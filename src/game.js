@@ -19,7 +19,12 @@ import { createAlbum } from "./meta/album.js";
 import { music } from "./core/music.js";
 import { createSchedule, ACT_INFO, fmtH } from "./meta/schedule.js";
 import { createCalendar } from "./meta/calendar.js";
-import { line } from "./cat/lines.js";
+import { line, setNames } from "./cat/lines.js";
+import { createBond } from "./cat/bond.js";
+import { pickGift, giftName, GIFTS } from "./meta/gifts.js";
+const GIFTS_BY = Object.fromEntries(GIFTS.map((g) => [g.id, g]));
+import { letterToday } from "./meta/letter.js";
+import { createCloseup } from "./ui/closeup.js";
 
 export async function createGame(root) {
   const ev = bus();
@@ -49,6 +54,11 @@ export async function createGame(root) {
 
   // ------------------------------------------------------------------ vắng nhà (idle) + ghé thăm mỗi ngày
   game.lastSeen0 = s.lastSeen;
+  game.lastInput = Date.now();
+  game.awayH = (Date.now() - (s.lastSeen || Date.now())) / 3600e3;
+  setNames({ cat: game.cat.name, sen: s.profile.nick || "Sen" });
+  game.setNick = (n) => { s.profile.nick = (n || "").trim().slice(0, 16) || "Sen"; setNames({ sen: s.profile.nick }); save(s); };
+  const bond = createBond(game); game.bond = bond;
   const away = offline(s, game);
   const d0 = dayKey();
   if (s.visits.last !== d0) {
@@ -57,6 +67,7 @@ export async function createGame(root) {
     const bonus = ECON.dailyVisit + Math.min(6, s.visits.streak - 1) * 2; s.coins += bonus; game.dailyBonus = bonus;
     log(s, "day", `${game.today.mood.emo} Hôm nay ${game.cat.name}: ${game.today.mood.vi}`, { mood: game.today.mood.id });
   }
+  game.letter = letterToday(game);
   game.away = away;
 
   // ------------------------------------------------------------------ sân khấu
@@ -109,7 +120,20 @@ export async function createGame(root) {
     const vp = scene.S.vp; vp.classList.remove("glitch"); void vp.offsetWidth; vp.classList.add("glitch"); setTimeout(() => vp.classList.remove("glitch"), 420);
     scene.show(id, id === B.room ? B.x - scene.S.viewW / 2 : 0); sync(); game.syncHouse(); ev.emit("follow", scene.S.follow);
   };
-  game.viewRoom = async (id) => { if (game.mode === "cam") return game.camCut(id); if (id === scene.room || !game.roomAllowed(id)) return; const order = Object.keys(ROOMS); const cur = scene.room; scene.S.follow = false; await scene.go(id, order.indexOf(id) > order.indexOf(cur) ? 1 : -1, 0); sync(); ev.emit("follow", false); };
+  game.viewRoom = async (id) => {
+    if (game.mode === "cam") return game.camCut(id); if (id === scene.room || !game.roomAllowed(id)) return;
+    const order = Object.keys(ROOMS); const cur = scene.room; scene.S.follow = false;
+    await scene.go(id, order.indexOf(id) > order.indexOf(cur) ? 1 : -1, 0); sync(); ev.emit("follow", false);
+    followYou(id, cur);
+  };
+  // QUẤN NGƯỜI: bạn sang phòng nào, mèo (đủ thân) lẽo đẽo theo sang phòng đó
+  function followYou(id, from) {
+    if (!bond.at("known") || brain.sleeping || memory.angry || B.room === id || B.room !== from && Math.random() < 0.5) return;
+    if (["eat", "potty", "pet", "greet", "meeting"].includes(brain.activity)) return;
+    const t = game.today.traits, p = 0.3 + t.affectionate * 0.4 + bond.tier * 0.08 + (game.today.mood.id === "clingy" ? 0.3 : 0) - t.sassy * 0.15;
+    if (Math.random() > p) return;
+    setTimeout(() => { if (scene.room !== id) return; brain.interrupt(async () => { await brain.comeTo(id, Math.random() < 0.3 ? "trot_tailup" : "walk"); game.say("follow"); game.moment("follow"); await B.act("idle_tail", 4000); }, "follow"); }, 900);
+  }
   game.followCat = async (on = true) => {
     scene.S.follow = on; s.settings.follow = on; scene.S.manualUntil = 0;
     if (on && scene.room !== B.room) { const order = Object.keys(ROOMS); await scene.go(B.room, order.indexOf(B.room) > order.indexOf(scene.room) ? 1 : -1, B.x - scene.S.viewW / 2); sync(); }
@@ -127,7 +151,7 @@ export async function createGame(root) {
     ev.emit("q", "feed");
     if (s.house.bowl) return ev.emit("toast", { text: "Bát vẫn còn đầy." });
     s.house.bowl = 1; s.stats.feeds++; memory.fed(); game.syncHouse(); ev.emit("needs"); save(s);
-    if (N.hunger < 80 && !brain.sleeping) { brain.interrupt(async () => { B.say(line("hungry", game.today.mood.id)); await brain.ACTS.find((a) => a.id === "eat").run(); }, "eat"); game.coins(N.hunger < 50 ? ECON.feed : 0, "feed"); }
+    if (N.hunger < 80 && !brain.sleeping) { brain.interrupt(async () => { B.say(line("hungry", game.today.mood.id)); await brain.ACTS.find((a) => a.id === "eat").run(); }, "eat"); game.coins(N.hunger < 50 ? ECON.feed : 0, "feed"); if (N.hunger < 50) bond.gain(0.5, "feed"); }
     ev.emit("toast", { text: `Đã đổ hạt vào bát ở ${ROOMS.kitchen.icon} Bếp` });
   };
   game.clean = () => {
@@ -162,10 +186,43 @@ export async function createGame(root) {
     else sayFar("call_no");
   };
 
+  // ------------------------------------------------------------------ QUÀ: mèo ngậm về, thả trước mặt bạn, chạm để nhận
+  let carry = null;
+  game.carryGift = () => { const g = pickGift(memory.level("hunter")); const el = document.createElement("div"); el.className = "giftcarry"; el.textContent = g.emo; carry = { g, el }; return g; };
+  game.dropGift = () => {
+    if (!carry) return; const { g, el } = carry; carry = null; el.remove();
+    const w = ROOMS[B.room].walk; s.house.gift = { id: g.id, room: B.room, x: clamp(B.x + B.face * 70 * (B.k || 0.6), w.x0 + 40, w.x1 - 40), y: clamp(B.y + 18, w.y0, w.y1 + 20) }; save(s); placeGift();
+  };
+  function placeGift() {
+    document.querySelectorAll(".giftdrop").forEach((n) => n.remove());
+    const G = s.house.gift; if (!G || G.room !== scene.room || !scene.actors) return;
+    const g = pickGiftById(G.id), el = document.createElement("button"); el.className = "giftdrop"; el.setAttribute("aria-label", "Nhận quà");
+    el.innerHTML = `<span>${g.emo}</span>`; el.style.transform = `translate(${G.x}px, ${G.y}px)`; el.style.zIndex = Math.round(G.y); scene.actors.appendChild(el);
+    el.addEventListener("pointerdown", (e) => { e.stopPropagation(); collectGift(el); });
+  }
+  const pickGiftById = (id) => GIFTS_BY[id] || { id, emo: "🎁", vi: "Quà" };
+  function collectGift(el) {
+    const G = s.house.gift; if (!G) return; const g = pickGiftById(G.id); s.house.gift = null;
+    s.gifts[g.id] = (s.gifts[g.id] || 0) + 1; const name = giftName(g, s.profile.nick || "Sen");
+    game.journal("gift", `🎁 ${game.cat.name} tặng: ${g.emo} ${name}`); game.moment("gift", true); bond.gain(1.5, "gift"); game.coins(2, "gift");
+    ev.emit("toast", { text: `🎁 Nhận quà: ${g.emo} ${name}${s.gifts[g.id] === 1 ? " · món mới!" : ""}` }); ev.emit("gift", g); buzz(15);
+    el.classList.add("got"); setTimeout(() => el.remove(), 700);
+    if (brain.st.giftWaiting) { game.say("gift_thanks"); hearts?.(2); }
+  }
+  ev.on("room", () => setTimeout(placeGift, 50));
+  setTimeout(placeGift, 300);
+  const buzz = (p) => { if (s.settings.haptics !== false && navigator.userActivation?.hasBeenActive !== false) try { navigator.vibrate?.(p); } catch { /* không hỗ trợ */ } };
+  game.buzz = buzz;
+  game.purr = (on) => { if (!on || s.settings.sound) snd.purr(on); };
+  // mèo chỉ "quấn" khi bạn đang thực sự nhìn: ở nhà, tab đang mở, không mở bảng, không cầm đồ chơi
+  game.attention = () => game.mode === "home" && !document.hidden && !game.tool && !game.sheetOpen?.() && !game.closeup?.busy && !game.docked && game.roomAllowed(scene.room);
+  game.closeup = createCloseup(game, root);
+  let hearts = null;
+
   // ------------------------------------------------------------------ vòng lặp khung hình
   let watchSec = 0;
   let last = 0, tHud = 0, tLight = 0, tNeeds = 0, tMem = 0, tBlink = 4000;
-  const slowBlinked = () => { game.moment("slowblink"); const n = memory.seen("slowblink"); if (n === 1) { ev.emit("toast", { text: `😽 ${game.cat.name} chớp mắt chậm với bạn – nghĩa là “tin bạn”` }); memory.note("blink", "Đã chớp mắt chậm với bạn. Tin bạn rồi."); } s.cat.bond = clamp(s.cat.bond + 0.2, 0, 100); };
+  const slowBlinked = () => { game.moment("slowblink"); const n = memory.seen("slowblink"); if (n === 1) { ev.emit("toast", { text: `😽 ${game.cat.name} chớp mắt chậm với bạn – nghĩa là “tin bạn”` }); memory.note("blink", "Đã chớp mắt chậm với bạn. Tin bạn rồi."); } bond.gain(0.2, "blink"); };
   function frame(t) {
     const dt = last ? Math.min(0.05, (t - last) / 1000) : 0; last = t;
     B.tick(dt);
@@ -185,6 +242,7 @@ export async function createGame(root) {
       if (slow) { slowBlinked(); }
     }
     tick2(dt);
+    if (carry) { if (scene.room === B.room && B.hx != null) { if (!carry.el.isConnected) scene.topfx.appendChild(carry.el); const k = B.k || 0.6; carry.el.style.transform = `translate(${(B.hx + B.face * 26 * k).toFixed(1)}px, ${(B.hy + 34 * k).toFixed(1)}px) scale(${(k * 1.6).toFixed(3)})`; } else carry.el.remove(); }
     requestAnimationFrame(frame);
   }
   const brain = createBrain(game); game.brain = brain;
@@ -226,11 +284,11 @@ export async function createGame(root) {
     const w = ROOMS[scene.room].walk, S = scene.S, x = clamp(S.cam + S.viewW * (0.3 + Math.random() * 0.4), w.x0, w.x1), y = rand(w.y0 + 20, w.y1 - 10);
     const el = document.createElement("div"); el.className = "treat"; el.textContent = "🐟"; scene.actors.appendChild(el);
     const x0 = S.cam + S.viewW / 2, t0 = performance.now(); const fly = (tt) => { const u = Math.min(1, (tt - t0) / 600); el.style.transform = `translate(${lerp(x0, x, u)}px, ${lerp(380, y, u) - Math.sin(u * Math.PI) * 180}px) rotate(${u * 540}deg)`; el.style.zIndex = Math.round(y); if (u < 1) requestAnimationFrame(fly); }; requestAnimationFrame(fly);
-    brain.interrupt(async () => { await brain.down(); await B.wait(400); await B.walkTo(x - Math.sign(x - B.x) * 60, y); B.faceTo(x - B.x); await B.act("eat", 2200); el.remove(); game.say("treat"); N.hunger = clamp(N.hunger + 6, 0, 100); memory.appease(8); s.cat.bond = clamp(s.cat.bond + 0.3, 0, 100); await B.act("lick_lip", 1800); }, "eat");
+    brain.interrupt(async () => { await brain.down(); await B.wait(400); await B.walkTo(x - Math.sign(x - B.x) * 60, y); B.faceTo(x - B.x); await B.act("eat", 2200); el.remove(); game.say("treat"); N.hunger = clamp(N.hunger + 6, 0, 100); memory.appease(8); bond.gain(0.3, "treat"); await B.act("lick_lip", 1800); }, "eat");
   };
   game.snacksLeft = () => (snackDay !== dayKey() ? 5 : snacks);
   const events = createEvents(game); game.events = events;
-  const tick2 = interactions(game, root);
+  const tick2 = interactions(game, root); hearts = game.hearts;
   const scares = createScares(game, root); game.scares = scares;
   const quests = createQuests(game); game.quests = quests;
   const album = createAlbum(game); game.album = album;
@@ -254,6 +312,9 @@ export async function createGame(root) {
       // ra cửa ngồi chờ đúng giờ bạn hay về
       scene.show("living", 0); B.setRoom("living", 240, 760, 0); B.face = 1; B.faceShown = 1;
       setTimeout(() => { game.say("waitdoor"); game.meow(1); }, 1200); brain.st.cur = "seek";
+    } else if (gap > 3 && game.ownerHome() && bond.at("known")) {
+      // vắng lâu mới mở app → mèo chạy ra đón tận nơi (đủ thân thì dụi đầu luôn vào màn hình)
+      setTimeout(() => brain.interrupt(() => brain.ACTS.find((a) => a.id === "greet").run(), "greet"), 1600);
     } else setTimeout(() => game.say(game.age.stage === "kitten" ? "kitten" : "hello"), 900);
     brain.start();
   };
@@ -311,6 +372,7 @@ function interactions(game, root) {
   function hearts(n = 1, bad = false) {
     for (let i = 0; i < n; i++) { const h = document.createElement("div"); h.className = "fx-heart" + (bad ? " bad" : ""); h.textContent = bad ? "💢" : "♥"; const k = kOf(); h.style.left = B.x + rand(-40, 40) * k * 2 + "px"; h.style.top = B.y - B.h - rand(120, 190) * k + "px"; scene.topfx.appendChild(h); setTimeout(() => h.remove(), 1400); }
   }
+  game.hearts = hearts;
   function scratchMarks(cx, cy) { const m = document.createElement("div"); m.className = "scratch"; m.style.left = cx - 40 + "px"; m.style.top = cy - 40 + "px"; m.innerHTML = `<svg viewBox="0 0 80 80"><path d="M14 10 L46 66"/><path d="M30 6 L60 62"/><path d="M46 8 L72 54"/></svg>`; document.body.appendChild(m); setTimeout(() => m.classList.add("out"), 900); setTimeout(() => m.remove(), 1500); }
 
   // ---------------- vuốt ve
@@ -331,6 +393,13 @@ function interactions(game, root) {
   function stroke(zone, withFur, e) {
     const t = T(), mem = game.memory, tol = 3 + t.affectionate * 7 - t.sassy * 2 - (mood() === "grumpy" ? 3 : 0) - (mem.angry ? 3 : 0);
     pet.strokes++; s.stats.pets++;
+    // khoe bụng: 1 lần gãi là biết – được thương, hay dính bẫy
+    if (game.belly && !game.belly.done) {
+      game.belly.done = true; const trap = Math.random() < 0.6 - game.bond.tier * 0.06 + t.sassy * 0.15;
+      if (trap) { game.say("belly_trap", null, 1800); swat(e); game.buzz([20, 40, 20]); game.moment("belly_trap", true); petEnd(null, true); brain.interrupt(async () => { await B.act("belly_trap", 1400); await B.act("crouch", 600); const w = ROOMS[B.room].walk; await B.walkTo(clamp(B.x + (B.x < (w.x0 + w.x1) / 2 ? 260 : -260), w.x0, w.x1), B.y, { gait: "run" }); await B.act("groom", 3000); }, "pet"); }
+      else { game.say("belly_ok", null, 2200); hearts(3); game.bond.gain(0.6, "belly"); game.moment("belly_ok", true); if (s.settings.sound) snd.purr(true); B.wobble = 0.7; }
+      return;
+    }
     if (zone === game.today.hateZone && (Math.random() < 0.5 + t.sassy * 0.4)) {
       swat(e); mem.pet(zone, false); mem.offend(25, "chạm chỗ ghét"); N.social = clamp(N.social - 4, 0, 100); petEnd(null, true);
       brain.interrupt(async () => { await B.act("crouch", 700); await brain.down(); const w = ROOMS[B.room].walk; await B.walkTo(B.x < (w.x0 + w.x1) / 2 ? w.x1 - 100 : w.x0 + 100, B.y, { gait: "run" }); await B.act("groom", 4000); }, "sulk");
@@ -344,7 +413,7 @@ function interactions(game, root) {
     const like = zone === game.today.likeZone || mem.learnedLike(zone); if (like) game.emit("q", "pet_like");
     if (pet.strokes > tol + (like ? 4 : 0) || mem.spend(like ? 1 : 2.5) < 15) { game.say("annoyed"); petEnd(null, true); leave(false); return; }
     mem.pet(zone, true);
-    N.social = clamp(N.social + (like ? 7 : 4), 0, 100); s.cat.bond = clamp(s.cat.bond + (like ? 0.6 : 0.3), 0, 100);
+    N.social = clamp(N.social + (like ? 7 : 4), 0, 100); game.bond.gain(like ? 0.6 : 0.3, "pet");
     hearts(like ? 2 : 1); B.wobble = like ? 0.9 : 0.5; if (s.settings.sound) snd.purr(true);
     if (pet.strokes === 2 || like && pet.strokes % 3 === 1) game.say("pet_good", null, 1800);
     if (pet.strokes === 3 && like) game.R.play(game.R.resolve(B.h > 0 ? "loaf" : "lie"));
@@ -369,7 +438,7 @@ function interactions(game, root) {
     const ok = !brain.sleeping && Math.random() < p; mem.xp("highfive", ok ? 2 : 1);
     brain.interrupt(async () => {
       if (ok) { game.emit("q", "highfive"); game.moment("highfive"); game.R.play(game.R.resolve("groom"), { dur: 160 }); hearts(1); const f = document.createElement("div"); f.className = "fx-heart"; f.textContent = "🖐️"; const k = kOf(); f.style.left = B.x + B.face * 60 * k + "px"; f.style.top = B.y - B.h - 150 * k + "px"; scene.topfx.appendChild(f); setTimeout(() => f.remove(), 1400);
-        game.say("highfive_ok", null, 1800); game.coins(1, "highfive"); s.cat.bond = clamp(s.cat.bond + 0.5, 0, 100); await B.wait(700); await B.act(B.h > 0 ? "loaf" : "idle_tail", 3000); }
+        game.say("highfive_ok", null, 1800); game.coins(1, "highfive"); game.bond.gain(0.5, "highfive"); await B.wait(700); await B.act(B.h > 0 ? "loaf" : "idle_tail", 3000); }
       else { game.say("highfive_no", null, 1600); await B.act("look_up", 1800); await B.act(B.h > 0 ? "loaf" : "idle_tail", 2000); }
     }, "pet");
   }
@@ -402,7 +471,7 @@ function interactions(game, root) {
       await B.walkTo(B.x + (dx / dist) * step, B.y + (dy / dist) * step, { gait: dist > 400 ? "run" : "stalk" });
     }
     B.agility = 1; B.speedMul = sm0;
-    if (hits) { s.stats.plays++; game.coins(ECON.play, "play"); log(s, "play", `${kind === "laser" ? "🔴" : "🪶"} Chơi ${hits} lượt`); }
+    if (hits) { s.stats.plays++; game.coins(ECON.play, "play"); game.bond.gain(0.8, "play"); log(s, "play", `${kind === "laser" ? "🔴" : "🪶"} Chơi ${hits} lượt`); }
     await B.act("loaf", 2500);
   }
   function throwYarn(p) {

@@ -14,6 +14,10 @@ export const MOMENTS = [
   { id: "phantom", vi: "Thấy… gì đó", rare: 3 }, { id: "whiteeyes", vi: "Mắt trắng nửa đêm", rare: 3 }, { id: "blackout", vi: "Cúp điện", rare: 3 },
   { id: "peek", vi: "Ló mặt", rare: 3 }, { id: "shadow", vi: "Bóng ma trên tường", rare: 3 }, { id: "stranger", vi: "Mèo lạ ngoài cửa sổ", rare: 3 },
   { id: "dash", vi: "Phóng lúc 3 giờ sáng", rare: 3 }, { id: "crash", vi: "RẦM!", rare: 2 }, { id: "season", vi: "Mùa lễ cùng mèo", rare: 3 },
+  // quấn người
+  { id: "follow", vi: "Lẽo đẽo theo bạn", rare: 1 }, { id: "headbutt", vi: "Dụi đầu vào màn hình", rare: 2 }, { id: "gift", vi: "Quà đầu tiên", rare: 2 },
+  { id: "knead", vi: "Nhào bột", rare: 2 }, { id: "belly_trap", vi: "Dính bẫy bụng", rare: 2 }, { id: "belly_ok", vi: "Được gãi bụng", rare: 3 },
+  { id: "pawtap", vi: "Gõ cửa kính", rare: 2 }, { id: "sleepnear", vi: "Ngủ cạnh bạn", rare: 3 }, { id: "greetrun", vi: "Chạy ra tận cửa", rare: 2 },
 ];
 const BG = { living: "#F4E6D2", kitchen: "#DDEBE2", bedroom: "#DCE3EC", bathroom: "#F6E1DE", balcony: "#CFE6F2" };
 

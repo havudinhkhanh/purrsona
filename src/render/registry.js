@@ -39,6 +39,7 @@ export async function createCatRenderer(id) {
   const r = await make(man, base);
   if (!r.box) { const vb = man.viewBox || [-200, -262, 400, 272]; r.box = { w: vb[2], h: vb[3], ax: -vb[0], ay: -vb[1] }; }
   r.resolve = (name) => resolveClip(r.has, name);
+  man.base = base.href;      // để tìm file đi kèm (clip cận mặt, âm thanh) theo đường dẫn tương đối
   return r;
 }
 

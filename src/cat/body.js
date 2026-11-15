@@ -102,6 +102,7 @@ export function createBody(R, scene, opts = {}) {
     const fAbs = Math.abs(B.faceShown), fSign = B.faceShown >= 0 ? 1 : -1, turning = fAbs < 0.98;
     const fx = fSign * (0.22 + 0.78 * fAbs), turnLift = turning ? 1 + 0.035 * (1 - fAbs) : 1;
     let sq = 1; if (B.squash) { const u = (performance.now() - B.squash) / 220; if (u < 1) sq = 1 - 0.07 * Math.sin(u * Math.PI); else B.squash = 0; }
+    if (B.knead) sq *= 1 - 0.022 * Math.abs(Math.sin(performance.now() / 190));      // nhào bột: nhún nhịp nhàng
     const d = depth(B.y), k = k0 * d * B.extraScale * (B.ageScale || 1);
     const wob = B.wobble ? Math.sin(performance.now() / 22) * B.wobble : 0;
     el.style.transform = `translate(${(B.x + wob).toFixed(2)}px, ${(B.y - B.h + bob).toFixed(2)}px) scale(${k.toFixed(4)}, ${(k * sq * turnLift).toFixed(4)})`;
@@ -117,6 +118,7 @@ export function createBody(R, scene, opts = {}) {
       const hy = B.y - B.h - (R.box.ay - 30) * k * 0.82; bubble.style.transform = `translate(${B.x.toFixed(1)}px, ${hy.toFixed(1)}px) translate(-50%, -100%)`;
     }
     const e = R.eye(), n = scene.S.night || 0;
+    if (e) { B.hx = B.x + e[0] * k * fx; B.hy = B.y - B.h + e[1] * k; B.k = k; }      // vị trí đầu – để ngậm quà
     eyes.classList.toggle("white", !!B.eyeWhite);
     if (e && !B.hidden && (B.eyeWhite || (n > 0.25 && !R.blinking && !R.clip.startsWith("sleep")))) { eyes.style.opacity = B.eyeWhite ? 1 : ((n - 0.25) * 1.3).toFixed(2); eyes.style.transform = `translate(${(B.x + e[0] * k * fx).toFixed(1)}px, ${(B.y - B.h + e[1] * k).toFixed(1)}px) scale(${(k * (B.eyeWhite ? 2.6 : 1.6)).toFixed(3)})`; }
     else eyes.style.opacity = 0;

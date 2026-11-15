@@ -12,11 +12,14 @@ import { MOMENTS } from "../meta/album.js";
 import { ACT_INFO, fmtH, parseH } from "../meta/schedule.js";
 import { KIND, KIND_ORDER } from "../meta/calendar.js";
 import { CAL } from "../config.js";
+import { icon } from "./icons.js";
+import { TIERS } from "../cat/bond.js";
+import { GIFTS, giftName } from "../meta/gifts.js";
 
 let CATS = [];
 listCats().then((c) => (CATS = c)).catch(() => {});
 
-const NEEDS = [["hunger", "No", "🐟"], ["energy", "Sức", "⚡"], ["fun", "Vui", "🎾"], ["social", "Thân", "💕"], ["hygiene", "Sạch", "🫧"]];
+const NEEDS = [["hunger", "No", "🐟", "fish"], ["energy", "Sức", "⚡", "bolt"], ["fun", "Vui", "🎾", "yarn"], ["social", "Thân", "💕", "heart"], ["hygiene", "Sạch", "🫧", "sparkle"]];
 const ACT_VI = { eat: "Đang ăn", beg: "Đòi ăn", nap: "Đang ngủ", potty: "Đi vệ sinh", watch: "Ngắm trời", explore: "Đi dạo", groom: "Liếm lông", scratch: "Mài vuốt", zoomies: "Chạy rần rần", selfplay: "Tự chơi", perch: "Leo trèo", seek: "Tìm bạn", wander: "Thong thả", "chase-laser": "Đuổi laser", "chase-feather": "Vờn lông vũ", pet: "Được vuốt ve", wakeowner: "Gọi bạn dậy", seeoff: "Tiễn bạn", waitdoor: "Ngồi chờ cửa", greet: "Đón bạn", bedtime: "Đi ngủ cùng bạn", prowl: "Tuần đêm", meeting: "Phá cuộc họp", talk: "Nghe loa", scare: "…", sulk: "Đang dỗi", knock: "Phá phách", dock: "Chiếm chỗ", dawnyell: "Réo ăn", nightsong: "Hát đêm", bird: "Rình chim", butterfly: "Vờn bướm", gecko: "Săn thạch sùng", box: "Chui hộp", storm: "Trốn sấm", phantom: "Nhìn ma" };
 const planChip = (p) => (p === "free" ? "" : `<span class="chip chip-${p}">${PLANS[p].vi}</span>`);
 
@@ -25,49 +28,48 @@ export function createHud(game, root) {
   const el = document.createElement("div"); el.className = "hud"; root.appendChild(el);
   el.innerHTML = `
   <header class="top">
-    <button class="catcard" data-a="cat" aria-label="Thông tin mèo">
+    <button class="status" data-a="cat" aria-label="Hồ sơ mèo">
       <span class="ava"><i class="ring"></i>${R.snapshot("sit")}<em class="moodemo"></em></span>
-      <span class="who"><b>${esc(game.cat.name)}</b><span class="mood"></span>
-        <span class="needs">${NEEDS.map(([k, vi, ic]) => `<i data-n="${k}" title="${vi}"><em>${ic}</em><s><u></u></s></i>`).join("")}</span></span>
+      <span class="who"><span class="nm"><b>${esc(game.cat.name)}</b><i class="bondchip">${icon("heartFill")}<span></span></i></span><span class="mood"></span>
+        <span class="needs">${NEEDS.map(([k, vi, , ic]) => `<i data-n="${k}" title="${vi}">${icon(ic)}<s><u></u></s></i>`).join("")}</span></span>
     </button>
-    <div class="roomwrap">
-      <button class="roompill" data-a="rooms"><span class="ri"></span><span class="rn"></span><span class="where"></span></button>
-      <button class="pin" data-a="follow" aria-label="Máy quay theo mèo" title="Máy quay theo mèo">📍</button>
+    <div class="island" aria-live="polite">
+      <div class="is-base"><button class="is-room" data-a="rooms"><span class="ri"></span><span class="rn"></span><span class="where"></span></button><button class="is-pin" data-a="follow" aria-label="Máy quay theo mèo" title="Máy quay theo mèo">${icon("locate")}</button></div>
+      <div class="is-msg"></div>
     </div>
     <div class="topr">
-      <button class="coins" data-a="shop" aria-label="Cá khô"><span>🐟</span><b></b></button>
-      <button class="ic" data-a="menu" aria-label="Menu">☰</button>
+      <button class="coins" data-a="shop" aria-label="Cá khô">${icon("fish")}<b></b></button>
+      <button class="ic glass" data-a="menu" aria-label="Menu">${icon("menu")}</button>
     </div>
   </header>
   <aside class="rail" aria-label="Lối tắt">
-    <button data-a="cammode" title="Xem qua camera / Ở nhà"><span>📹</span></button>
-    <button data-a="schedule" title="Lịch của bạn & kế hoạch của mèo"><span>🗓️</span></button>
-    <button data-a="quests" title="Nhiệm vụ hôm nay"><span>🎯</span><i class="badge" hidden></i></button>
-    <button data-a="album" title="Sổ khoảnh khắc"><span>📸</span></button>
-    <button data-a="journal" title="Nhật ký"><span>📔</span></button>
-    <button data-a="music" title="Nhạc chill"><span>🎵</span></button>
-    <button data-a="immersive" title="Ẩn giao diện – chỉ ngắm mèo"><span>👁️</span></button>
+    <button data-a="cammode" data-tip="Camera / Ở nhà">${icon("video")}</button>
+    <button data-a="schedule" data-tip="Lịch & kế hoạch">${icon("calendar")}</button>
+    <button data-a="quests" data-tip="Nhiệm vụ">${icon("target")}<i class="badge" hidden></i></button>
+    <button data-a="album" data-tip="Sổ khoảnh khắc">${icon("album")}</button>
+    <button data-a="journal" data-tip="Nhật ký">${icon("book")}</button>
+    <i class="sep"></i>
+    <button data-a="music" data-tip="Nhạc chill">${icon("music")}</button>
+    <button data-a="immersive" data-tip="Chỉ ngắm mèo">${icon("eyeOff")}</button>
   </aside>
   <div class="toolhint" hidden></div>
   <div class="camui" aria-hidden="true"><div class="cam-tag"><b class="rec">● REC</b><span class="cam-name"></span><span class="cam-clock"></span><em class="cam-ir">HỒNG NGOẠI</em></div></div>
-  <nav class="camdock" aria-label="Điều khiển camera">
-    <button data-a="talk"><span>🎙️</span><small>Nói</small></button>
-    <button data-a="treat"><span>🐟</span><small>Snack <b class="snk"></b></small></button>
-    <button data-a="camlaser" class="main"><span>🔴</span><small>Laser</small></button>
-    <button data-a="photo"><span>📷</span><small>Chụp</small></button>
-    <button data-a="grid"><span>⊞</span><small>Các cam</small></button>
-    <button data-a="recs"><span>📼</span><small>Bản ghi</small></button>
+  <nav class="camdock actbar" aria-label="Điều khiển camera">
+    <button data-a="talk">${icon("mic")}<small>Nói</small></button>
+    <button data-a="treat">${icon("fish")}<small>Snack <b class="snk"></b></small></button>
+    <button data-a="camlaser" class="main"><span>${icon("laser")}</span><small>Laser</small></button>
+    <button data-a="photo">${icon("camera")}<small>Chụp</small></button>
+    <button data-a="grid">${icon("grid")}<small>Các cam</small></button>
+    <button data-a="recs">${icon("film")}<small>Bản ghi</small></button>
   </nav>
-  <nav class="dock">
-    <button data-a="feed"><span>🍽️</span><small>Cho ăn</small></button>
-    <button data-a="call"><span>📣</span><small>Gọi</small></button>
-    <button data-a="play" class="main"><span>🧶</span><small>Chơi</small></button>
-    <button data-a="clean"><span>🧹</span><small>Dọn dẹp</small><i class="dot" hidden></i></button>
-    <button data-a="photo"><span>📷</span><small>Chụp</small></button>
+  <nav class="dock actbar" aria-label="Chăm mèo">
+    <button data-a="feed">${icon("bowl")}<small>Cho ăn</small></button>
+    <button data-a="call">${icon("call")}<small>Gọi</small></button>
+    <button data-a="play" class="main"><span>${icon("yarn")}</span><small>Chơi</small></button>
+    <button data-a="clean">${icon("broom")}<small>Dọn</small><i class="dot" hidden></i></button>
+    <button data-a="photo">${icon("camera")}<small>Chụp</small></button>
   </nav>
   <button class="docksit" data-a="shoo" hidden aria-label="Đuổi mèo xuống">${R.snapshot("loaf")}</button>
-  <div class="checkin" hidden></div>
-  <div class="toasts"></div>
   <div class="sheet-wrap" hidden><div class="scrim" data-a="close"></div><section class="sheet" role="dialog" aria-modal="true"><div class="grab"></div><div class="sheet-body"></div></section></div>`;
   const q = (x) => el.querySelector(x);
 
@@ -77,12 +79,13 @@ export function createHud(game, root) {
     q(".mood").textContent = `${game.memory.angry ? "😾 Đang giận" : `${game.today.mood.emo} ${game.today.mood.vi}`} · ${ACT_VI[game.brain.activity] || "…"}`;
     q(".coins b").textContent = s.coins;
     const vr = ROOMS[game.scene.room]; q(".ri").textContent = vr.icon; q(".rn").textContent = vr.vi;
-    const here = game.body.room === game.scene.room; q(".where").textContent = here ? "" : `${game.cat.name} ở ${ROOMS[game.body.room].icon}`; q(".where").hidden = here;
+    const here = game.body.room === game.scene.room; q(".where").textContent = here ? "" : `${ROOMS[game.body.room].icon}`; q(".where").title = here ? "" : `${game.cat.name} đang ở ${ROOMS[game.body.room].vi}`; q(".where").hidden = here;
     q("[data-a=clean] .dot").hidden = !s.house.litter && s.house.cup !== "broken";
     q("[data-a=follow]").classList.toggle("on", game.scene.S.follow);
     q(".moodemo").textContent = game.memory.angry ? "😾" : game.today.mood.emo;
     const nAvg = (s.cat.needs.hunger + s.cat.needs.energy + s.cat.needs.fun + s.cat.needs.social + s.cat.needs.hygiene) / 5; q(".ring").style.setProperty("--p", Math.round(nAvg) + "%"); q(".ring").classList.toggle("low", nAvg < 35);
-    const qb = q(".rail .badge"), qc = game.quests.claimable; qb.hidden = !qc; qb.textContent = qc;
+    const qb = q(".rail [data-a=quests] .badge"), qc = game.quests.claimable; qb.hidden = !qc; qb.textContent = qc;
+    const bc = q(".bondchip"); bc.querySelector("span").textContent = game.bond.T.vi; bc.style.setProperty("--p", game.bond.pct + "%"); bc.dataset.tier = game.bond.tier;
     q("[data-a=music]").classList.toggle("on", !!s.settings.music);
     const cam = game.mode === "cam"; root.dataset.mode = game.mode; q("[data-a=cammode]").classList.toggle("on", cam);
     if (cam) { const order = ["balcony", "bedroom", "living", "kitchen", "bathroom"]; q(".cam-name").textContent = `CAM ${order.indexOf(game.scene.room) + 1} · ${ROOMS[game.scene.room].vi}`; q(".snk").textContent = game.snacksLeft(); }
@@ -91,44 +94,55 @@ export function createHud(game, root) {
   game.on("tick", refresh); game.on("needs", refresh); game.on("room", refresh); game.on("follow", refresh); game.on("coins", (c) => { refresh(); if (c.n > 0) floatCoin(c.n); });
   refresh();
 
-  // ------------------------------------------------------------------ thẻ CHECK-IN khi mèo sang phòng
-  let ckT = 0;
+  // ------------------------------------------------------------------ ĐẢO THÔNG BÁO (kiểu "dynamic island")
+  // Mọi thông báo + thẻ check-in nở ra từ viên tên phòng ở giữa phía trên, lần lượt từng cái, rồi thu lại.
+  const isl = q(".island"), msg = q(".is-msg"), queue = []; let showing = null, isT = 0;
+  function pump() {
+    if (showing || !queue.length) return; showing = queue.shift();
+    msg.innerHTML = showing.html; isl.className = "island open " + (showing.cls || "");
+    msg.querySelector("button")?.addEventListener("click", (e) => { e.stopPropagation(); showing?.fn?.(); hideIsland(); });
+    clearTimeout(isT); isT = setTimeout(hideIsland, showing.ms || 3400);
+  }
+  function hideIsland() { clearTimeout(isT); isl.className = "island"; setTimeout(() => { showing = null; msg.innerHTML = ""; pump(); }, 420); }
+  isl.addEventListener("click", (e) => { if (showing && !e.target.closest("button")) hideIsland(); });
+  function island(o, urgent = false) { if (urgent) { queue.unshift(o); if (showing) hideIsland(); else pump(); } else { if (queue.length > 4) queue.shift(); queue.push(o); pump(); } }
+
   game.on("checkin", ({ to, follow, here }) => {
-    const r = ROOMS[to], ck = q(".checkin");
-    if (!follow && !here) { toast(game.mode === "cam" ? `📹 Phát hiện chuyển động · ${r.icon} ${r.vi}` : `${game.cat.name} vừa sang ${r.icon} ${r.vi}`, { act: "Xem", fn: () => (game.mode === "cam" ? game.camCut(to) : game.followCat(true)) }); return; }
-    ck.innerHTML = `<div class="ck-ic">${r.icon}</div><div class="ck-tx"><small>📍 Check-in · ${hhmm()}</small><b>${r.vi}</b><span>${esc(game.cat.name)} · ${esc(r.mood)}</span></div>
-      <ol class="ck-map">${ORDER.filter((id) => game.roomAllowed(id)).map((id) => `<li class="${id === to ? "on" : ""}" title="${ROOMS[id].vi}">${ROOMS[id].icon}</li>`).join("")}</ol>`;
-    ck.hidden = false; ck.classList.remove("show"); void ck.offsetWidth; ck.classList.add("show");
-    clearTimeout(ckT); ckT = setTimeout(() => { ck.classList.remove("show"); setTimeout(() => (ck.hidden = true), 400); }, 2800);
+    const r = ROOMS[to];
+    if (!follow && !here) { toast(game.mode === "cam" ? `📹 Có chuyển động · ${r.icon} ${r.vi}` : `${game.cat.name} vừa sang ${r.icon} ${r.vi}`, { act: "Xem", fn: () => (game.mode === "cam" ? game.camCut(to) : game.followCat(true)) }); return; }
+    island({ cls: "ck", ms: 2800, html: `<div class="ck-ic">${r.icon}</div><div class="ck-tx"><small>Check-in · ${hhmm()}</small><b>${r.vi}</b><span>${esc(game.cat.name)} · ${esc(r.mood)}</span></div>
+      <ol class="ck-map">${ORDER.filter((id) => game.roomAllowed(id)).map((id) => `<li class="${id === to ? "on" : ""}" title="${ROOMS[id].vi}">${ROOMS[id].icon}</li>`).join("")}</ol>` }, true);
     refresh();
   });
 
-  // ------------------------------------------------------------------ toast
   function toast(text, { act, fn, avatar } = {}) {
-    const t = document.createElement("div"); t.className = "toast";
-    t.innerHTML = `${avatar ? `<span class="ava sm">${R.snapshot("sit")}</span>` : ""}<span>${esc(text)}</span>${act ? `<button>${esc(act)}</button>` : ""}`;
-    if (act) t.querySelector("button").onclick = () => { fn(); t.remove(); };
-    q(".toasts").appendChild(t); setTimeout(() => t.classList.add("out"), 3200); setTimeout(() => t.remove(), 3600);
+    island({ fn, html: `${avatar ? `<span class="ava sm">${R.snapshot("sit")}</span>` : ""}<span class="tx">${esc(text)}</span>${act ? `<button>${esc(act)}</button>` : ""}` });
   }
   game.on("toast", (o) => toast(o.text, o));
-  function floatCoin(n) { const f = document.createElement("div"); f.className = "coinfloat"; f.textContent = `+${n} 🐟`; q(".topr").appendChild(f); setTimeout(() => f.remove(), 1300); }
+  function floatCoin(n) { const f = document.createElement("div"); f.className = "coinfloat"; f.textContent = `+${n}`; q(".topr").appendChild(f); setTimeout(() => f.remove(), 1300); }
 
   // ------------------------------------------------------------------ bảng trượt
   const wrap = q(".sheet-wrap"), body = q(".sheet-body");
   let closeT = 0;
-  function open(html, cls = "") { clearTimeout(closeT); const keep = wrap.classList.contains("open"); body.innerHTML = html; wrap.className = "sheet-wrap " + cls + (keep ? " open" : ""); wrap.hidden = false; if (!keep) requestAnimationFrame(() => wrap.classList.add("open")); }
+  game.sheetOpen = () => !wrap.hidden;
+  function open(html, cls = "") { clearTimeout(closeT); game.buzz?.(6); const keep = wrap.classList.contains("open"); body.innerHTML = html; wrap.className = "sheet-wrap " + cls + (keep ? " open" : ""); wrap.hidden = false; if (!keep) requestAnimationFrame(() => wrap.classList.add("open")); }
   let pendingSchedule = !s.owner?.set;
   function close() { wrap.classList.remove("open"); clearTimeout(closeT); closeT = setTimeout(() => (wrap.hidden = true), 260); if (pendingSchedule) { pendingSchedule = false; setTimeout(() => show("schedule"), 450); } }
   game.firstRun = () => { if (pendingSchedule && wrap.hidden) { pendingSchedule = false; show("schedule"); } };
   const lock = (feat) => !can(s.plan, feat);
-  const head = (t, sub = "") => `<div class="sh-head"><div><h2>${t}</h2>${sub ? `<p>${sub}</p>` : ""}</div><button class="ic" data-a="close" aria-label="Đóng">✕</button></div>`;
+  const head = (t, sub = "") => `<div class="sh-head"><div><h2>${t}</h2>${sub ? `<p>${sub}</p>` : ""}</div><button class="ic" data-a="close" aria-label="Đóng">${icon("close")}</button></div>`;
 
   const SHEETS = {
     cat() {
       const t = game.today, tr = t.traits;
       const mem = game.memory, M = mem.M, se = season();
       const skills = Object.entries(SKILLS).map(([k, d]) => { const xp = M.skills[k] || 0, lv = levelOf(xp), nx = nextXp(xp), base = [0, 4, 12, 28, 55, 100][lv], pct = lv >= 5 ? 100 : Math.round(((xp - base) / (nx - base)) * 100); return `<div class="skill"><span class="se">${d.emo}</span><div><b>${d.vi} <em>Cấp ${lv}</em></b><s><u style="width:${pct}%"></u></s><small>${lv >= 5 ? "Tối đa" : d.how} · ${d.perk}</small></div></div>`; }).join("");
-      return head(`${esc(game.cat.name)}`, `${esc(game.cat.breed || "")} · ${game.age.vi} · ngày ${game.age.days} · Gắn bó ${Math.round(s.cat.bond)}/100`) + `
+      const bd = game.bond, nx = bd.next;
+      return head(`${esc(game.cat.name)}`, `${esc(game.cat.breed || "")} · ${game.age.vi} · ngày ${game.age.days} · gọi bạn là “${esc(s.profile.nick || "Sen")}”`) + `
+      <div class="bondcard"><div class="bc-top"><span class="bc-emo">${bd.T.emo}</span><div><small>Gắn bó</small><b>${bd.T.vi}</b></div><em>${Math.round(bd.v)}/100</em></div>
+        <s><u style="width:${bd.pct}%"></u></s><p>${nx ? `Còn ${Math.ceil(nx.min - bd.v)} điểm nữa thành <b>${nx.vi}</b>: ${nx.unlock}` : "Thân nhất rồi. Không ai thay được bạn."}</p>
+        <ol class="tiers">${TIERS.map((t, i) => `<li class="${i <= bd.tier ? "on" : ""}"><span>${i <= bd.tier ? t.emo : icon("lock")}</span><div><b>${t.vi}</b><small>${t.unlock}</small></div></li>`).join("")}</ol>
+        <p class="muted">Tăng khi: vuốt đúng chỗ, cho ăn lúc đói, chơi cùng, nhận quà, đáp lại khi mèo dụi/gõ màn hình, ghé thăm mỗi ngày.</p></div>
       <div class="moodcard"><div class="mc-emo">${t.mood.emo}</div><div><small>Tâm trạng hôm nay · ${new Date().toLocaleDateString("vi-VN", { weekday: "long", day: "numeric", month: "numeric" })}</small><b>${t.mood.vi}</b><p>${t.mood.desc}</p></div></div>
       <h3>Cảm xúc lúc này</h3><div class="traits">
         <div><span>😾 Giận bạn</span><s><u class="bad" style="width:${Math.round(mem.grudge)}%"></u></s></div>
@@ -167,7 +181,7 @@ export function createHud(game, root) {
         ${days.length > lim ? `<button class="locked" data-a="plans">🔒 Xem thêm ${days.length - lim} ngày cũ với ${lim === 3 ? "Plus" : "Pro"}</button>` : ""}</div>`;
     },
     plans() {
-      const rows = [["Nuôi na na, 4 phòng, cuộn len", 1, 1, 1], ["Nhật ký", "3 ngày", "30 ngày", "Không giới hạn"], ["Ban công + laser + lông vũ", 0, 1, 1], ["Xem trước tâm trạng ngày mai", 0, 1, 1], ["Nuôi thêm mèo thứ 2", 0, 1, 1], ["Mèo riêng (thả bộ khung hình của bạn)", 0, 0, 1], ["Mũ phớt, mọi phụ kiện", 0, 0, 1], ["Animation Lab", 0, 0, 1], ["Giọng AI: mèo nói theo trí nhớ", 0, 0, 1]];
+      const rows = [["Nuôi 1 bé mèo, 4 phòng, cuộn len", 1, 1, 1], ["Nhật ký", "3 ngày", "30 ngày", "Không giới hạn"], ["Ban công + laser + lông vũ", 0, 1, 1], ["Xem trước tâm trạng ngày mai", 0, 1, 1], ["Nuôi thêm mèo thứ 2", 0, 1, 1], ["Mèo riêng (thả bộ khung hình của bạn)", 0, 0, 1], ["Mũ phớt, mọi phụ kiện", 0, 0, 1], ["Animation Lab", 0, 0, 1], ["Giọng AI: mèo nói theo trí nhớ", 0, 0, 1], ["Gắn bó, quà, thư mỗi sáng", 1, 1, 1], ["Xem lại thư cũ của mèo", "Hôm nay", "30 lá", "30 lá"], ["Clip cận mặt Flow cho mèo riêng", 0, 0, 1]];
       const cell = (v) => (v === 1 ? "✓" : v === 0 ? "–" : v);
       return head("Gói", "Bản thử: chọn gói để mở khoá ngay (chưa nối thanh toán).") + `<div class="plans">${Object.entries(PLANS).map(([k, p]) => `<button data-plan="${k}" class="${s.plan === k ? "on" : ""}"><b>${p.vi}</b><span>${p.price}</span><small>${p.note}</small>${s.plan === k ? "<em>Đang dùng</em>" : ""}</button>`).join("")}</div>
       <table class="cmp"><thead><tr><th></th><th>Free</th><th>Plus</th><th>Pro</th></tr></thead><tbody>${rows.map((r) => `<tr><td>${r[0]}</td>${r.slice(1).map((v) => `<td>${cell(v)}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
@@ -212,24 +226,35 @@ export function createHud(game, root) {
     album() {
       const A = game.album.A, tab = albumTab;
       const mom = MOMENTS.map((m) => { const c = A.moments[m.id]; return c ? polaroid(c, m.vi, "★".repeat(m.rare)) : `<div class="pola locked"><div class="ph">?</div><small>${"★".repeat(m.rare)} ???</small></div>`; }).join("");
-      const ph = A.photos.length ? A.photos.map((c) => polaroid(c, c.caption)).join("") : `<p class="muted">Chưa có ảnh. Bấm 📷 Chụp lúc mèo đang đáng yêu.</p>`;
-      return head("Sổ khoảnh khắc", `${game.album.count}/${MOMENTS.length} khoảnh khắc · ${A.photos.length} ảnh`) + `<div class="tabs"><button data-tab="m" class="${tab === "m" ? "on" : ""}">Khoảnh khắc</button><button data-tab="p" class="${tab === "p" ? "on" : ""}">Ảnh của tôi</button></div><div class="polas">${tab === "m" ? mom : ph}</div>`;
+      const ph = A.photos.length ? A.photos.map((c) => polaroid(c, c.caption)).join("") : `<p class="muted">Chưa có ảnh. Bấm Chụp lúc mèo đang đáng yêu.</p>`;
+      const nick = s.profile.nick || "Sen", gotN = GIFTS.filter((g) => s.gifts[g.id]).length;
+      const gifts = `<div class="giftgrid">${GIFTS.map((g) => { const n = s.gifts[g.id]; return n ? `<div class="gi"><span>${g.emo}</span><b>${esc(giftName(g, nick))}</b><small>${"★".repeat(g.rare)}${n > 1 ? ` · ×${n}` : ""}</small></div>` : `<div class="gi locked"><span>?</span><b>???</b><small>${"★".repeat(g.rare)}</small></div>`; }).join("")}</div>
+        ${game.bond.at("friend") ? `<p class="muted">${esc(game.cat.name)} tha quà về khi bạn đang xem. Chạm vào món quà để nhận.</p>` : `<p class="muted">Thành <b>Bạn</b> của ${esc(game.cat.name)} thì bé mới tha quà về.</p>`}`;
+      return head("Sổ khoảnh khắc", `${game.album.count}/${MOMENTS.length} khoảnh khắc · ${A.photos.length} ảnh · ${gotN}/${GIFTS.length} quà`) + `<div class="tabs"><button data-tab="m" class="${tab === "m" ? "on" : ""}">Khoảnh khắc</button><button data-tab="p" class="${tab === "p" ? "on" : ""}">Ảnh</button><button data-tab="g" class="${tab === "g" ? "on" : ""}">Quà</button></div>${tab === "g" ? gifts : `<div class="polas">${tab === "m" ? mom : ph}</div>`}`;
+    },
+    letters() {
+      const L = [...(s.letters || [])].reverse(), all = can(s.plan, "letters.archive"), shown = all ? L : L.slice(0, 1);
+      return head(`Thư của ${esc(game.cat.name)}`, "Mỗi sáng một lá, viết từ chuyện hôm qua.") + `<div class="letters">${shown.map((x, i) => letterCard(x, i === 0)).join("") || "<p class='muted'>Chưa có thư.</p>"}</div>
+        ${!all && L.length > 1 ? `<button class="locked" data-a="plans">${icon("lock")} Đọc lại ${L.length - 1} lá thư cũ với Plus</button>` : ""}`;
     },
     menu() {
       return head(APP.name, APP.tagline) + `<div class="menu">
-        <button data-a="quests"><span>🎯</span>Nhiệm vụ</button><button data-a="album"><span>📸</span>Khoảnh khắc</button>
-        <button data-a="journal"><span>📔</span>Nhật ký</button><button data-a="shop"><span>🛍️</span>Cửa hàng</button>
-        <button data-a="cat"><span>🐈‍⬛</span>Hồ sơ mèo</button><button data-a="rooms"><span>🏠</span>Căn nhà</button>
-        <button data-a="plans"><span>⭐</span>Gói ${planChip(s.plan) || "Miễn phí"}</button><button data-a="settings"><span>⚙️</span>Cài đặt</button>
+        <button data-a="cat"><span>${icon("cat")}</span>Hồ sơ mèo</button><button data-a="rooms"><span>${icon("home")}</span>Căn nhà</button>
+        <button data-a="quests"><span>${icon("target")}</span>Nhiệm vụ</button><button data-a="album"><span>${icon("album")}</span>Khoảnh khắc</button>
+        <button data-a="letters"><span>${icon("letter")}</span>Thư của mèo</button><button data-a="journal"><span>${icon("book")}</span>Nhật ký</button>
+        <button data-a="schedule"><span>${icon("calendar")}</span>Lịch</button><button data-a="shop"><span>${icon("bag")}</span>Cửa hàng</button>
+        <button data-a="plans"><span>${icon("star")}</span>Gói ${planChip(s.plan) || "Miễn phí"}</button><button data-a="settings"><span>${icon("settings")}</span>Cài đặt</button>
       </div>`;
     },
     settings() {
       const h = s.settings.hour;
       return head("Cài đặt") + `<div class="settings">
+        <label class="row"><span>${esc(game.cat.name)} gọi bạn là</span><input class="nick" type="text" maxlength="16" value="${esc(s.profile.nick || "Sen")}" data-nick placeholder="Sen"></label>
         <div class="row"><span>Cỡ giao diện</span><span class="seg">${[["s", "Nhỏ"], ["m", "Vừa"], ["l", "Lớn"]].map(([k, v]) => `<button data-ui="${k}" class="${(s.settings.ui || "m") === k ? "on" : ""}">${v}</button>`).join("")}</span></div>
         <div class="row"><span>Hù doạ 👻</span><span class="seg">${[["off", "Tắt"], ["soft", "Nhẹ"], ["full", "Đủ đô"]].map(([k, v]) => `<button data-scare="${k}" class="${(s.settings.scare || "full") === k ? "on" : ""}">${v}</button>`).join("")}</span></div>
         <label class="row"><span>Nhạc lo-fi chill</span><input type="checkbox" data-set="music" ${s.settings.music ? "checked" : ""}></label>
         <label class="row"><span>Âm thanh (meo, rừ rừ)</span><input type="checkbox" data-set="sound" ${s.settings.sound ? "checked" : ""}></label>
+        <label class="row"><span>Rung nhẹ khi mèo dụi, gõ màn hình</span><input type="checkbox" data-set="haptics" ${s.settings.haptics !== false ? "checked" : ""}></label>
         <label class="row"><span>Máy quay theo mèo</span><input type="checkbox" data-set="follow" ${s.settings.follow ? "checked" : ""}></label>
         <label class="row"><span>Giọng AI – mèo nói theo trí nhớ ${planChip("pro")}${AI.endpoint ? "" : "<small>chưa cấu hình</small>"}</span><input type="checkbox" data-set="aiVoice" ${s.settings.aiVoice ? "checked" : ""} ${can(s.plan, "ai.voice") ? "" : "disabled"}></label>
         <label class="row"><span>Giảm chuyển động</span><input type="checkbox" data-set="reduced" ${s.settings.reduced ? "checked" : ""}></label>
@@ -240,6 +265,7 @@ export function createHud(game, root) {
     },
   };
   let albumTab = "m"; const thumbs = {};
+  const letterCard = (x, today) => `<article class="letter${today ? " today" : ""}"><header>${icon("letter")}<time>${x.d === dayKey() ? "Sáng nay" : new Date(x.d).toLocaleDateString("vi-VN", { weekday: "long", day: "numeric", month: "numeric" })}</time></header>${x.text.split("\n").map((l) => `<p>${esc(l)}</p>`).join("")}</article>`;
   const polaroid = (c, cap, stars = "") => `<div class="pola ${c.night ? "night" : ""}"><div class="ph" style="--bg:${c.bg}">${c.svg}</div><small>${stars ? `<i>${stars}</i> ` : ""}${esc(cap)}</small></div>`;
   function show(k) { if (SHEETS[k]) open(SHEETS[k](), "sh-" + k); }
   game.showSheet = show;
@@ -249,6 +275,7 @@ export function createHud(game, root) {
     const a = game.away, t = game.today;
     if (!a && !game.dailyBonus) return;
     open(head(a ? "Trong lúc bạn vắng nhà" : "Chào ngày mới", a ? `Bạn đi ${fmtDur(a.h * 3600e3)}` : "") + `
+      ${game.dailyBonus && game.letter ? letterCard(game.letter, true) : ""}
       <div class="moodcard"><div class="mc-emo">${t.mood.emo}</div><div><small>Hôm nay ${esc(game.cat.name)}</small><b>${t.mood.vi}</b><p>${t.mood.desc}</p></div></div>
       ${a ? `<ol class="awaylist">${a.events.map((e) => `<li><time>${hhmm(e.t)}</time><span>${esc(e.text)}</span></li>`).join("")}</ol>` : ""}
       <div class="gain">${a ? `<div><b>+${a.coins} 🐟</b><small>Cá khô tích được</small></div>` : ""}${game.dailyBonus ? `<div><b>+${game.dailyBonus} 🐟</b><small>Ghé thăm ${s.visits.streak} ngày liền</small></div>` : ""}</div>
@@ -311,6 +338,7 @@ export function createHud(game, root) {
   }
   game.on("calendar-error", (m) => toast("📅 " + m));
   el.addEventListener("change", (e) => {
+    if (e.target.matches("[data-nick]")) { game.setNick(e.target.value); e.target.value = s.profile.nick; toast(`${game.cat.name} sẽ gọi bạn là “${s.profile.nick}”`); return; }
     if (e.target.matches("[data-calfile]") && e.target.files[0]) { const f = e.target.files[0]; calRun(() => game.calendar.importFile(f)); return; }
     const k = e.target.dataset.set; if (!k) return;
     if (k === "hour") { const v = +e.target.value; game.setHour(v < 0 ? null : v); show("settings"); return; }
@@ -322,9 +350,14 @@ export function createHud(game, root) {
   // cỡ giao diện & chế độ chỉ ngắm mèo
   function applyUi() { document.documentElement.dataset.ui = s.settings.ui || "m"; }
   applyUi();
-  const eye = document.createElement("button"); eye.className = "uneye"; eye.hidden = true; eye.setAttribute("aria-label", "Hiện giao diện"); eye.textContent = "👁️"; root.appendChild(eye);
-  function immersive(on) { el.classList.toggle("hidden", on); eye.hidden = !on; if (on) { toast("Chạm 👁️ để hiện lại giao diện"); } }
+  const eye = document.createElement("button"); eye.className = "uneye"; eye.hidden = true; eye.setAttribute("aria-label", "Hiện giao diện"); eye.innerHTML = icon("eye"); root.appendChild(eye);
+  function immersive(on) { el.classList.toggle("hidden", on); eye.hidden = !on; if (on) { toast("Chạm con mắt ở góc dưới để hiện lại giao diện"); } }
   eye.onclick = () => immersive(false);
+  game.on("bond-up", (t) => {
+    game.buzz?.([20, 60, 20, 60, 40]);
+    const show = () => open(`<div class="bondup"><div class="bu-emo">${t.emo}</div><small>Bậc gắn bó mới</small><h2>${esc(game.cat.name)} xem bạn là ${t.vi}</h2><p>${t.unlock}</p><button class="primary" data-a="close">Thương ghê</button></div>`, "sh-bondup");
+    if (wrap.hidden) show(); else toast(`${t.emo} ${game.cat.name} giờ xem bạn là ${t.vi}!`, { act: "Xem", fn: show });
+  });
   game.on("photo", (c) => { const t = document.createElement("div"); t.className = "photopop"; t.innerHTML = polaroid(c, c.caption); el.appendChild(t); setTimeout(() => t.classList.add("out"), 2200); setTimeout(() => t.remove(), 2800); });
   game.on("moment", (m) => toast(`📸 Khoảnh khắc mới: ${m.vi} ${"★".repeat(m.rare)}`));
   game.on("quests", refresh); game.on("music", refresh); game.on("mode", refresh); game.on("treat", refresh); game.on("schedule", refresh);

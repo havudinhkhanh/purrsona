@@ -29,6 +29,15 @@ export const CLIPS = {
   roll_play:  { kind: "once", vi: "Lăn lộn trọn bộ",      note: "" },
   play_yarn:  { kind: "loop", vi: "Chơi len",             note: "" },
   scratch:    { kind: "loop", vi: "Cào trụ",              note: "" },
+  // ---- quấn người (v0.6) – chưa có khung thì tự lùi về động tác gần nhất
+  trot_tailup:{ kind: "move", vi: "Đi đuôi dựng chào",    note: "Bước nhún vui, đuôi dựng thẳng có móc ở chóp" },
+  rub:        { kind: "loop", vi: "Cọ người",             note: "Cọ má rồi cả sườn vào cạnh đồ vật" },
+  knead:      { kind: "loop", vi: "Nhào bột",             note: "Hai chân trước dậm luân phiên lên chăn" },
+  belly_up:   { kind: "loop", vi: "Khoe bụng",            note: "Nằm ngửa, bụng phơi, nhìn ngược" },
+  belly_trap: { kind: "once", vi: "Bẫy bụng",             note: "Từ khoe bụng: bốn chân ôm + đạp" },
+  chirp:      { kind: "once", vi: "Kêu chào",             note: "Há miệng kêu mrrp ngắn" },
+  gift_carry: { kind: "move", vi: "Ngậm quà đi tới",      note: "Đi bộ ngậm chuột bông, đầu ngẩng cao" },
+  gift_drop:  { kind: "once", vi: "Thả quà",              note: "Cúi đầu thả quà rồi ngồi nhìn" },
 };
 
 /** Lùi về động tác gần nhất khi con mèo không có động tác được gọi */
@@ -37,6 +46,7 @@ export const FALLBACK = {
   groom: "idle", groom_full: "groom", lick_body: "groom", lick_lip: "groom", stretch: "idle",
   crouch: "loaf", eat: "crouch", run: "walk", stalk: "walk", jump: "idle", chase: "jump",
   roll: "lie", roll_play: "roll", play_yarn: "roll", scratch: "stretch",
+  trot_tailup: "walk", rub: "idle_tail", knead: "loaf", belly_up: "roll", belly_trap: "roll_play", chirp: "look_up", gift_carry: "walk", gift_drop: "crouch",
 };
 
 /** tên chuẩn → tên có thật của con mèo này */

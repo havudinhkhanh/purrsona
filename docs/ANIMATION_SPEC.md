@@ -42,6 +42,17 @@ Bắt buộc: `idle`. Rất nên có: `walk`. Còn lại có bao nhiêu dùng b�
 | `roll`, `roll_play` | Lăn lộn / lăn lộn trọn bộ | lặp / 1 lần | 24–60 |
 | `play_yarn` | Vờn len | lặp | 24 |
 | `scratch` | Cào trụ | lặp | 8–16 |
+| `trot_tailup` | Đi đuôi dựng chào (lúc đón bạn) | lặp, tại chỗ | 16–24 |
+| `rub` | Cọ má, cọ sườn | lặp | 24 |
+| `knead` | Nhào bột | lặp | 16–24 |
+| `belly_up`, `belly_trap` | Khoe bụng / bẫy bụng | lặp / 1 lần | 24 |
+| `chirp` | Kêu chào "mrrp" | 1 lần | 12–20 |
+| `gift_carry`, `gift_drop` | Ngậm quà đi / thả quà | lặp tại chỗ / 1 lần | 16–24 |
+
+**Clip cận mặt** (khung dọc 9:16, mèo nhìn thẳng ống kính) không tách khung mà giữ nguyên video nền xanh:
+đặt `closeups/headbutt.mp4`, `closeups/pawtap.mp4`, `closeups/slowblink.mp4` trong thư mục mèo và khai báo
+`"closeups": { "headbutt": "closeups/headbutt.mp4", … }` trong `cat.json`. Game tự xoá nền xanh khi phát.
+Thiếu file nào thì dùng mặt mèo vẽ vector. Toàn bộ câu lệnh cho Google Flow: tài liệu "Purrsona – Bộ prompt Google Flow".
 
 Danh sách gốc nằm ở `src/render/clips.js`. Thêm tên mới = thêm 1 dòng ở đó + dùng trong `src/cat/brain.js`.
 

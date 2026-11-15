@@ -1,0 +1,43 @@
+// Bộ icon nét (24×24, nét 1.9, bo tròn) – một kiểu cho toàn app thay cho emoji ở phần khung giao diện.
+// Emoji chỉ còn dùng cho NỘI DUNG (tâm trạng, quà, sự kiện). Thêm icon = thêm 1 dòng path.
+const P = {
+  bowl: '<path d="M3 11h18a9 9 0 0 1-18 0Z"/><path d="M8 7c0-1.5 1-2 1-3.5M12 7c0-1.5 1-2 1-3.5M16 7c0-1.5 1-2 1-3.5"/>',
+  call: '<path d="M4 10v4a1 1 0 0 0 1 1h2l5 4V5L7 9H5a1 1 0 0 0-1 1Z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/>',
+  yarn: '<circle cx="11" cy="11" r="7.5"/><path d="M5 8.2c3.4-.4 7.6 1.4 10.6 5.6M7.2 5c3 1.3 5.4 4.6 6.2 9.6M4.4 13.2c2.6-1.2 6.4-1.6 10-.4"/><path d="M16.6 16.2c1.6 1.7 3.4 2.2 4.6 1.4"/>',
+  broom: '<path d="m14 4-4.5 8"/><path d="M8 11.5 13 14l-2.2 6.5c-3 0-5.8-1.2-7.3-3.4L8 11.5Z"/><path d="M6.5 17.5l1.5-2M9.5 19l1-2.3"/>',
+  camera: '<path d="M4 8h3l1.6-2.4h6.8L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13" r="3.6"/>',
+  video: '<rect x="3" y="6.5" width="12.5" height="11" rx="2.2"/><path d="m15.5 10.5 5-3v9l-5-3"/>',
+  calendar: '<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M8 14h2M14 14h2M8 17h2"/>',
+  target: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".8" fill="currentColor"/>',
+  album: '<rect x="3.5" y="5" width="13" height="14" rx="2"/><path d="M16.5 8 20 9a1 1 0 0 1 .7 1.2L18 20"/><path d="m6.5 15 3-3 2.5 2.5 1.5-1.5 2.5 2.5"/><circle cx="9" cy="9" r="1.2"/>',
+  book: '<path d="M5 4.5h11a2 2 0 0 1 2 2V20H7a2 2 0 0 1-2-2V4.5Z"/><path d="M5 18a2 2 0 0 1 2-2h11"/><path d="M9 8.5h5"/>',
+  music: '<path d="M9 17.5V6l10-2v11.5"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="15.5" r="2.5"/>',
+  eye: '<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/>',
+  eyeOff: '<path d="M4 4l16 16"/><path d="M9.9 6A9.8 9.8 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a17 17 0 0 1-2.6 3.4M6.2 7.6A16.6 16.6 0 0 0 2.5 12S6 18.5 12 18.5a9 9 0 0 0 4-.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>',
+  locate: '<circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="2" fill="currentColor"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"/>',
+  menu: '<path d="M4 7h16M4 12h16M4 17h10"/>',
+  close: '<path d="M6 6l12 12M18 6 6 18"/>',
+  fish: '<path d="M3 12c3-4.5 7.5-6 11-4.5 2 .8 3.4 2.3 4.2 4.5-.8 2.2-2.2 3.7-4.2 4.5-3.5 1.5-8 0-11-4.5Z"/><path d="M18.2 12 21.5 9v6l-3.3-3Z"/><circle cx="13.5" cy="11" r=".9" fill="currentColor"/>',
+  heart: '<path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.4a4.3 4.3 0 0 1 7.5 2.4C19.5 15.4 12 20 12 20Z"/>',
+  heartFill: '<path fill="currentColor" stroke="none" d="M12 20.6S3.6 15.6 3.6 9.5A4.9 4.9 0 0 1 12 6.6a4.9 4.9 0 0 1 8.4 2.9c0 6.1-8.4 11.1-8.4 11.1Z"/>',
+  mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/>',
+  gift: '<rect x="4" y="9" width="16" height="11" rx="1.5"/><path d="M3 9h18M12 9v11M12 9S10.5 4 8 4.6C6 5 6.5 8 8.5 8.6M12 9s1.5-5 4-4.4c2 .4 1.5 3.4-.5 4"/>',
+  grid: '<rect x="4" y="4" width="7" height="7" rx="1.6"/><rect x="13" y="4" width="7" height="7" rx="1.6"/><rect x="4" y="13" width="7" height="7" rx="1.6"/><rect x="13" y="13" width="7" height="7" rx="1.6"/>',
+  film: '<rect x="3.5" y="5" width="17" height="14" rx="2"/><path d="M7.5 5v14M16.5 5v14M3.5 9.5h4M3.5 14.5h4M16.5 9.5h4M16.5 14.5h4"/>',
+  laser: '<circle cx="12" cy="12" r="3.2" fill="currentColor"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/>',
+  sparkle: '<path d="M12 3.5 13.8 10l6.7 2-6.7 2L12 20.5 10.2 14 3.5 12l6.7-2L12 3.5Z"/>',
+  settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 14.6a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V20.6a2 2 0 1 1-4 0v-.2a1.6 1.6 0 0 0-2.7-1.1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0-1.1-2.7H3.4a2 2 0 1 1 0-4h.2a1.6 1.6 0 0 0 1.1-2.7l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 2.7-1.1V3.4a2 2 0 1 1 4 0v.2a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0 1.1 2.7h.2a2 2 0 1 1 0 4h-.2a1.6 1.6 0 0 0-1.6 1Z"/>',
+  bag: '<path d="M5 8h14l-1 12H6L5 8Z"/><path d="M9 10V6.5a3 3 0 0 1 6 0V10"/>',
+  star: '<path d="m12 3.8 2.5 5.1 5.6.8-4 3.9.9 5.6-5-2.6-5 2.6.9-5.6-4-3.9 5.6-.8L12 3.8Z"/>',
+  home: '<path d="M4 11 12 4l8 7v8.5a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1V11Z"/>',
+  cat: '<path d="M5 20c0-4 1.5-7 4-8.5L8 4l3.5 3.2h1L16 4l-1 7.5c2.5 1.5 4 4.5 4 8.5"/><path d="M9.8 14.5h.01M14.2 14.5h.01"/><path d="M11 17.2h2l-1 .9-1-.9Z"/>',
+  chevron: '<path d="m9 5 7 7-7 7"/>',
+  lock: '<rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>',
+  letter: '<rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="m4 7 8 6 8-6"/>',
+  paw: '<ellipse cx="12" cy="16" rx="4.2" ry="3.6"/><ellipse cx="6" cy="10.5" rx="1.8" ry="2.3"/><ellipse cx="10" cy="7" rx="1.8" ry="2.4"/><ellipse cx="14" cy="7" rx="1.8" ry="2.4"/><ellipse cx="18" cy="10.5" rx="1.8" ry="2.3"/>',
+  bolt: '<path d="M13 3 5 13.5h6L10 21l8-10.5h-6L13 3Z"/>',
+  door: '<path d="M6 21V4.5a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1V21M4 21h16"/><circle cx="15" cy="12.5" r=".9" fill="currentColor"/>',
+};
+/** icon(name, cls) → chuỗi SVG nội tuyến, đổi màu theo currentColor */
+export const icon = (n, cls = "") => `<svg class="ico ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n] || P.sparkle}</svg>`;
+export const ICONS = Object.keys(P);

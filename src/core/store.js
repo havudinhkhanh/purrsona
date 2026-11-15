@@ -9,7 +9,8 @@ export function fresh() {
     catId: "nana", owned: { "toy.yarn": 1, "skin.classic": 1 }, skin: "classic",
     cat: { room: "living", x: 900, y: 790, needs: { hunger: 70, energy: 80, fun: 60, social: 55, hygiene: 90 }, bond: 10 },
     house: { bowl: 1, water: 1, litter: 0 },
-    journal: [], visits: { last: "", streak: 0 }, settings: { sound: true, follow: true, reduced: false, hour: null, aiVoice: true, scare: "full", music: false, ui: "m", immersive: false },
+    journal: [], visits: { last: "", streak: 0 }, settings: { sound: true, follow: true, reduced: false, hour: null, aiVoice: true, scare: "full", music: false, ui: "m", immersive: false, haptics: true },
+    profile: { nick: "Sen" }, gifts: {}, letters: [], cd: {},
     stats: { pets: 0, feeds: 0, plays: 0, checkins: 0 },
   };
 }

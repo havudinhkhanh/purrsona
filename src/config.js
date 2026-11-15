@@ -3,7 +3,7 @@ export const APP = {
   name: "Purrsona",
   tagline: "Nhà có mèo · mỗi ngày một tính cách",
   saveKey: "purrsona.save.v1",
-  version: "0.5.0",
+  version: "0.6.0",
 };
 
 // ------------------------------------------------------------------ GÓI (free / plus / pro)
@@ -28,6 +28,8 @@ export const FEATURES = {
   "cat.custom": "pro",
   "lab": "pro",
   "ai.voice": "pro",
+  "letters.archive": "plus",
+  "closeup.custom": "pro",
 };
 
 // ------------------------------------------------------------------ GIỌNG AI (Pro) – điền địa chỉ Worker sau khi deploy worker/ai-voice

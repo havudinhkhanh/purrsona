@@ -101,7 +101,7 @@ export const ROOMS = {
   living: {
     vi: "Phòng khách", icon: "🛋️", W: 2120, exits: { left: "bedroom", right: "kitchen" },
     walk: { x0: 120, x1: 2000, y0: 708, y1: 822 },
-    mood: "Ấm áp, nắng chiều", lines: ["Sofa là của na na.", "Ở đây có nắng."],
+    mood: "Ấm áp, nắng chiều", lines: ["Sofa là của {cat}.", "Ở đây có nắng."],
     bg: (W) => A.wall(W, "#F4E6D2", "#EAD6BC", `<rect y="0" width="${W}" height="14" fill="#fff" opacity=".4"/>`) + A.glassDefs + A.doorDefs
       + A.windowBox(430, 140, 420, 320, { frame: "#FBF7F0", curtain: "#C8664A", panes: 3 })
       + A.frameArt(1080, 190, 150, 190, "#2F2A26", A.abstract(["#E2B04A", "#557E77", "#C8664A"])) + A.frameArt(1260, 230, 130, 130, "#C9A77A", A.catPic("#F2D8C2"))
@@ -183,7 +183,7 @@ export const ROOMS = {
   bathroom: {
     vi: "Phòng tắm", icon: "🛁", W: 1400, exits: { left: "kitchen" },
     walk: { x0: 120, x1: 1330, y0: 712, y1: 822 },
-    mood: "Mát lạnh", lines: ["Nước? Không, cảm ơn.", "Ai tắm thì tắm. na na thì không."],
+    mood: "Mát lạnh", lines: ["Nước? Không, cảm ơn.", "Ai tắm thì tắm. {cat} thì không."],
     bg: (W) => A.wall(W, "#F6E1DE", "#F2D7D5") + A.glassDefs + A.doorDefs
       + `<rect y="330" width="${W}" height="${FY - 330}" fill="#FAFAF8"/>${Array.from({ length: 12 }, (_, i) => `<line x1="0" y1="${330 + i * 24}" x2="${W}" y2="${330 + i * 24}" stroke="#e3e3df" stroke-width="2"/>`).join("")}${Array.from({ length: 12 * 30 }, (_, i) => { const r = Math.floor(i / 30), c = i % 30; return `<line x1="${c * 50 + (r % 2) * 25}" y1="${330 + r * 24}" x2="${c * 50 + (r % 2) * 25}" y2="${354 + r * 24}" stroke="#e3e3df" stroke-width="2"/>`; }).join("")}<rect y="322" width="${W}" height="10" fill="#E8C9C4"/>`
       + `<rect x="358" y="150" width="184" height="210" rx="90" fill="#C8A064"/><rect x="370" y="162" width="160" height="186" rx="80" fill="#DDE8EE"/><path d="M400 200 l40 -20 M410 240 l70 -40" stroke="#fff" stroke-width="8" opacity=".6" stroke-linecap="round"/>`
