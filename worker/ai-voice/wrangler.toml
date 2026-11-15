@@ -1,0 +1,8 @@
+name = "purrsona-ai-voice"
+main = "worker.js"
+compatibility_date = "2026-11-01"
+
+[vars]
+# các địa chỉ web được phép gọi, cách nhau dấu phẩy
+ALLOWED_ORIGINS = "https://purrsona.pages.dev,http://localhost:8765"
+MODEL = "claude-haiku-5-5"

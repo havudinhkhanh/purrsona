@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Animation Lab · Purrsona</title>
+<link rel="stylesheet" href="styles/app.css">
+<style>
+  body{background:#F4EFE6;overflow:auto}
+  .lab{max-width:1100px;margin:0 auto;padding:20px 16px 60px;display:grid;gap:16px}
+  .lab h1{font-size:1.25rem;margin:0}
+  .lab p{margin:0;color:var(--ink-2);font-size:.875rem}
+  .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .bar select,.bar input{font:inherit}
+  .labstage{position:relative;height:340px;border-radius:20px;background:linear-gradient(#EFE4D2,#E6D5BC 70%,#D8C2A2 70%);overflow:hidden}
+  .labstage .catw{position:absolute;bottom:40px}
+  .clips{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+  .clips button{text-align:left;padding:10px 12px;border-radius:12px;border:0;background:var(--surface);font:inherit;cursor:pointer;color:var(--ink)}
+  .clips button small{display:block;color:var(--ink-3);font-size:.6875rem}
+  .clips button.on{background:var(--brand);color:#fff}.clips button.on small{color:#fff9}
+  .clips button.miss{opacity:.55}
+  .fps{font-variant-numeric:tabular-nums;font-size:.8125rem;color:var(--ink-2)}
+</style>
+</head>
+<body>
+<main class="lab">
+  <h1>🎬 Animation Lab</h1>
+  <p>Xem từng động tác của từng con mèo. Dùng để duyệt bộ khung hình mới (Gemini / ChatGPT) trước khi đưa vào game. Ô mờ = mèo chưa có động tác đó → game sẽ tự lùi về động tác gần nhất (ghi bên dưới).</p>
+  <div class="bar">
+    <select id="cat"></select>
+    <label class="pill">Tốc độ đi <input id="spd" type="range" min="0" max="2" step="0.05" value="1"></label>
+    <label class="pill"><input id="mv" type="checkbox" checked> Đi qua lại</label>
+    <label class="pill">Chậm <input id="slow" type="range" min="0.1" max="1" step="0.05" value="1"></label>
+    <span class="fps" id="fps"></span>
+  </div>
+  <div class="labstage" id="stage"></div>
+  <div class="clips" id="clips"></div>
+</main>
+<script type="module" src="src/lab.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+[
+  {
+    "id": "nana",
+    "name": "na na",
+    "renderer": "vector",
+    "tier": "free"
+  },
+  {
+    "id": "bong",
+    "name": "Bông",
+    "renderer": "sprite",
+    "tier": "plus"
+  }
+]

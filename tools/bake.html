@@ -1,0 +1,33 @@
+<!doctype html>
+<!-- Trang phụ cho tools/bake_frames.py: dựng mèo vector, chạy từng clip, để Playwright chụp từng khung (nền trong suốt). -->
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../styles/app.css">
+<style>html,body{background:transparent!important;margin:0;overflow:hidden}#box{position:absolute;left:0;top:0}.cat-svg{filter:none!important}</style></head>
+<body><div id="box"></div>
+<script type="module">
+import { createCatRenderer } from "../src/render/registry.js";
+const qs = new URLSearchParams(location.search), cat = qs.get("cat") || "nana", sc = +(qs.get("scale") || 0.6);
+const R = await createCatRenderer(cat); await R.sheetsReady;
+const box = document.getElementById("box"); box.appendChild(R.el); R.el.style.position = "relative";
+R.el.style.width = R.box.w * sc + "px"; R.el.style.height = R.box.h * sc + "px";
+if (qs.get("fur")) R.el.style.setProperty("--fur", qs.get("fur"));
+if (qs.get("eye")) R.el.style.setProperty("--eye", qs.get("eye"));
+if (qs.get("stroke")) { const st = document.createElement("style"); st.textContent = `.cat-svg .b{stroke:${qs.get("stroke")};stroke-width:3.2;stroke-linejoin:round;paint-order:stroke}`; document.head.appendChild(st); }
+R.reduced = true;      // không hoà chuyển cảnh khi xuất
+const C = R.manifest.clips;
+window.BAKE = {
+  size: [Math.round(R.box.w * sc), Math.round(R.box.h * sc)], anchor: [R.box.ax * sc, R.box.ay * sc], unitsPerPixel: 1 / sc,
+  eye: R.eye ? null : null,
+  /** chu kỳ (giây) của 1 clip ở tốc độ v */
+  period(name, v) {
+    const c = C[name]; if (!c) return 0;
+    if (c.osc) return c.osc[2]; if (c.br) return (2 * Math.PI) / (c.br > 1 ? 1.1 : 1.6); if (c.scr) return Math.PI / 9; if (c.rock) return (2 * Math.PI) / 3.2;
+    if (c.loop && c.per) return c.per; if (c.loop && c.stride) return c.stride / v;
+    if (c.sheet) { R.play(name, { restart: true }); R.update(0, v); let t = 0, last = -1; for (let i = 0; i < 20000; i++) { R.update(1 / 480, v); t += 1 / 480; const p = R._phase(); if (p < last) return t; last = p; if (R.done) return t; } return t; }
+    return 1;
+  },
+  async start(name, v) { R.play(name, { restart: true }); await new Promise((r) => setTimeout(r, 12)); R.update(0, v); },
+  step(dt, v) { R.update(dt, v); },
+  done() { return R.done; },
+};
+document.title = "ready";
+</script></body></html>
