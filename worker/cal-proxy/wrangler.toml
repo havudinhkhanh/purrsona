@@ -1,6 +1,0 @@
-name = "purrsona-cal-proxy"
-main = "worker.js"
-compatibility_date = "2026-11-01"
-
-[vars]
-ALLOWED_ORIGINS = "https://purrsona.pages.dev,http://localhost:8765"

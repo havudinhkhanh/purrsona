@@ -1,17 +1,30 @@
 {
-  "name": "Purrsona · Nhà có mèo",
-  "short_name": "Purrsona",
-  "description": "Nuôi một bé mèo có tính cách riêng, đổi theo từng ngày.",
-  "start_url": "./",
-  "scope": "./",
-  "display": "standalone",
-  "orientation": "any",
-  "background_color": "#F4E6D2",
-  "theme_color": "#F4E6D2",
-  "lang": "vi",
-  "icons": [
-    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
-    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
-  ]
+ "name": "Purrsona · Mèo đanh đá dạy chữ",
+ "short_name": "Purrsona",
+ "description": "Học từ vựng tiếng Anh và tiếng Trung cùng một con mèo đanh đá.",
+ "start_url": "./",
+ "scope": "./",
+ "display": "standalone",
+ "orientation": "any",
+ "background_color": "#F3F0E8",
+ "theme_color": "#F3F0E8",
+ "lang": "vi",
+ "icons": [
+  {
+   "src": "icons/icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "icons/icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  },
+  {
+   "src": "icons/icon-maskable-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ]
 }

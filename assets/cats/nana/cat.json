@@ -6,7 +6,7 @@
   "version": 1,
   "scale": 0.7,
   "viewBox": [-200, -262, 400, 272],
-  "colors": { "fur": "#0c0c0f", "eye": "#E9B949", "gold": "#C8A064", "tongue": "#E8687F" },
+  "colors": { "fur": "#1d1d1f", "eye": "#F3F0E8", "gold": "#8c8c8c", "tongue": "#b9b2b2" },
   "personality": { "playful": 0.55, "lazy": 0.6, "curious": 0.65, "affectionate": 0.35, "sassy": 0.85, "greedy": 0.5, "brave": 0.6 },
   "voice": "aris",
   "poses": "poses.json",

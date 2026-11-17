@@ -8,6 +8,7 @@ export const depth = (y) => 0.74 + (0.34 * (y - FLOOR_Y)) / 280;
 
 export function createBody(R, scene, opts = {}) {
   const k0 = R.manifest.scale || 0.6;
+  const D = (y) => (scene.depth ? scene.depth(y) : depth(y));      // khung cảnh tự quy định to/nhỏ theo chiều sâu
   const el = document.createElement("div"); el.className = "cat";
   el.innerHTML = `<div class="cat-flip"></div><div class="cat-hit" role="button" tabindex="0" aria-label="${R.manifest.name}"></div>`;
   const flip = el.firstElementChild, hit = el.lastElementChild; flip.appendChild(R.el);
@@ -74,7 +75,7 @@ export function createBody(R, scene, opts = {}) {
     let v = 0, bob = 0;
     if (B.move) {
       // tăng tốc / giảm tốc tự nhiên: chân luôn khớp sàn vì clip đi chạy theo đúng tốc độ thật
-      const m = B.move, d = depth(B.y), dx = m.x - B.x, dy = m.y - B.y, dist = Math.hypot(dx, dy), pxPerU = k0 * d;
+      const m = B.move, d = D(B.y), dx = m.x - B.x, dy = m.y - B.y, dist = Math.hypot(dx, dy), pxPerU = k0 * d;
       const acc = m.u / (B.accelT || 0.48), remainU = dist / pxPerU;
       const vEnd = Math.sqrt(2 * acc * 0.9 * remainU) + 18;
       vcur = Math.min(m.u, vcur + acc * dt, vEnd);
@@ -96,14 +97,14 @@ export function createBody(R, scene, opts = {}) {
     // nghiêng người theo đường bay: lao lên thì ngóc đầu, rơi xuống thì chúi
     const vh = dt > 0 ? (B.h - prevH) / dt : 0; prevH = B.h;
     tilt = lerp(tilt, B.jump ? clamp(-vh * 0.03, -16, 16) : 0, 1 - Math.exp(-dt * 12));
-    const adv = R.update(dt, v); if (adv) B.x += B.face * adv * k0 * depth(B.y);
+    const adv = R.update(dt, v); if (adv) B.x += B.face * adv * k0 * D(B.y);
     // quay người: không lật phẳng như tờ giấy – hình co lại tối đa ~78% rồi bung ra phía kia, hơi nhổm lên
     B.faceShown = lerp(B.faceShown, B.face, 1 - Math.exp(-dt * 11));
     const fAbs = Math.abs(B.faceShown), fSign = B.faceShown >= 0 ? 1 : -1, turning = fAbs < 0.98;
     const fx = fSign * (0.22 + 0.78 * fAbs), turnLift = turning ? 1 + 0.035 * (1 - fAbs) : 1;
     let sq = 1; if (B.squash) { const u = (performance.now() - B.squash) / 220; if (u < 1) sq = 1 - 0.07 * Math.sin(u * Math.PI); else B.squash = 0; }
     if (B.knead) sq *= 1 - 0.022 * Math.abs(Math.sin(performance.now() / 190));      // nhào bột: nhún nhịp nhàng
-    const d = depth(B.y), k = k0 * d * B.extraScale * (B.ageScale || 1);
+    const d = D(B.y), k = k0 * d * B.extraScale * (B.ageScale || 1);
     const wob = B.wobble ? Math.sin(performance.now() / 22) * B.wobble : 0;
     el.style.transform = `translate(${(B.x + wob).toFixed(2)}px, ${(B.y - B.h + bob).toFixed(2)}px) scale(${k.toFixed(4)}, ${(k * sq * turnLift).toFixed(4)})`;
     flip.style.transform = `scaleX(${fx.toFixed(3)}) rotate(${(tilt * B.face).toFixed(2)}deg)`;
@@ -115,7 +116,7 @@ export function createBody(R, scene, opts = {}) {
     shadow.style.opacity = B.hidden ? 0 : (0.32 * air).toFixed(3); shadow.style.zIndex = el.style.zIndex - 1;
     if (!bubble.hidden) {
       if (performance.now() > B.sayUntil) bubble.hidden = true;
-      const hy = B.y - B.h - (R.box.ay - 30) * k * 0.82; bubble.style.transform = `translate(${B.x.toFixed(1)}px, ${hy.toFixed(1)}px) translate(-50%, -100%)`;
+      const hy = B.y - B.h - (R.box.ay - 30) * k * 0.82, bw = bubble.offsetWidth / 2, vw = scene.S?.vw || innerWidth, bx = Math.min(Math.max(B.x, bw + 10), vw - bw - 10); bubble.style.transform = `translate(${bx.toFixed(1)}px, ${hy.toFixed(1)}px) translate(-50%, -100%)`; bubble.style.setProperty("--tail", `${(B.x - bx).toFixed(0)}px`);
     }
     const e = R.eye(), n = scene.S.night || 0;
     if (e) { B.hx = B.x + e[0] * k * fx; B.hy = B.y - B.h + e[1] * k; B.k = k; }      // vị trí đầu – để ngậm quà

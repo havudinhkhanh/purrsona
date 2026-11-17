@@ -1,14 +1,14 @@
 // GẮN BÓ: điểm 0–100 giữa mèo và bạn. Mỗi bậc mở khoá một kiểu "quấn người" mới.
-// Tăng khi chăm đúng cách (vuốt đúng chỗ, cho ăn lúc đói, chơi, nhận quà, ghé thăm mỗi ngày), giảm nhẹ khi bỏ bê nhiều ngày.
+// Tăng khi học đều, trả lời đúng liền mạch, thuộc từ mới, vuốt đúng chỗ, ghé mỗi ngày; giảm nhẹ khi bỏ bê nhiều ngày.
 import { clamp, dayKey } from "../core/util.js";
 import { save, log } from "../core/store.js";
 
 export const TIERS = [
-  { min: 0, id: "stranger", vi: "Người lạ", emo: "🙀", unlock: "Còn dè chừng. Cho ăn đúng giờ, vuốt đúng chỗ để làm quen." },
-  { min: 12, id: "known", vi: "Quen mặt", emo: "😼", unlock: "Lẽo đẽo đi theo khi bạn sang phòng khác." },
-  { min: 28, id: "friend", vi: "Bạn", emo: "😺", unlock: "Dụi đầu vào màn hình, tha quà về, chớp mắt chậm với bạn." },
-  { min: 50, id: "bestie", vi: "Bạn thân", emo: "😻", unlock: "Nhào bột, khoe bụng (coi chừng bẫy), gõ màn hình khi nhớ bạn." },
-  { min: 75, id: "soul", vi: "Tri kỷ", emo: "💞", unlock: "Ngủ ngay cạnh bạn, chạy ra tận cửa đón, thư mỗi sáng dài hơn." },
+  { min: 0, id: "stranger", vi: "Người lạ", emo: "🙀", unlock: "Còn dè chừng. Học đều, gãi đúng chỗ thì mới quen." },
+  { min: 12, id: "known", vi: "Quen mặt", emo: "😼", unlock: "Hay chạy lại gần, đứng coi bạn học." },
+  { min: 28, id: "friend", vi: "Bạn", emo: "😺", unlock: "Dụi đầu vô màn hình, chớp mắt chậm, gõ kính đòi học." },
+  { min: 50, id: "bestie", vi: "Bạn thân", emo: "😻", unlock: "Nằm nhào bột kế bên, khoe bụng (coi chừng bị cào)." },
+  { min: 75, id: "soul", vi: "Tri kỷ", emo: "💞", unlock: "Ngủ kế bên lúc bạn học. Giấy nhắn buổi sáng ngọt hơn xíu." },
 ];
 export const tierIndex = (b) => { let i = 0; TIERS.forEach((t, k) => { if (b >= t.min) i = k; }); return i; };
 

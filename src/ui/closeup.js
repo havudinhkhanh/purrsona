@@ -6,21 +6,21 @@ import { line } from "../cat/lines.js";
 
 
 const FACE = (fur, eye) => `<svg class="cu-face" viewBox="0 0 400 420" aria-hidden="true">
-  <defs><radialGradient id="cu-iris" cx="50%" cy="42%" r="60%"><stop offset="0" stop-color="#FFE7A3"/><stop offset=".55" stop-color="${eye}"/><stop offset="1" stop-color="#9C6A12"/></radialGradient>
+  <defs><radialGradient id="cu-iris" cx="50%" cy="42%" r="60%"><stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="${eye}"/><stop offset="1" stop-color="#8f8f8f"/></radialGradient>
   <clipPath id="cu-eyeclip"><ellipse rx="44" ry="46"/></clipPath><radialGradient id="cu-sheen" cx="35%" cy="20%" r="80%"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
   <g class="cu-ears"><path d="M70 170 L52 22 Q60 14 74 22 L178 110 Z" fill="${fur}"/><path d="M330 170 L348 22 Q340 14 326 22 L222 110 Z" fill="${fur}"/>
-  <path d="M84 140 L72 50 L150 112 Z" fill="#3A2730"/><path d="M316 140 L328 50 L250 112 Z" fill="#3A2730"/></g>
+  <path d="M84 140 L72 50 L150 112 Z" fill="#4a4a4c"/><path d="M316 140 L328 50 L250 112 Z" fill="#4a4a4c"/></g>
   <path d="M200 92 C300 92 368 160 370 250 C372 340 300 410 200 410 C100 410 28 340 30 250 C32 160 100 92 200 92 Z" fill="${fur}"/>
   <path d="M200 92 C300 92 368 160 370 250 C372 340 300 410 200 410 C100 410 28 340 30 250 C32 160 100 92 200 92 Z" fill="url(#cu-sheen)"/>
   <g class="cu-eyes">
     <g class="cu-eye" transform="translate(132 236)" clip-path="url(#cu-eyeclip)"><ellipse rx="44" ry="46" fill="url(#cu-iris)"/><ellipse class="cu-pupil" rx="11" ry="34" fill="#140D05"/><circle cx="-14" cy="-18" r="9" fill="#fff" opacity=".9"/><circle cx="12" cy="16" r="4" fill="#fff" opacity=".5"/><rect class="cu-lid" x="-50" y="-52" width="100" height="104" fill="${fur}"/></g>
     <g class="cu-eye" transform="translate(268 236)" clip-path="url(#cu-eyeclip)"><ellipse rx="44" ry="46" fill="url(#cu-iris)"/><ellipse class="cu-pupil" rx="11" ry="34" fill="#140D05"/><circle cx="-14" cy="-18" r="9" fill="#fff" opacity=".9"/><circle cx="12" cy="16" r="4" fill="#fff" opacity=".5"/><rect class="cu-lid" x="-50" y="-52" width="100" height="104" fill="${fur}"/></g>
   </g>
-  <path d="M188 304 h24 l-12 13 Z" fill="#E58B9B"/><path d="M200 317 v10 M200 327 q-12 12 -24 4 M200 327 q12 12 24 4" stroke="#5a4a50" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M188 304 h24 l-12 13 Z" fill="#8e8e8e"/><path d="M200 317 v10 M200 327 q-12 12 -24 4 M200 327 q12 12 24 4" stroke="#3a3a3a" stroke-width="4" fill="none" stroke-linecap="round"/>
   <g stroke="#fff" stroke-opacity=".5" stroke-width="2.4" stroke-linecap="round" fill="none"><path d="M150 318 Q90 306 24 316"/><path d="M150 330 Q92 332 30 350"/><path d="M250 318 Q310 306 376 316"/><path d="M250 330 Q308 332 370 350"/></g>
 </svg>`;
 const PAW = (fur) => `<svg class="cu-paw" viewBox="0 0 200 260" aria-hidden="true"><path d="M40 260 C30 170 40 90 100 80 C160 90 170 170 160 260 Z" fill="${fur}"/>
-  <g fill="#E8A0AE"><ellipse cx="100" cy="128" rx="34" ry="28"/><ellipse cx="58" cy="92" rx="13" ry="16"/><ellipse cx="84" cy="70" rx="13" ry="17"/><ellipse cx="116" cy="70" rx="13" ry="17"/><ellipse cx="142" cy="92" rx="13" ry="16"/></g></svg>`;
+  <g fill="#c4c4c4"><ellipse cx="100" cy="128" rx="34" ry="28"/><ellipse cx="58" cy="92" rx="13" ry="16"/><ellipse cx="84" cy="70" rx="13" ry="17"/><ellipse cx="116" cy="70" rx="13" ry="17"/><ellipse cx="142" cy="92" rx="13" ry="16"/></g></svg>`;
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export function createCloseup(game, root) {

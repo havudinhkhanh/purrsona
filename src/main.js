@@ -8,12 +8,11 @@ try {
   if (game.save.settings.reduced) document.documentElement.classList.add("reduced");
   game.start();
   setTimeout(() => game.welcome(), 600);
-  setTimeout(() => game.firstRun?.(), 1800);
   document.getElementById("boot")?.classList.add("gone");
   window.PURR = game;      // tiện gỡ lỗi trên console
 } catch (e) {
   console.error(e);
-  document.getElementById("boot").innerHTML = `<p>Không mở được nhà mèo 😿<br><small>${e.message}</small></p>`;
+  document.getElementById("boot").innerHTML = `<p>Mèo làm gãy bút chì rồi.<br><small>${e.message}</small></p>`;
 }
 
 // PWA: cài như app, chạy không cần mạng sau lần mở đầu

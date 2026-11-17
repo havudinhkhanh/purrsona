@@ -5,18 +5,18 @@ import { rng, dayKey, weighted, pick, clamp } from "../core/util.js";
 export const TRAITS = { playful: "Ham chơi", lazy: "Lười", curious: "Tò mò", affectionate: "Tình cảm", sassy: "Đanh đá", greedy: "Tham ăn", brave: "Gan dạ" };
 
 export const MOODS = [
-  { id: "zoomie", vi: "Tăng động", emo: "⚡", desc: "Chạy khắp nhà, khó ngồi yên. Chơi laser với bé hôm nay là hết sẩy.", mod: { playful: 0.35, lazy: -0.4, curious: 0.15 }, w: (t) => t.playful, speed: 1.25 },
-  { id: "sleepy", vi: "Lười biếng", emo: "☁️", desc: "Ngủ là chính, dậy là phụ. Đừng gọi trừ khi có đồ ăn.", mod: { lazy: 0.45, playful: -0.3, curious: -0.2 }, w: (t) => t.lazy, speed: 0.8 },
-  { id: "diva", vi: "Õng ẹo", emo: "💅", desc: "Chỉ chịu được vuốt đúng chỗ, đúng chiều. Sai là quay lưng.", mod: { sassy: 0.35, affectionate: -0.2 }, w: (t) => t.sassy, speed: 0.95 },
-  { id: "clingy", vi: "Bám người", emo: "💕", desc: "Đi đâu theo đó, gọi là tới. Hôm nay dễ thương bất thường.", mod: { affectionate: 0.5, sassy: -0.3 }, w: (t) => 1 - t.sassy * 0.5 + t.affectionate, speed: 1 },
-  { id: "explorer", vi: "Tò mò", emo: "🔍", desc: "Lục mọi phòng, leo mọi chỗ. Dễ check-in nhiều phòng nhất.", mod: { curious: 0.45, brave: 0.2 }, w: (t) => t.curious, speed: 1.05 },
-  { id: "grumpy", vi: "Cáu kỉnh", emo: "😾", desc: "Đụng vào là cào. Để bé yên, cho ăn đúng giờ là được.", mod: { sassy: 0.4, affectionate: -0.4, playful: -0.15 }, w: (t) => t.sassy * 0.6, speed: 0.95 },
-  { id: "foodie", vi: "Thèm ăn", emo: "🐟", desc: "Đòi ăn liên tục, ngồi canh bát. Cho ăn là thân ngay.", mod: { greedy: 0.5 }, w: (t) => t.greedy, speed: 1 },
-  { id: "poet", vi: "Mơ màng", emo: "🌙", desc: "Ngồi bậu cửa sổ ngắm trời hàng giờ. Rất triết lý.", mod: { curious: 0.1, lazy: 0.15, playful: -0.2 }, w: (t) => 0.5 + t.curious * 0.3, speed: 0.9 },
+  { id: "zoomie", vi: "Tăng động", emo: "⚡", desc: "Chạy khắp nhà, ra vườn đuổi bướm. Học nhanh thì bé đỡ phá.", mod: { playful: 0.35, lazy: -0.4, curious: 0.15 }, w: (t) => t.playful, speed: 1.25 },
+  { id: "sleepy", vi: "Lười biếng", emo: "☁️", desc: "Ngủ là chính. Kháy ít hơn, nhưng kháy câu nào trúng câu đó.", mod: { lazy: 0.45, playful: -0.3, curious: -0.2 }, w: (t) => t.lazy, speed: 0.8 },
+  { id: "diva", vi: "Õng ẹo", emo: "💅", desc: "Khen nhỏ giọt, chê thả cửa. Sai một câu là quay lưng.", mod: { sassy: 0.35, affectionate: -0.2 }, w: (t) => t.sassy, speed: 0.95 },
+  { id: "clingy", vi: "Bám người", emo: "💕", desc: "Đi đâu theo đó, đúng một câu là mừng. Hôm nay dễ thương bất thường.", mod: { affectionate: 0.5, sassy: -0.3 }, w: (t) => 1 - t.sassy * 0.5 + t.affectionate, speed: 1 },
+  { id: "explorer", vi: "Tò mò", emo: "🔍", desc: "Lục khắp nhà lẫn vườn. Hay đố bất chợt chữ cũ.", mod: { curious: 0.45, brave: 0.2 }, w: (t) => t.curious, speed: 1.05 },
+  { id: "grumpy", vi: "Cáu kỉnh", emo: "😾", desc: "Đụng vào là cào, sai là mắng. Học cho đủ chỉ tiêu thì yên.", mod: { sassy: 0.4, affectionate: -0.4, playful: -0.15 }, w: (t) => t.sassy * 0.6, speed: 0.95 },
+  { id: "foodie", vi: "Thèm ăn", emo: "🐟", desc: "Mỗi câu đúng coi như một viên snack. Đòi liên tục.", mod: { greedy: 0.5 }, w: (t) => t.greedy, speed: 1 },
+  { id: "poet", vi: "Mơ màng", emo: "🌙", desc: "Ngồi bậu cửa sổ ngắm trời, viết chữ lên tường như làm thơ.", mod: { curious: 0.1, lazy: 0.15, playful: -0.2 }, w: (t) => 0.5 + t.curious * 0.3, speed: 0.9 },
 ];
 export const ZONES = { head: "Đỉnh đầu", chin: "Cằm", back: "Lưng", tail: "Gốc đuôi" };
 export const TOYS = { "toy.yarn": "Cuộn len", "toy.laser": "Đèn laser", "toy.feather": "Cần lông vũ" };
-export const SPOTS = { sofa: "Sofa", sunbeam: "Vệt nắng", treetop: "Đỉnh trụ cào", bed: "Giường chủ", catbed: "Ổ riêng", window: "Bậu cửa sổ", chair: "Ghế mây", counter: "Mặt bếp", tub: "Thành bồn tắm" };
+export const SPOTS = { desk: "Bàn học", shelf: "Nóc kệ sách", sill: "Bậu cửa sổ", catbed: "Ổ riêng", rug: "Thảm", bench: "Ghế đá", branch: "Cành cây", swing: "Xích đu", flowers: "Luống hoa", sunny: "Vệt nắng" };
 
 /** tính cách hôm nay của con mèo id (cùng ngày → cùng kết quả trên mọi máy) */
 export function today(cat, date = new Date()) {
@@ -37,16 +37,14 @@ export function today(cat, date = new Date()) {
 // ------------------------------------------------------------------ THÓI TẬT CỐ ĐỊNH (bốc ngẫu nhiên 2 cái lúc mới nhận nuôi – theo mèo cả đời)
 // mod: hoạt động → hệ số điểm; spot: chỗ → hệ số; khác: cờ cho bộ não / sự kiện
 export const QUIRKS = [
-  { id: "faucet", vi: "Mê nước vòi", emo: "🚰", desc: "Hay ngồi trong bồn rửa mặt chờ nước chảy.", spot: { sink: 3 } },
-  { id: "bedhog", vi: "Chiếm giường chủ", emo: "🛏️", desc: "Ngủ giữa giường của bạn, không phải ổ riêng.", spot: { bed: 3, catbed: 0.4 } },
-  { id: "boxlover", vi: "Nghiện hộp giấy", emo: "📦", desc: "Thấy hộp là chui vào, không cần biết to nhỏ.", spot: { box: 4 } },
-  { id: "laserhater", vi: "Coi thường laser", emo: "🙄", desc: "Biết thừa chấm đỏ là trò lừa. Hiếm khi đuổi.", laser: 0.35 },
-  { id: "nightsinger", vi: "Ca sĩ nửa đêm", emo: "🎤", desc: "Kêu to lúc khuya không vì lý do gì.", night: 1 },
-  { id: "geckohunter", vi: "Thợ săn thạch sùng", emo: "🦎", desc: "Nghe tiếng chắc chắc là bật dậy.", gecko: 2 },
-  { id: "counterthief", vi: "Đạo chích mặt bếp", emo: "🥷", desc: "Thích nhảy lên bếp và đẩy đồ rơi.", mod: { knock: 2.5, perch: 1.3 } },
+  { id: "deskhog", vi: "Chiếm bàn học", emo: "💻", desc: "Thích nằm đè lên laptop đúng lúc bạn cần học.", spot: { desk: 3 } },
+  { id: "shelfking", vi: "Vua kệ sách", emo: "📚", desc: "Ngồi trên nóc kệ nhìn xuống phán xét.", spot: { shelf: 3 } },
+  { id: "graffiti", vi: "Hoạ sĩ vẽ bậy", emo: "✏️", desc: "Viết lên tường nhiều gấp đôi mèo thường.", mod: { write: 2.2 } },
+  { id: "butterfly", vi: "Thợ săn bướm", emo: "🦋", desc: "Ra vườn là đuổi bướm, kể cả bướm mang chữ.", mod: { chase: 2.2, explore: 1.3 } },
+  { id: "examiner", vi: "Giám khảo khó tính", emo: "📝", desc: "Hay chạy tới đố bất chợt chữ cũ.", mod: { quizme: 2 } },
   { id: "windowpoet", vi: "Thi sĩ cửa sổ", emo: "🪟", desc: "Có thể ngắm trời cả buổi chiều.", mod: { watch: 2 } },
-  { id: "velcro", vi: "Mèo dán keo", emo: "🧲", desc: "Thích ở cùng phòng với bạn hơn mọi chỗ khác.", mod: { seek: 2 } },
-  { id: "foodclock", vi: "Đồng hồ báo cơm", emo: "⏰", desc: "Đói đúng giờ, réo đúng giờ, kể cả 5 giờ sáng.", mod: { dawnyell: 2.5, beg: 1.5 } },
+  { id: "velcro", vi: "Mèo dán keo", emo: "🧲", desc: "Thích ở cùng khu với bạn hơn mọi chỗ khác.", mod: { seek: 2 } },
+  { id: "nightsinger", vi: "Ca sĩ nửa đêm", emo: "🎤", desc: "Kêu to lúc khuya, nhất là khi bạn chưa ôn bài.", night: 1 },
 ];
 export function quirksOf(cat, adoptedAt) {
   const r = rng(cat.id + "|quirk|" + adoptedAt), a = QUIRKS.slice();
@@ -55,9 +53,8 @@ export function quirksOf(cat, adoptedAt) {
 
 // ------------------------------------------------------------------ MÓN MÊ CỦA TUẦN (đổi mỗi thứ hai)
 export const OBSESSIONS = [
-  { spot: "tub", vi: "Thành bồn tắm" }, { spot: "window", vi: "Bậu cửa sổ" }, { spot: "treetop", vi: "Đỉnh trụ cào" },
-  { spot: "counter", vi: "Mặt bếp" }, { spot: "chair", vi: "Ghế mây ban công" }, { spot: "bed", vi: "Giường chủ" },
-  { spot: "sunbeam", vi: "Vệt nắng" }, { spot: "catbed", vi: "Ổ riêng" }, { spot: "sink", vi: "Bồn rửa mặt" },
+  { spot: "desk", vi: "Bàn học" }, { spot: "shelf", vi: "Nóc kệ sách" }, { spot: "sill", vi: "Bậu cửa sổ" }, { spot: "bench", vi: "Ghế đá ngoài vườn" },
+  { spot: "branch", vi: "Cành cây" }, { spot: "swing", vi: "Xích đu" }, { spot: "catbed", vi: "Ổ riêng" }, { spot: "sunny", vi: "Vệt nắng ngoài vườn" },
 ];
 export function weekKey(d = new Date()) { const x = new Date(d); x.setHours(0, 0, 0, 0); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return dayKey(x); }
 export const obsessionOf = (cat, d = new Date()) => { const r = rng(cat.id + "|week|" + weekKey(d)); return OBSESSIONS[Math.floor(r() * OBSESSIONS.length)]; };

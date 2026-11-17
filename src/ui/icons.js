@@ -36,6 +36,13 @@ const P = {
   letter: '<rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="m4 7 8 6 8-6"/>',
   paw: '<ellipse cx="12" cy="16" rx="4.2" ry="3.6"/><ellipse cx="6" cy="10.5" rx="1.8" ry="2.3"/><ellipse cx="10" cy="7" rx="1.8" ry="2.4"/><ellipse cx="14" cy="7" rx="1.8" ry="2.4"/><ellipse cx="18" cy="10.5" rx="1.8" ry="2.3"/>',
   bolt: '<path d="M13 3 5 13.5h6L10 21l8-10.5h-6L13 3Z"/>',
+  speaker: '<path d="M4 9.5v5h3.5L12 19V5L7.5 9.5H4Z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/>',
+  list: '<path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1.2" fill="currentColor"/><circle cx="4.5" cy="12" r="1.2" fill="currentColor"/><circle cx="4.5" cy="18" r="1.2" fill="currentColor"/>',
+  chart: '<path d="M4 20V4M4 20h16"/><path d="M8 16v-4M12 16V8M16 16v-6"/>',
+  pencil: '<path d="M4 20l1-4.5L15.5 5a2.1 2.1 0 0 1 3 3L8 18.5 4 20Z"/><path d="M13.5 7l3 3"/>',
+  flower: '<circle cx="12" cy="9" r="2.4"/><path d="M12 6.6c0-2.4 3-3 3.4-.8.4 2-2 2.6-3.4 3.2M14.4 9c2.4 0 3 3 .8 3.4-2 .4-2.6-2-3.2-3.4M12 11.4c0 2.4-3 3-3.4.8-.4-2 2-2.6 3.4-3.2M9.6 9C7.2 9 6.6 6 8.8 5.6c2-.4 2.6 2 3.2 3.4"/><path d="M12 11.5V21M12 17c-2-2.5-4.5-2.5-5.5-1.5M12 18.5c2-2 4-2 5-1"/>',
+  upload: '<path d="M12 15V4M7.5 8.5 12 4l4.5 4.5"/><path d="M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/>',
+  check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
   door: '<path d="M6 21V4.5a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1V21M4 21h16"/><circle cx="15" cy="12.5" r=".9" fill="currentColor"/>',
 };
 /** icon(name, cls) → chuỗi SVG nội tuyến, đổi màu theo currentColor */

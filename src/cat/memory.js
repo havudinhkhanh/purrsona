@@ -1,4 +1,4 @@
-// TRÍ NHỚ & KỸ NĂNG – mèo học dần từ cách bạn đối xử với nó. Mọi thứ lưu trong save.cat.mem, sống qua nhiều ngày.
+// TRÍ NHỚ & KỸ NĂNG – mèo học dần từ cách bạn đối xử (và học hành) với nó. Mọi thứ lưu trong save.cat.mem, sống qua nhiều ngày.
 //  · thói quen của bạn: giờ hay mở app, giờ hay cho ăn, chỗ hay gãi
 //  · cảm xúc kéo dài: GIẬN (nguôi dần, nửa đời 2 giờ) và KIÊN NHẪN (hồi dần, cạn thì bỏ đi / cào)
 //  · kỹ năng lên cấp nhờ lặp lại: gọi tên, săn mồi, leo trèo, chờ ăn, đập tay
@@ -7,9 +7,8 @@ import { clamp, hhmm } from "../core/util.js";
 
 export const SKILLS = {
   callname: { vi: "Nghe gọi tên", emo: "📣", how: "Gọi mèo thường xuyên", perk: "Gọi là tới, kể cả lúc đang dỗi" },
-  hunter:   { vi: "Săn mồi", emo: "🎯", how: "Chơi laser / lông vũ", perk: "Vồ xa hơn, nhanh hơn, trúng nhiều hơn" },
-  climber:  { vi: "Leo trèo", emo: "🧗", how: "Để mèo tự leo trèo", perk: "Cấp 2: lên được nóc tủ lạnh" },
-  mealtime: { vi: "Đồng hồ sinh học", emo: "⏰", how: "Cho ăn đúng giờ mỗi ngày", perk: "Tới giờ là tự ra canh bát" },
+  hunter:   { vi: "Bắt bướm", emo: "🦋", how: "Để mèo ra vườn đuổi bướm", perk: "Vồ trúng nhiều hơn" },
+  climber:  { vi: "Leo trèo", emo: "🧗", how: "Để mèo tự leo trèo", perk: "Cấp 2: lên được nóc kệ sách" },
   highfive: { vi: "Đập tay", emo: "🖐️", how: "Chạm đúp vào mèo", perk: "Đập tay thành công nhiều hơn" },
 };
 const LV = [0, 4, 12, 28, 55, 100];
