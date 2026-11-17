@@ -74,7 +74,7 @@ export function createLife(game) {
     else if (how === "pop") { await play(g, [{ transform: "scale(.2)", opacity: 0 }, { transform: "scale(1.12)", opacity: 1, offset: 0.65 }, { transform: "scale(1)", opacity: 1 }], { duration: 420, easing: "cubic-bezier(.3,1.4,.5,1)" }); }
     else if (how === "slide") { const dx = (o.dx || -2.2) * u; await play(g, [{ transform: `translate(${dx}px, ${-0.6 * u}px) rotate(-12deg)`, opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 480, easing: "cubic-bezier(.2,.9,.3,1.2)" }); }
   }
-  function draw(it) { const [x, y] = Y.P(it.u, it.v), u = Y.S.k * 1.1; it.el.style.zIndex = Math.round(y) + it.dz; const art = PROPS[it.kind](x, y, u, it.st); it.el.innerHTML = `<svg class="spr" viewBox="0 0 ${Y.S.vw} ${Y.S.vh}">${Y.S.theme === "paint" ? paintSvg(art, LMAT[it.kind] || "misc") : art}</svg>`; fitSvg(it.el.firstChild); }
+  function draw(it) { const [x, y] = Y.P(it.u, it.v), u = Y.S.k * 1.1; it.el.style.zIndex = Math.round(y) + it.dz; const art = PROPS[it.kind](x, y, u, it.st); it.el.innerHTML = `<svg class="spr" viewBox="0 0 ${Y.S.vw} ${Y.S.vh}">${Y.S.theme === "paint" || Y.S.theme === "art" ? paintSvg(art, LMAT[it.kind] || "misc") : art}</svg>`; fitSvg(it.el.firstChild); }
   function remove(it, picked) {
     items = items.filter((x) => x !== it); const g = svgOf(it);
     if (picked && g) { const [x, y] = base(it); pivot(g, x, y); play(g, [{ transform: "none", opacity: 1 }, { transform: `translateY(${-3 * U()}px) scale(.7) rotate(-10deg)`, opacity: 0 }], { duration: 380, easing: "ease-in" }).then(() => it.el.remove()); return; }

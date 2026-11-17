@@ -6,7 +6,7 @@ import { save } from "../core/store.js";
 import { unlock } from "../core/sound.js";
 import { SKILLS, levelOf, nextXp } from "../cat/memory.js";
 import { TIERS } from "../cat/bond.js";
-import { LANGS, parseCsv, allCards, cardsOfLevel, LEVEL_TAG, LADDERS, nextLevel } from "../learn/packs.js";
+import { LANGS, parseCsv, allCards, cardsOfLevel, LEVEL_TAG, LADDERS, nextLevel, isTopic, topicName } from "../learn/packs.js";
 import { buildIndex, scanText } from "../learn/scan.js";
 import { line } from "../cat/lines.js";
 import { BOX_IV, MASTER } from "../learn/srs.js";
@@ -93,7 +93,7 @@ export function createHud(game, root) {
   const noteCard = (x, today) => `<article class="letter${today ? " today" : ""}"><header>${icon("letter")}<time>${x.d === dayKey() ? "Sáng nay" : new Date(x.d).toLocaleDateString("vi-VN", { weekday: "long", day: "numeric", month: "numeric" })}</time></header>${x.text.split("\n").map((l) => `<p>${esc(l)}</p>`).join("")}</article>`;
   let jumpQ = null;
   let loginStep = "email", loginEmail = "", loginMsg = "", loginMode = "login";
-  let wordsTab = "book", readRes = null, readText = "";
+  let wordsTab = "book", readRes = null, readText = "", langTab = null;      // langTab: "path" (lộ trình kỳ thi) | "topic" (theo chủ đề)
   const host = (u) => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return ""; } };
 
   const tabBar = (tabs) => `<div class="tabs scroll">${tabs.map(([k, v]) => `<button data-wtab="${k}" class="${wordsTab === k ? "on" : ""}">${v}${k === "book" && s.learn.book.length ? ` <small>${s.learn.book.length}</small>` : ""}</button>`).join("")}</div>`;
@@ -241,12 +241,22 @@ export function createHud(game, root) {
       const lvBtn = (lv) => { const lk = !learn.tierOk(lv.key), p = prog(lv.key), tag = LEVEL_TAG[lv.key]; return `<button data-level="${lv.key}" class="${cur === lv.key ? "on" : ""} ${lk ? "lockd" : ""}">${tag ? `<em>${esc(tag)}</em>` : ""}<span>${esc(tag ? lv.vi.replace(new RegExp(`^${tag}\\s*·?\\s*|\\s*\\(${tag}\\)`, "g"), "").replace(/^$/, tag) : lv.vi)}</span><small>${lv.n} từ · đã học ${p}%${lk ? ` · ${icon("lock")} ${PLANS[lv.tier].vi}` : ""}</small><i style="--p:${p}%"></i></button>`; };
       const all = learn.levels(), inLadder = new Set((LADDERS[L.lang] || []).flat());
       const ladders = (LADDERS[L.lang] || []).map((tr, i) => `<h3>${esc(TRACK[i] || "Lộ trình")}</h3><div class="lvls ladder">${tr.map((k) => all.find((x) => x.key === k)).filter(Boolean).map(lvBtn).join("")}</div>`).join("");
-      const nx = nextLevel(cur), nxl = nx && all.find((x) => x.key === nx);
-      return head("Ngôn ngữ & trình độ", "Chữ chia theo kỳ thi. Học hết cấp nào tự lên cấp đó; biết rồi thì thi nhảy lớp.") + `<div class="pick3">${Object.entries(LANGS).map(([k, v]) => `<button data-setlang="${k}" class="${L.lang === k ? "on" : ""}"><b class="${k}">${v.flag}</b><span>${v.vi}</span></button>`).join("")}</div>
-        ${nxl ? `<button class="jumpbtn" data-a="jump">${icon("bolt")}<span><b>Thi nhảy lên ${esc(LEVEL_TAG[nx] || nxl.vi)}</b><small>8 câu · đúng 6 là qua, chữ đã biết khỏi học lại</small></span>${learn.tierOk(nx) ? "" : `<em>${PLANS[nxl.tier].vi}</em>`}</button>` : ""}
+      const topics = all.filter((lv) => isTopic(lv.key)), extra = all.filter((lv) => !inLadder.has(lv.key) && !isTopic(lv.key));
+      const inTopic = isTopic(cur), home = learn.homeLevel(), homeTag = LEVEL_TAG[home] || all.find((x) => x.key === home)?.vi || "";
+      const tab = langTab || (inTopic ? "topic" : "path");
+      const nx = inTopic ? null : nextLevel(cur), nxl = nx && all.find((x) => x.key === nx);
+      const tile = (lv) => { const lk = !learn.tierOk(lv.key), p = prog(lv.key), t = topicName(lv.vi), on = cur === lv.key;
+        return `<button data-level="${lv.key}" class="ttile ${on ? "on" : ""} ${lk ? "lockd" : ""}" aria-pressed="${on}"><span class="tico" aria-hidden="true">${esc(t.ico || "•")}</span><b>${esc(t.name)}</b><small>${on ? "Đang học · " : ""}${lv.n} từ${p ? ` · ${p}%` : ""}${lk ? ` · ${icon("lock")} ${PLANS[lv.tier].vi}` : ""}</small><i style="--p:${p}%"></i></button>`; };
+      const pathView = `${nxl ? `<button class="jumpbtn" data-a="jump">${icon("bolt")}<span><b>Thi nhảy lên ${esc(LEVEL_TAG[nx] || nxl.vi)}</b><small>8 câu · đúng 6 là qua, chữ đã biết khỏi học lại</small></span>${learn.tierOk(nx) ? "" : `<em>${PLANS[nxl.tier].vi}</em>`}</button>` : ""}
         ${pace !== null ? `<p class="pace">Đúng ngay lần đầu <b>${Math.round(pace * 100)}%</b> · ${pace >= 0.8 ? "học nhanh: chữ dễ được nhảy cóc, ôn thưa hơn" : pace >= 0.5 ? "nhịp vừa" : "chậm lại chút: bớt chữ mới mỗi ngày cho chắc"}</p>` : ""}
         ${ladders}
-        <h3>Gói chủ đề</h3><div class="lvls">${all.filter((lv) => !inLadder.has(lv.key)).map(lvBtn).join("")}</div>
+        ${extra.length ? `<h3>Gói thêm</h3><div class="lvls">${extra.map(lvBtn).join("")}</div>` : ""}`;
+      const topicView = `<p class="muted tintro">Học chữ theo tình huống. Học hết một chủ đề, mèo tự đưa bạn về lộ trình${homeTag ? ` <b>${esc(homeTag)}</b>` : ""}.</p>
+        <div class="ttiles">${topics.map(tile).join("")}</div>`;
+      return head("Ngôn ngữ & trình độ", tab === "topic" ? "Chọn một chủ đề để học chữ theo tình huống." : "Chữ chia theo kỳ thi. Học hết cấp nào tự lên cấp đó; biết rồi thì thi nhảy lớp.") + `<div class="pick3">${Object.entries(LANGS).map(([k, v]) => `<button data-setlang="${k}" class="${L.lang === k ? "on" : ""}"><b class="${k}">${v.flag}</b><span>${v.vi}</span></button>`).join("")}</div>
+        ${inTopic ? `<div class="tbanner"><span>Đang học chủ đề <b>${esc(LEVEL_TAG[cur] || "")}</b></span><button class="btn sm" data-level="${esc(home)}">Về ${esc(homeTag || "lộ trình")}</button></div>` : ""}
+        ${topics.length ? `<div class="seg ltabs" role="tablist"><button role="tab" data-ltab="path" aria-selected="${tab === "path"}" class="${tab === "path" ? "on" : ""}">Lộ trình kỳ thi</button><button role="tab" data-ltab="topic" aria-selected="${tab === "topic"}" class="${tab === "topic" ? "on" : ""}">Theo chủ đề</button></div>` : ""}
+        ${tab === "topic" && topics.length ? topicView : pathView}
         <p class="muted">Đổi ngôn ngữ không mất tiến độ – mỗi ngôn ngữ có hoa riêng trong vườn.</p>`;
     },
     jump() {
@@ -256,7 +266,7 @@ export function createHud(game, root) {
       return head(`Nhảy lên ${esc(J.tag)}`, `Câu ${J.i + 1}/${J.items.length} · đúng ${J.right}`) + `<div class="jq"><h1 class="w ${c.lang}">${esc(c.w)}</h1><p class="ph">${esc(c.ph || "")}</p></div><div class="jopts">${opts.map((o) => `<button data-jans="${esc(o.id)}">${esc(o.vi)}</button>`).join("")}<button class="ghost" data-jans="?">Không biết</button></div>`;
     },
     plans() {
-      const rows = [["Học mỗi ngày, ôn lặp lại, vườn hoa chữ", 1, 1, 1], ["Vibe khu vườn", "Nhà · Nhật", "+ Trung · Ý · Pháp", "+ Thượng Hải xưa"], ["Tranh chữ (chữ sâu)", "12 chữ", "24 chữ", "24 chữ"], ["Đồng bộ nhiều máy", 1, 1, 1], ["Cấp độ", "A1–A2 · Starters–Movers · HSK 1 · N5", "Đến B2 · Flyers · HSK 3 · N3", "+ C1 · HSK 6 · N1 · chuyên ngành"], ["Học thích ứng, thi nhảy lớp", 1, 1, 1], ["Từ mới mỗi ngày", "tối đa 5", "tối đa 20", "tối đa 50"], ["Câu nghe đọc & tự gõ", 0, 1, 1], ["Thống kê 30 ngày, từ hay sai", 0, 1, 1], ["Đọc lại giấy nhắn cũ", 0, 1, 1], ["Tiếng Anh tài chính – kinh doanh", 0, 0, 1], ["Tự nhập danh sách từ (CSV)", 0, 0, 1], ["Mèo kháy bằng AI theo đúng từ bạn sai", 0, 0, 1]];
+      const rows = [["Học mỗi ngày, ôn lặp lại, vườn hoa chữ", 1, 1, 1], ["Vibe khu vườn", "Nhà · Nhật", "+ Trung · Ý · Pháp", "+ Thượng Hải xưa"], ["Tranh chữ (chữ sâu)", "12 chữ", "24 chữ", "24 chữ"], ["Đồng bộ nhiều máy", 1, 1, 1], ["Cấp độ", "A1–A2 · Starters–Movers · HSK 1 · N5", "Đến B2 · Flyers · HSK 3 · N3", "+ C1 · HSK 6 · N1 · chuyên ngành"], ["Học thích ứng, thi nhảy lớp", 1, 1, 1], ["Học theo chủ đề (trường học, du lịch…)", "5 chủ đề", "10 chủ đề", "10 chủ đề"], ["Từ mới mỗi ngày", "tối đa 5", "tối đa 20", "tối đa 50"], ["Câu nghe đọc & tự gõ", 0, 1, 1], ["Thống kê 30 ngày, từ hay sai", 0, 1, 1], ["Đọc lại giấy nhắn cũ", 0, 1, 1], ["Tiếng Anh tài chính – kinh doanh", 0, 0, 1], ["Tự nhập danh sách từ (CSV)", 0, 0, 1], ["Mèo kháy bằng AI theo đúng từ bạn sai", 0, 0, 1]];
       const cell = (v) => (v === 1 ? "✓" : v === 0 ? "–" : v);
       return head("Gói", "Bản thử: chọn gói để mở khoá ngay (chưa nối thanh toán).") + `<div class="plans">${Object.entries(PLANS).map(([k, p]) => `<button data-plan="${k}" class="${s.plan === k ? "on" : ""}"><b>${p.vi}</b><span>${p.price}</span><small>${p.note}</small>${s.plan === k ? "<em>Đang dùng</em>" : ""}</button>`).join("")}</div>
       <table class="cmp"><thead><tr><th></th><th>Free</th><th>Plus</th><th>Pro</th></tr></thead><tbody>${rows.map((r) => `<tr><td>${r[0]}</td>${r.slice(1).map((v) => `<td>${cell(v)}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
@@ -274,7 +284,7 @@ export function createHud(game, root) {
         <div class="row"><span>Đổi chữ trên tường</span><span class="seg">${[5, 15, 60].map((n) => `<button data-rot="${n}" class="${(s.settings.rotate || 15) === n ? "on" : ""}">${n === 60 ? "1 giờ" : n + "′"}</button>`).join("")}</span></div>
         <button class="row link" data-a="vibe"><span>Vibe khu vườn</span><span>${game.vibe ? `${VIBES[game.vibe.chosen].emo} ${VIBES[game.vibe.chosen].vi}` : ""} ›</span></button>
         <div class="row"><span>Màn hình chính</span><span class="seg">${[["poster", "Tranh chữ"], ["card", "Thẻ học"]].map(([k, v]) => `<button data-home="${k}" class="${(s.settings.home || "poster") === k ? "on" : ""}">${v}</button>`).join("")}</span></div>
-        <div class="row"><span>Kiểu vẽ <small>${(s.settings.theme || "sketch") === "paint" ? "tranh màu theo từng khu" : "bút chì trắng đen"}</small></span><span class="seg">${[["sketch", "Bút chì"], ["paint", "Tranh màu"]].map(([k, v]) => `<button data-theme="${k}" class="${(s.settings.theme || "sketch") === k ? "on" : ""}">${v}</button>`).join("")}</span></div>
+        <div class="row"><span>Kiểu vẽ <small>${{ paint: "tranh màu theo từng khu", art: "bóng đổ, nắng đổi theo giờ, lá vẽ từng chùm" }[s.settings.theme] || "bút chì trắng đen"}</small></span><span class="seg">${[["sketch", "Bút chì"], ["paint", "Tranh màu"], ["art", "Hội hoạ"]].map(([k, v]) => `<button data-theme="${k}" class="${(s.settings.theme || "sketch") === k ? "on" : ""}">${v}</button>`).join("")}</span></div>
         <div class="row"><span>Tầm nhìn</span><span class="seg">${[["near", "Gần"], ["mid", "Vừa"], ["far", "Xa"]].map(([k, v]) => `<button data-zoom="${k}" class="${(s.settings.zoom || "mid") === k ? "on" : ""}">${v}</button>`).join("")}</span></div>
         <div class="row zoomrow"><span>Phóng to mèo & sân <small>hoặc chụm 2 ngón trên sân</small></span><span class="seg"><button data-zstep="-1" aria-label="Thu nhỏ">−</button><button data-zstep="0" class="${Math.abs(game.yard.zf - 1) < 0.01 ? "on" : ""}" aria-label="Về khung vừa">${zPct(game.yard.zf)}</button><button data-zstep="1" aria-label="Phóng to">+</button></span></div>
         <div class="row"><span>Chế độ máy <small>${game.perf?.mode === "auto" ? (game.perf.low ? "đang chạy nhẹ cho máy này" : "đang chạy đẹp") : game.perf?.low ? "nhẹ: 30 hình/giây, bỏ kính mờ" : "đẹp: mượt tối đa"}</small></span><span class="seg">${[["auto", "Tự động"], ["low", "Nhẹ"], ["high", "Đẹp"]].map(([k, v]) => `<button data-perf="${k}" class="${(game.perf?.mode || "auto") === k ? "on" : ""}">${v}</button>`).join("")}</span></div>
@@ -304,6 +314,7 @@ export function createHud(game, root) {
   };
   function show(k) { if (SHEETS[k]) open(SHEETS[k](), "sh-" + k); }
   game.showSheet = show;
+  game.showTopics = () => { langTab = "topic"; show("lang"); };
 
   // ------------------------------------------------------------------ chào ngày mới / lần đầu
   game.welcome = () => { if (game.newDay && game.note && s.onboarded) toast(`${game.cat.name} để lại giấy nhắn. Bấm ≡ để đọc.`); };
@@ -311,7 +322,7 @@ export function createHud(game, root) {
   // ------------------------------------------------------------------ bấm nút
   el.addEventListener("click", (e) => {
     unlock(); game.lastInput = Date.now(); game.musicResume?.();
-    const b = e.target.closest("[data-a],[data-plan],[data-skin],[data-ui],[data-setlang],[data-level],[data-daily],[data-wtab],[data-wd],[data-rate],[data-rot],[data-yard],[data-wxmode],[data-wxfix],[data-rtime],[data-bsay],[data-unbook],[data-rsave],[data-rnew],[data-hstar],[data-vibe],[data-zoom],[data-zstep],[data-perf],[data-theme],[data-home],[data-jans],[data-lmode]"); if (!b || !el.contains(b)) return;
+    const b = e.target.closest("[data-a],[data-plan],[data-skin],[data-ui],[data-setlang],[data-level],[data-daily],[data-wtab],[data-wd],[data-rate],[data-rot],[data-yard],[data-wxmode],[data-wxfix],[data-rtime],[data-bsay],[data-unbook],[data-rsave],[data-rnew],[data-hstar],[data-vibe],[data-zoom],[data-zstep],[data-perf],[data-theme],[data-home],[data-jans],[data-lmode],[data-ltab]"); if (!b || !el.contains(b)) return;
     if (b.dataset.bsay) { game.speakCard(learn.card(b.dataset.bsay)); return; }
     if (b.dataset.hstar) { const id = b.dataset.hstar; if (learn.booked(id)) learn.unbook(id); else { const h = learn.hotOf(id), r = learn.bookmark({ ...learn.card(id), src: "hot", url: h?.src?.[0]?.u || "" }, s.plan); if (r.full) return toast("Sổ đầy rồi. Plus lưu thoải mái."); game.jab?.("book"); } save(s); show("words"); return; }
     if (b.dataset.unbook) { learn.unbook(b.dataset.unbook); save(s); show("words"); return; }
@@ -319,8 +330,9 @@ export function createHud(game, root) {
       if (learn.booked(id)) learn.unbook(id); else { const ctx = (readText.match(new RegExp(`[^.!?。！？\\n]*${(/[\u3040-\u30ff\u4e00-\u9fff]/.test(c ? c.w : b.dataset.rnew) ? "" : "\\b") + (c ? c.w : b.dataset.rnew).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}[^.!?。！？\\n]*`, "i")) || [""])[0].trim();
         const r = learn.bookmark(c || { w: b.dataset.rnew, lang: "en", ctx, src: "read" }, s.plan); if (r.full) return toast("Sổ đầy rồi. Plus lưu thoải mái."); if (c) s.learn.book[0].src = "read", s.learn.book[0].ctx = ctx.slice(0, 200); game.jab?.("book"); }
       save(s); show("read"); return; }
+    if (b.dataset.ltab) { langTab = b.dataset.ltab; show("lang"); return; }
     if (b.dataset.setlang) { learn.setLang(b.dataset.setlang); save(s); show(wrap.classList.contains("sh-onboard") ? "onboard" : "lang"); refresh(); return; }
-    if (b.dataset.level) { if (b.classList.contains("lockd")) return show("plans"); learn.setLevel(b.dataset.level); save(s); show(wrap.classList.contains("sh-onboard") ? "onboard" : "lang"); refresh(); return; }
+    if (b.dataset.level) { if (b.classList.contains("lockd")) return show("plans"); langTab = null; learn.setLevel(b.dataset.level); save(s); show(wrap.classList.contains("sh-onboard") ? "onboard" : "lang"); refresh(); return; }
     if (b.dataset.daily) { learn.setDaily(+b.dataset.daily); save(s); b.parentElement.querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b)); refresh(); return; }
     if (b.dataset.rtime) { if (!game.notify.toggleTime(b.dataset.rtime)) toast(`Gói Free nhắc 1 giờ/ngày. Plus thì 3.`); show("settings"); return; }
     if (b.dataset.wxmode) { s.settings.wx.mode = b.dataset.wxmode; s.wxCache = null; save(s); game.weather.refresh().then(() => show("settings")); return; }
@@ -337,7 +349,7 @@ export function createHud(game, root) {
     if (b.dataset.jans) { const J = jumpQ, c = J.items[J.i], ok = b.dataset.jans === c.id; if (ok) { J.right++; J.known.push(c.id); } game.buzz?.(ok ? 8 : [10, 40, 10]); J.i++; if (J.i >= J.items.length && J.right >= J.need) { learn.jumpTo(J.key, J.known); save(s, true); refresh(); } show("jump"); return; }
     if (b.dataset.home) { s.settings.home = b.dataset.home; game.persist(); game.wall?.refresh?.(); show("settings"); return; }
     if (b.dataset.zoom) { s.settings.zoom = b.dataset.zoom; game.yard.setZf(1); game.yard.onZoom?.(1, null, null); game.yard.setZoom(b.dataset.zoom); game.persist(); show("settings"); return; }
-    if (b.dataset.theme) { s.settings.theme = b.dataset.theme; game.yard.setTheme(b.dataset.theme); game.persist(); game.critters?.ambient(); show("settings"); return; }
+    if (b.dataset.theme) { if (b.dataset.theme === "art" && !game.can("theme.art")) { game.showSheet?.("plans"); return; } s.settings.theme = b.dataset.theme; game.yard.setTheme(b.dataset.theme); game.persist(); game.critters?.ambient(); show("settings"); return; }
     if (b.dataset.perf) { if (b.dataset.perf !== "auto") game.perf.auto = false; game.setPerf(b.dataset.perf); game.persist(); show("settings"); return; }
     if (b.dataset.zstep != null) { zStep(+b.dataset.zstep); zSync(); show("settings"); return; }
     if (b.dataset.vibe) { const r = game.vibe.set(b.dataset.vibe); if (r.used) { toast(`Hôm nay xem thử rồi. Mở hẳn với gói ${PLANS[r.tier].vi}.`); show("plans"); return; } if (r.preview) toast(`Xem thử 30 giây. Mở hẳn với gói ${PLANS[r.tier].vi}.`); show("vibe"); return; }

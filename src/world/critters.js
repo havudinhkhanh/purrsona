@@ -8,7 +8,7 @@ const BEE = `<svg viewBox="-20 -16 40 32"><ellipse cx="-4" cy="-10" rx="7" ry="9
 export function createCritters(game) {
   const Y = game.yard; let list = [];
   // vùng bay (toạ độ trong sân) = khu vườn ∩ phần đang thấy trên màn hình (phóng to thì máy quay dời cảnh)
-  const area = () => { const b = Y.bbox(), S = Y.S, cx = Y.cam?.x || 0, cy = Y.cam?.y || 0; return { x0: Math.max(b.x0 + 20, 70 - cx), x1: Math.min(b.x1 - 20, S.vw - 90 - cx), y0: Math.max(b.y0 - 30, S.vh * 0.3 - cy), y1: Math.min(b.y1 - 20, S.vh - 90 - cy) }; };
+  const area = () => { const b = Y.bbox(), S = Y.S, cx = Y.cam?.x || 0, cy = Y.cam?.y || 0; return { x0: Math.max(b.x0 + 20, 70 - cx), x1: Math.min(b.x1 - 20, S.vw - 90 - cx), y0: Math.max(b.y0 - 30, S.vh * 0.3 - cy, (S.reserve || 0) + 24 - cy), y1: Math.min(b.y1 - 20, S.vh - 90 - cy) }; };      // y0: không bay đè tranh chữ
   function add(kind, o = {}) {
     const el = document.createElement("button"); el.className = kind + (o.answer ? "" : " amb"); el.type = "button";
     el.innerHTML = (kind === "bfly" ? BFLY : BEE) + (o.tag ? `<span class="tag${o.lang && o.lang !== "en" ? " " + o.lang : ""}">${esc(o.tag)}</span>` : "");

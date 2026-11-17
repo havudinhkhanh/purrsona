@@ -19,23 +19,49 @@ export function createWall(game, root) {
       <button data-w="learn">${icon("bolt")}<span>Học</span><b class="badge" hidden></b></button>
       <button data-w="review">${icon("repeat")}<span>Ôn</span><b class="badge" hidden></b></button>
       <button data-w="book">${icon("book")}<span>Sổ</span></button>
-      <button data-w="read">${icon("eye")}<span>Đọc ké</span></button>
+      <button data-w="read">${icon("eye")}<span>Đọc</span></button>
       <button data-w="menu">${icon("menu")}<span>Thêm</span></button>
     </nav>`;
   const q = (x) => el.querySelector(x), tl = q(".tl");
   let blind = null, mode = "ambient", shift = 0, cur = null, series = [], quizT = 0, lastQuiz = Date.now(), shownAt = 0;
 
   // ------------------------------------------------------------------ đồng hồ & số liệu (góc phải)
-  let lastChips = "";
+  let lastChips = "", qmOpen = false;
+  // ------------------------------------------------------------------ menu nhanh "⋯" (gom các nút phụ cho hàng trên đỡ rối)
+  const qm = document.createElement("div"); qm.className = "qmenu"; qm.hidden = true; qm.setAttribute("role", "menu"); el.appendChild(qm);
+  function quickMenu(open = true) {
+    qmOpen = open; lastChips = ""; clock(); if (!open) { qm.hidden = true; return; }
+    const W = game.weather, fl = learn.mastered().filter((c) => c.lang === learn.lang).length, th = s.settings.theme || "sketch";
+    const sw = (on) => `<span class="qsw${on ? " on" : ""}" aria-hidden="true"></span>`;
+    qm.innerHTML = `<button class="qrow" data-q="topics" role="menuitem">${icon("book")}<span>Học theo chủ đề</span><span class="qgo">›</span></button>
+      <button class="qrow" data-q="names" role="menuitemcheckbox" aria-checked="${!!s.settings.names}">${icon("tag")}<span>Tên đồ vật trong vườn</span>${sw(s.settings.names)}</button>
+      <button class="qrow" data-q="music" role="menuitemcheckbox" aria-checked="${!!s.settings.music}">${icon("music")}<span>Nhạc lo-fi</span>${sw(s.settings.music)}</button>
+      <button class="qrow" data-q="pause" role="menuitem">${icon("pause")}<span>${paused() ? "Học tiếp" : "Tạm nghỉ học"}</span></button>
+      <div class="qrow qseg" role="group" aria-label="Kiểu vẽ"><span>Kiểu vẽ</span><span class="seg">${[["sketch", "Bút chì"], ["paint", "Màu"], ["art", "Hội hoạ"]].map(([k, v]) => `<button data-q="theme" data-v="${k}" class="${th === k ? "on" : ""}">${v}</button>`).join("")}</span></div>
+      <div class="qinfo">${W && W.kind ? `<span>${W.label()}${W.st.place ? ` · ${esc(W.st.place)}` : ""}</span>` : ""}<span>🌼 ${fl} chữ đã thuộc</span></div>
+      <button class="qrow" data-q="settings" role="menuitem">${icon("settings")}<span>Tất cả cài đặt</span><span class="qgo">›</span></button>`;
+    qm.hidden = false;
+  }
+  qm.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-q]"); if (!b) return; const k = b.dataset.q;
+    if (k === "names") { game.names?.toggle(); return quickMenu(true); }
+    if (k === "music") { game.music(!s.settings.music); return quickMenu(true); }
+    if (k === "pause") { quickMenu(false); return paused() ? resume() : pauseAsk(); }
+    if (k === "theme") { if (b.dataset.v === "art" && !game.can("theme.art")) { quickMenu(false); return game.showSheet?.("plans"); } s.settings.theme = b.dataset.v; game.yard.setTheme(b.dataset.v); game.persist(); return quickMenu(true); }
+    if (k === "settings") { quickMenu(false); return game.showSheet?.("settings"); }
+    if (k === "topics") { quickMenu(false); return game.showTopics?.(); }
+  });
+  addEventListener("pointerdown", (e) => { if (qmOpen && !qm.contains(e.target) && !e.target.closest("[data-w=quickmenu]")) quickMenu(false); }, true);
   function clock() {
     const d = new Date(), t = learn.todo();
     q(".clock").textContent = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
     q(".date").textContent = `${WD[d.getDay()]}, ${d.getDate()}/${d.getMonth() + 1}`;
     const st = learn.streakAlive(), fl = learn.mastered().filter((c) => c.lang === learn.lang).length;
-    const W = game.weather; const chipsHtml = `<button class="chip-s chip-lang chip-ico${s.settings.names ? " on" : ""}" data-w="namestoggle" aria-pressed="${!!s.settings.names}" aria-label="${s.settings.names ? "Ẩn tên đồ vật" : "Hiện tên đồ vật trong vườn"}">${icon("tag")}</button><button class="chip-s chip-lang chip-mus${s.settings.music ? " on" : ""}" data-w="musictoggle" aria-pressed="${!!s.settings.music}" aria-label="${s.settings.music ? "Tắt nhạc" : "Bật nhạc lo-fi"}">${s.settings.music ? "♫" : "♪"}</button><button class="chip-s chip-lang" data-w="lang" aria-label="Đổi ngôn ngữ học: đang học ${esc(LANGS[learn.lang].vi)}">${esc(LANGS[learn.lang].short)}<span aria-hidden="true">▾</span></button>${W && W.kind ? `<span class="chip-s" title="Thời tiết · ${W.st.place}">${W.label()}</span>` : ""}<span class="chip-s" title="Chuỗi ngày học">🔥 ${st || 0}</span><span class="chip-s" title="Hoa (từ đã thuộc)">🌼 ${fl}</span>`; if (chipsHtml !== lastChips) { lastChips = chipsHtml; q(".chips").innerHTML = chipsHtml; }      // chỉ vẽ lại khi đổi (vẽ lại liên tục làm nút mất lượt chạm);
+    // HÀNG TRÊN gọn: ngôn ngữ · chuỗi ngày · nút ⋯ (nhãn đồ vật, nhạc, nghỉ học, kiểu vẽ, thời tiết… nằm trong ⋯)
+    const chipsHtml = `<button class="chip-s chip-lang" data-w="lang" aria-label="Đổi ngôn ngữ học: đang học ${esc(LANGS[learn.lang].vi)}">${esc(LANGS[learn.lang].short)}<span aria-hidden="true">▾</span></button><span class="chip-s" title="Chuỗi ngày học">🔥 ${st || 0}</span><button class="chip-s chip-lang chip-ico${qmOpen ? " on" : ""}" data-w="quickmenu" aria-label="Tuỳ chọn nhanh" aria-expanded="${qmOpen}">${icon("dots")}</button>`; if (chipsHtml !== lastChips) { lastChips = chipsHtml; q(".chips").innerHTML = chipsHtml; }      // chỉ vẽ lại khi đổi
     const badge = (sel, n) => { const b = q(`[data-w=${sel}] .badge`); b.hidden = !n; b.textContent = n > 99 ? "99+" : n; };
-    badge("learn", t.neu); badge("review", t.due);
-    q("[data-w=review] span").textContent = t.due ? "Ôn" : "Đố vui";
+    badge("learn", Math.min(t.neu, BATCH)); badge("review", t.due);      // số trên nút Học = số chữ của bài kế (tối đa 5), đỡ ngợp
+    q("[data-w=review] span").textContent = "Ôn";      // nhãn cố định: đổi chữ theo trạng thái làm người học rối
     el.dataset.lang = learn.lang;
   }
 
@@ -56,10 +82,19 @@ export function createWall(game, root) {
   const lab = (c) => { const tg = levelTag(c); return lab0(c) + (tg && !hotInfo(c) ? ` · ${tg}` : ""); };
   const lab0 = (c) => { const st = learn.stat(c.id); if (hotInfo(c) && (!st || st.box < 4)) return `chữ nóng hôm nay · ${hotInfo(c).tag}`; if (!st || !st.seen) return "từ mới hôm nay"; if (st.box >= 4) return "đã thuộc · nhắc lại cho vui"; if (st.due <= Date.now() && st.right + st.wrong > 0) return "tới lúc ôn"; return "đang học"; };
   // thẻ chữ mặc định là widget nhỏ ở góc (để ngắm mèo); chạm vào thẻ mới mở rộng xem ví dụ, lý do, nguồn
-  function write(html, cls = "", big = false) { tl.className = "tl card " + cls + (big ? " big" : " mini"); tl.innerHTML = html; tl.scrollTop = 0; tl.classList.remove("in"); void tl.offsetWidth; tl.classList.add("in"); shownAt = Date.now(); }
+  // DẢI THAO TÁC dưới đáy (ngay trên thanh điều hướng – vùng ngón cái): mọi nút bấm chính, đáp án, ô xếp chữ, ô gõ
+  // đều nằm ở đây; thẻ chữ phía trên chỉ để ĐỌC. Trên điện thoại không phải với tay lên đầu màn hình, không phải đuổi bướm.
+  const dock = document.createElement("div"); dock.className = "dock"; el.appendChild(dock);
+  try { new ResizeObserver(() => el.style.setProperty("--dockH", dock.offsetHeight + "px")).observe(dock); } catch { /* máy cũ */ }
+  const $1 = (sel) => tl.querySelector(sel) || dock.querySelector(sel), $$ = (sel) => [...tl.querySelectorAll(sel), ...dock.querySelectorAll(sel)];
+  function toDock() { const nodes = [...tl.querySelectorAll(":scope > .opts, :scope > .tiles, :scope > .typein, :scope > .acts, :scope > .pcta, :scope > .pmore")]; dock.replaceChildren(...nodes); dock.classList.remove("in"); void dock.offsetWidth; if (nodes.length) dock.classList.add("in"); }
+  function write(html, cls = "", big = false) { tl.className = "tl card " + cls + (big ? " big" : " mini"); tl.innerHTML = html; toDock(); tl.scrollTop = 0; tl.classList.remove("in"); void tl.offsetWidth; tl.classList.add("in"); shownAt = Date.now(); }
   const say = (c, ex = false) => `<button class="ib${ex ? " sm" : ""}" ${ex ? "data-sayex" : "data-say"}="${esc(c.id)}" aria-label="${ex ? "Nghe câu ví dụ" : "Nghe"}">${icon("speaker")}</button>`;
   const star = (c) => `<button class="ib star${learn.booked(c.id) ? " on" : ""}" data-star="${esc(c.id)}" aria-pressed="${learn.booked(c.id)}" aria-label="${learn.booked(c.id) ? "Bỏ khỏi sổ" : "Lưu vào sổ"}">${icon("star")}</button>`;
   const pauseBtn = () => `<button class="ib sm pz-btn" data-w="pause" aria-label="Tạm nghỉ học" title="Tạm nghỉ học">${icon("pause")}</button>`;
+  // nút tròn có chữ bên dưới (dễ hiểu hơn icon trơn)
+  const pbtn = (ic, label, attrs, cls = "") => `<button class="pbtn${cls}" ${attrs} aria-label="${label}"><span class="pbi">${icon(ic)}</span><small>${label}</small></button>`;
+  const BATCH = 5;      // mỗi bài học tối đa 5 chữ mới – nhiều quá thì chia bài, đỡ ngợp
   const top = (label, c, np) => `<div class="c-top"><span class="kick">${label}</span>${c ? star(c) : ""}${np ? "" : pauseBtn()}</div>`;
   const wordH = (c) => `<div class="c-word"><h1 class="w ${c.lang}" data-say="${esc(c.id)}">${esc(c.w)}</h1>${say(c)}</div>`;
   const exBox = (c) => (c.ex ? `<div class="exbox"><div><p class="ex ${c.lang}">${esc(c.ex)}</p>${c.exPh ? `<p class="exph">${esc(c.exPh)}</p>` : ""}${c.exVi ? `<p class="exvi">${esc(c.exVi)}</p>` : ""}</div>${say(c, true)}</div>` : "");
@@ -84,7 +119,8 @@ export function createWall(game, root) {
       <h1 class="pw ${c.lang}" data-say="${esc(c.id)}">${esc(c.w)}</h1>
       <p class="pph">${esc(c.ph || "")}<span>·</span>${esc(c.vi)}</p>
       ${c.ex ? `<p class="pex ${c.lang}" data-sayex="${esc(c.id)}">${esc(c.ex)}</p>${c.exPh ? `<p class="pexph">${esc(c.exPh)}</p>` : ""}<p class="pexvi">${esc(c.exVi || "")}</p>` : ""}
-      <div class="pacts">${say(c)}${star(c)}<button class="ib" data-w="pause" aria-label="Tạm nghỉ học">${icon("pause")}</button><button class="ib" data-w="next" aria-label="Chữ khác">${icon("arrow")}</button>${learn.stat(c.id)?.seen ? `<button class="pchip ghost" data-w="quizme">Đố chữ này</button>` : `<button class="pchip ghost" data-w="adopt">＋ Học chữ này</button>`}${n ? `<button class="pchip" data-w="${t.neu ? "learn" : "review"}">${t.neu ? `${t.neu} từ mới` : `${t.due} từ cần ôn`} · ${t.neu ? "Học" : "Ôn"}</button>` : learn.canExtra() ? `<button class="pchip" data-w="extra">Học thêm 3 từ</button>` : ""}</div>`, "poster");
+      <div class="pacts">${pbtn("speaker", "Nghe", `data-say="${esc(c.id)}"`)}${pbtn("star", learn.booked(c.id) ? "Đã lưu" : "Lưu", `data-star="${esc(c.id)}"`, learn.booked(c.id) ? " on" : "")}${learn.stat(c.id)?.seen ? pbtn("bolt", "Đố chữ này", `data-w="quizme"`) : pbtn("plus", "Học chữ này", `data-w="adopt"`)}${pbtn("arrow", "Chữ khác", `data-w="next"`)}</div>
+      ${t.neu ? `<button class="pcta" data-w="learn">${icon("bolt")}Học ${Math.min(t.neu, BATCH)} từ mới</button>${t.neu > BATCH ? `<p class="pmore">còn ${t.neu} từ hôm nay · học từng bài ${BATCH} từ</p>` : ""}` : t.due ? `<button class="pcta" data-w="review">${icon("repeat")}Ôn ${t.due} từ</button>` : learn.canExtra() ? `<button class="pcta ghost" data-w="extra">Học thêm 3 từ</button>` : ""}`, "poster");
     requestAnimationFrame(() => game.yard?.setReserve?.(tl.getBoundingClientRect().bottom + 6));      // chừa trời cho tranh chữ, vườn lùi xuống
     return true;
   }
@@ -169,15 +205,17 @@ export function createWall(game, root) {
     if ((kind === "fill" && !blankOf(c)) || (kind === "read" && !(c.lang !== "en" && c.ph)) || ((kind === "spell" || kind === "type") && !/^[a-z]{2,14}$/i.test(c.w))) kind = "rev";
     lastKind = qKind = kind; tried = new Set(); firstR = null; firstOk = null; tries = 0; want = c.id; qOpts = [];
     const head = top(`${src === "cat" ? `${esc(game.cat.name)} đố` : KIND_VI[kind]}${series.length ? ` · còn ${series.length}` : ""}`);
-    const acts = `<div class="acts">${kind === "spell" || kind === "type" || kind === "tf" ? `<button class="btn text" data-w="giveup">Chịu, xem đáp án</button>` : `<button class="btn text x-mini" data-w="more">Hiện lựa chọn</button>`}<button class="btn text" data-w="skip">Bỏ qua</button></div>`;
-    const bfly = (opts, tag, lang) => { qOpts = opts; cr.answers(opts.map((o) => ({ id: o.id, tag: tag(o), lang: lang(o) })), (id, b) => answer(id, b)); };
+    const acts = `<div class="acts">${kind === "spell" || kind === "type" || kind === "tf" ? `<button class="btn text" data-w="giveup">Chịu, xem đáp án</button>` : ""}<button class="btn text" data-w="skip">Bỏ qua</button></div>`;
+    // màn rộng (tablet, máy tính): bướm mang đáp án bay ra cho vui; điện thoại: chỉ chọn ở dải dưới cho gọn, khỏi rối mắt
+    const wide = innerWidth >= 700;
+    const bfly = (opts, tag, lang) => { qOpts = opts; if (!wide) { cr.clearAnswers(); return; } cr.answers(opts.map((o) => ({ id: o.id, tag: tag(o), lang: lang(o) })), (id, b) => answer(id, b)); };
     const buttons = (opts, tag, cls) => `<div class="opts${opts.some((o) => tag(o).length > 22) ? " one" : ""}">${opts.map((o, i) => `<button class="opt ${cls(o)}" data-ans="${esc(o.id)}"><i>${i + 1}</i>${esc(tag(o))}</button>`).join("")}</div>`;
     let html = "";
     if (kind === "mc" || kind === "rev" || kind === "listen" || kind === "fill") {
       const opts = learn.options(c, 4, lessonPool());
       const isW = kind !== "mc", tag = (o) => (isW ? o.w : o.vi), cls = (o) => (isW ? o.lang : "");
       const b = kind === "fill" ? blankOf(c) : null;
-      const prompt = kind === "mc" ? `${wordH(c)}<p class="ph">${esc(c.ph || "")}</p><p class="hint">Nghĩa là gì? Bắt con bướm đúng nghĩa.</p>`
+      const prompt = kind === "mc" ? `${wordH(c)}<p class="ph">${esc(c.ph || "")}</p><p class="hint">Nghĩa là gì?${wide ? " Chọn bên dưới hoặc bắt bướm." : ""}</p>`
         : kind === "rev" ? `<h1 class="w vi">${esc(c.vi)}</h1><p class="hint">Chữ nào mang nghĩa này?</p>`
         : kind === "fill" ? `<p class="fill ${c.lang}">${esc(b[0])}<span class="blank">${" ".repeat(2)}?${" ".repeat(2)}</span>${esc(b[2])}</p>${c.exVi ? `<p class="exvi">${esc(c.exVi)}</p>` : ""}<p class="hint">Chữ nào hợp chỗ trống?</p>`
         : `<div class="c-word"><h1 class="w">Nghe nè</h1>${say(c)}</div><p class="hint">Nghe rồi chọn đúng chữ.</p>`;
@@ -192,7 +230,7 @@ export function createWall(game, root) {
       want = truth ? "T" : "F"; qOpts = other ? [other] : [];
       html = `<div class="c-word"><h1 class="w ${c.lang}" data-say="${esc(c.id)}">${esc(c.w)}</h1>${say(c)}</div><p class="tfq">= ${esc(truth ? c.vi : other.vi)} ?</p><p class="hint">Đúng hay sai? Nhanh tay.</p>
         <div class="opts tf"><button class="opt" data-ans="T"><i>1</i>Đúng</button><button class="opt" data-ans="F"><i>2</i>Sai</button></div>`;
-      cr.answers([{ id: "T", tag: "Đúng", lang: "vi" }, { id: "F", tag: "Sai", lang: "vi" }], (id, b) => answer(id, b));
+      if (wide) cr.answers([{ id: "T", tag: "Đúng", lang: "vi" }, { id: "F", tag: "Sai", lang: "vi" }], (id, b) => answer(id, b)); else cr.clearAnswers();
     } else if (kind === "spell") {
       cr.clearAnswers(); const w = c.w.toLowerCase(), pool = w.split(""); if (w.length >= 5) pool.push("etaoinsrlu".replace(/./g, (x) => (w.includes(x) ? "" : x))[Math.floor(Math.random() * 3)] || "e");
       const tiles = pool.map((ch, i) => [ch, i]).sort(() => Math.random() - 0.5);
@@ -202,7 +240,7 @@ export function createWall(game, root) {
     } else if (kind === "type") {
       cr.clearAnswers();
       html = `<h1 class="w vi">${esc(c.vi)}</h1><p class="ph">${esc(c.ph || "")}</p><form class="typein" data-typein><input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done" aria-label="Gõ chữ tiếng Anh" placeholder="gõ chữ…"><button class="btn pri" type="submit">Xong</button></form><p class="hint">Gõ chữ tiếng Anh mang nghĩa này.</p>`;
-      setTimeout(() => tl.querySelector(".typein input")?.focus(), 350);
+      setTimeout(() => $1(".typein input")?.focus(), 350);
     }
     write(head + html + acts, "quiz " + kind);
     quizT = setTimeout(() => { if (mode === "quiz") { whisper(game.lineOf("pawtap_no")); cr.clearAnswers(); series = []; ambient(true); } }, 60000);
@@ -214,18 +252,18 @@ export function createWall(game, root) {
     const S0 = spellState; if (mode !== "quiz" || !S0 || btn.disabled) return;
     if (btn.dataset.tile === S0.w[S0.i]) {
       btn.disabled = true; btn.classList.add("used"); const sl = tl.querySelectorAll(".slot")[S0.i]; sl.textContent = S0.w[S0.i]; sl.classList.add("on"); S0.i++;
-      game.buzz?.(4); tl.querySelectorAll(".tile.hintme").forEach((x) => x.classList.remove("hintme")); if (S0.i >= S0.w.length) { spellState = null; setTimeout(() => answer(want), 250); }
+      game.buzz?.(4); $$(".tile.hintme").forEach((x) => x.classList.remove("hintme")); if (S0.i >= S0.w.length) { spellState = null; setTimeout(() => answer(want), 250); }
     } else {
       S0.miss++; btn.classList.remove("nope"); void btn.offsetWidth; btn.classList.add("nope"); game.buzz?.([12, 30, 12]);
       if (S0.miss === 2) record(false);      // sai 1 chữ cái thì tha, sai 2 là tính câu này sai – nhưng vẫn phải xếp cho xong
-      if (S0.miss >= 3) [...tl.querySelectorAll(".tile:not(.used)")].find((x) => x.dataset.tile === S0.w[S0.i])?.classList.add("hintme");      // sai nhiều: chỉ chữ kế tiếp
+      if (S0.miss >= 3) $$(".tile:not(.used)").find((x) => x.dataset.tile === S0.w[S0.i])?.classList.add("hintme");      // sai nhiều: chỉ chữ kế tiếp
     }
   }
   function typeCheck(v) {
     if (mode !== "quiz" || !cur) return; const a = norm(v), b = norm(cur.w);
     const near = (x, y) => { if (Math.abs(x.length - y.length) > 1 || y.length < 6) return false; let i = 0, j = 0, e = 0; while (i < x.length && j < y.length) { if (x[i] === y[j]) { i++; j++; } else { if (++e > 1) return false; if (x.length > y.length) i++; else if (y.length > x.length) j++; else { i++; j++; } } } return e + (x.length - i) + (y.length - j) <= 1; };
     if (a === b) return answer(want); if (near(a, b)) { whisper(`Gần đúng: ${cur.w}`); return answer(want); }
-    record(false); tries++; const inp = tl.querySelector(".typein input"); game.fx?.shake(tl); game.buzz?.([20, 50, 20]);
+    record(false); tries++; const inp = $1(".typein input"); game.fx?.shake(tl); game.buzz?.([20, 50, 20]);
     if (inp) { inp.value = ""; inp.placeholder = `${cur.w.slice(0, Math.min(tries, cur.w.length - 1))}…`; inp.focus(); }
     const h = tl.querySelector(".hint"); if (h) h.textContent = `Chưa đúng. Gợi ý: bắt đầu bằng "${cur.w.slice(0, Math.min(tries, cur.w.length - 1))}".`;
   }
@@ -234,7 +272,7 @@ export function createWall(game, root) {
   // chọn sai: gạch lựa chọn đó, đọc to chữ vừa chọn, mèo nhắc chọn lại – câu hỏi vẫn mở
   function wrongTry(id, b) {
     tried.add(id); tries++; record(false);
-    const btn = tl.querySelector(`[data-ans="${CSS.escape(id)}"]`); if (btn) { btn.disabled = true; btn.classList.add("wrong"); }
+    const btn = $1(`[data-ans="${CSS.escape(id)}"]`); if (btn) { btn.disabled = true; btn.classList.add("wrong"); }
     const bf = b || game.critters.list.find((x) => x.answer && x.id === id); if (bf) cr.land(bf, false);
     const tapped = qOpts.find((o) => o.id === id); if (tapped) game.speakCard(tapped, false, false);
     game.fx?.shake(tl); game.buzz?.([20, 50, 20]);
@@ -248,18 +286,18 @@ export function createWall(game, root) {
     if (!ok && !o.giveup) { if (!tried.has(id)) wrongTry(id, b); return; }
     mode = "result"; clearTimeout(quizT); spellState = null;
     const r = record(ok && !tries), first = firstOk;
-    tl.querySelectorAll("[data-ans]").forEach((x) => { x.disabled = true; if (x.dataset.ans === want) x.classList.add("right"); });
-    tl.querySelectorAll(".tile,.typein input,.typein button").forEach((x) => (x.disabled = true));
+    $$("[data-ans]").forEach((x) => { x.disabled = true; if (x.dataset.ans === want) x.classList.add("right"); });
+    $$(".tile,.typein input,.typein button").forEach((x) => (x.disabled = true));
     const bf = game.critters.list.find((x) => x.answer && x.id === want); if (bf) cr.land(bf, true);
     setTimeout(() => cr.clearAnswers(), 1400);
     const line = first ? game.react(r, c) : ok ? game.lineOf("fixed_ok") : game.react(r, c); game.sayLine(line, 3200);
     const res = document.createElement("div"); res.className = "res " + (first ? "ok" : "bad");
     res.innerHTML = `<p>${first ? `${icon("check")}Đúng${r.combo >= 3 ? ` · ${r.combo} câu liền` : ""}` : ok ? `${icon("check")}Đúng rồi · sửa ${tries} lần` : "Đáp án"} · <b class="${c.lang}">${esc(c.w)}</b> = ${esc(c.vi)}</p>${qKind === "fill" && c.ex ? `<p class="exr ${c.lang}">${esc(c.ex)}</p>` : ""}${others()}`;
-    tl.querySelector(".acts")?.replaceWith(res); game.buzz?.(ok ? 8 : [20, 50, 20]);
+    $1(".acts")?.remove(); tl.appendChild(res); dock.querySelector(".tiles, .typein")?.remove(); { const nx = document.createElement("button"); nx.className = "btn pri dnext"; nx.dataset.w = "nextq"; nx.innerHTML = `Tiếp ${icon("arrow")}`; dock.appendChild(nx); } game.buzz?.(ok ? 8 : [20, 50, 20]);
     // chạm lựa chọn nào thì đọc to chữ đó; điền câu đúng thì đọc cả câu
     if (qKind === "fill" && ok) game.speakCard(c, true, false); else game.speakCard(c, false, false);
     // cảm giác game: đúng → nổ hạt ở con bướm / nút đúng + điểm bay lên; sai → thẻ rung
-    const fx = game.fx; if (fx) { if (first) { const [x, y] = fx.center(bf?.el || tl.querySelector(".opt.right") || tl.querySelector(".slots") || tl); fx.burst(x, y, { n: r.combo >= 3 ? 16 : 11 }); fx.float(x, y - 24, `+${r.xp}`); if (r.combo >= 3) setTimeout(() => fx.float(x, y - 70, `${r.combo} câu liền!`, "big"), 180); if (r.box >= 2 && learn.stat(c.id)?.skip) fx.float(x, y + 30, "nhảy cóc", "sm"); } else if (ok) { const [x, y] = fx.center(bf?.el || tl.querySelector(".opt.right") || tl.querySelector(".slots") || tl); fx.burst(x, y, { n: 6 }); } }
+    const fx = game.fx; if (fx) { if (first) { const [x, y] = fx.center(bf?.el || $1(".opt.right") || tl.querySelector(".slots") || tl); fx.burst(x, y, { n: r.combo >= 3 ? 16 : 11 }); fx.float(x, y - 24, `+${r.xp}`); if (r.combo >= 3) setTimeout(() => fx.float(x, y - 70, `${r.combo} câu liền!`, "big"), 180); if (r.box >= 2 && learn.stat(c.id)?.skip) fx.float(x, y + 30, "nhảy cóc", "sm"); } else if (ok) { const [x, y] = fx.center(bf?.el || $1(".opt.right") || tl.querySelector(".slots") || tl); fx.burst(x, y, { n: 6 }); } }
     if (!first && !curRetry) series.push(Object.assign(Object.create(c), { _retry: 1, __q2: 1 }));      // sai thì cuối bài hỏi lại 1 lần, kiểu khác
     const wait = (first ? 2000 : 2800) + (qOpts.length > 1 ? 1600 : 0);
     nextT = setTimeout(next, wait);
@@ -282,7 +320,7 @@ export function createWall(game, root) {
   function lesson(kind = "full") {
     if (!s.onboarded) return onboard();
     if (paused()) resume(true);
-    const neu = kind === "full" ? learn.newToday() : kind === "hot" ? learn.hotToday().map((h) => h.card).filter((c) => !(learn.stat(c.id)?.right + learn.stat(c.id)?.wrong > 0)) : kind === "book" ? learn.book().map((b) => b.card).filter((c) => c.vi && c.lang === learn.lang && !(learn.stat(c.id)?.right + learn.stat(c.id)?.wrong > 0)) : [], due = kind === "fun" || kind === "hot" ? [] : kind === "book" ? learn.book().map((b) => b.card).filter((c) => c.vi && c.lang === learn.lang && learn.stat(c.id)?.seen) : learn.due().slice(0, kind === "review" ? 8 : 12);
+    const neu = kind === "full" ? learn.newToday().slice(0, BATCH) : kind === "hot" ? learn.hotToday().map((h) => h.card).filter((c) => !(learn.stat(c.id)?.right + learn.stat(c.id)?.wrong > 0)) : kind === "book" ? learn.book().map((b) => b.card).filter((c) => c.vi && c.lang === learn.lang && !(learn.stat(c.id)?.right + learn.stat(c.id)?.wrong > 0)) : [], due = kind === "fun" || kind === "hot" ? [] : kind === "book" ? learn.book().map((b) => b.card).filter((c) => c.vi && c.lang === learn.lang && learn.stat(c.id)?.seen) : learn.due().slice(0, kind === "review" ? 8 : 12);
     // học xen kẽ: chữ 1 → đố ngay · chữ 2 → đố ngay → ôn lại chữ 1 bằng kiểu khác · … → cuối cùng ôn chữ chót
     series = []; neu.forEach((c, i) => { series.push(Object.assign(Object.create(c), { __new: 1 })); if (i >= 1) series.push(Object.assign(Object.create(neu[i - 1]), { __q2: 1 })); });
     if (neu.length) series.push(Object.assign(Object.create(neu[neu.length - 1]), { __q2: 1 }));
@@ -332,6 +370,8 @@ export function createWall(game, root) {
     if (a === "next") { shift++; if (Math.random() < 0.35) game.jab("ui_next"); return ambient(true); }
     if (a === "quizme" && cur) return quiz(cur);
     if (a === "giveup") return answer("x", null, { giveup: true });
+    if (a === "nextq") { clearTimeout(nextT); return next(); }
+    if (a === "quickmenu") return quickMenu(!qmOpen);
     if (a === "namestoggle") { const on = game.names?.toggle(); whisper(on ? "Hiện tên đồ vật. Chạm chữ nào để xem to." : "Ẩn tên đồ vật. Chạm thẳng vào đồ vật vẫn xem được."); clock(); return; }
     if (a === "musictoggle") { const on = !s.settings.music; game.music(on); whisper(on ? "Bật nhạc lo-fi. Chill đi." : "Tắt nhạc."); clock(); return; }
     if (a === "pause") return pauseAsk();
@@ -352,8 +392,8 @@ export function createWall(game, root) {
   // phím tắt: 1–4 chọn đáp án, Enter = nút chính
   addEventListener("keydown", (e) => {
     if (game.sheetOpen?.() || e.target.matches?.("input,textarea")) return;
-    const n = +e.key; if (n >= 1 && n <= 4) { tl.querySelectorAll(".opt:not(:disabled)")[n - 1]?.click(); return; }
-    if (e.key === "Enter") tl.querySelector(".btn.pri")?.click();
+    const n = +e.key; if (n >= 1 && n <= 4) { $$(".opt:not(:disabled)")[n - 1]?.click(); return; }
+    if (e.key === "Enter") $1(".btn.pri")?.click();
   });
   // tự đố khi đang nhìn: 4–7 phút một lần, nếu có từ đã học
   setInterval(() => {

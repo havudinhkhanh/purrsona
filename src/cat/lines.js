@@ -101,6 +101,7 @@ const L = {
   pace_fast: ["Nhanh ghê. Học thêm 3 chữ không?", "Xong rồi? Nghi. Thêm 3 chữ coi.", "Hăng vậy thì bấm Học thêm."],
   pace_more: ["Ờ. Thêm 3 chữ.", "Tham ghê. Được."],
   levelup: ["Lên {tag} rồi. Đừng vênh.", "{tag}. Cấp mới, chữ khó hơn.", "Hết chữ cũ. Lên {tag}."],
+  topicdone: ["Hết chủ đề rồi. Về học tiếp như cũ.", "Xong chủ đề. Chọn cái khác đi, hoặc học tiếp lộ trình.", "Chủ đề này học hết rồi đó. Tạm được."],
   levelup_jump: ["Nhảy lớp hả. Giỏi… tạm.", "Thi qua rồi. Đừng có quên."],
   // ---- vibe khu vườn (đổi vibe / mèo ngồi chơi với đồ trang trí)
   vibe_home: ["Về nhà. Hết làm màu.", "Vườn cũ. Học chữ cũ luôn."],

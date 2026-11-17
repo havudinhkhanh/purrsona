@@ -18,8 +18,16 @@ import jaCore from "./packs/ja-core.js";
 import enLife from "./packs/en-life.js";
 import zhLife from "./packs/zh-life.js";
 import jaLife from "./packs/ja-life.js";
+import enTopic from "./packs/en-topic.js";
+import zhTopic from "./packs/zh-topic.js";
+import jaTopic from "./packs/ja-topic.js";
 
-export const PACKS = [enYle, enExam, enCore, zhCore, zhHsk, jaCore, enBiz, enLife, zhLife, jaLife, enScene, zhScene, jaScene, enVibe, zhVibe, enDeep, zhDeep, jaDeep];
+export const PACKS = [enYle, enExam, enCore, zhCore, zhHsk, jaCore, enBiz, enLife, zhLife, jaLife, enScene, zhScene, jaScene, enVibe, zhVibe, enDeep, zhDeep, jaDeep, enTopic, zhTopic, jaTopic];
+/** gói THEO CHỦ ĐỀ (trường học, du lịch…): hiện thành lưới ô riêng, học xong thì quay về lộ trình kỳ thi */
+export const TOPIC_PACKS = new Set([enTopic.id, zhTopic.id, jaTopic.id]);
+export const isTopic = (key) => !!key && TOPIC_PACKS.has(key.split("/")[0]);
+/** tách "🏫 Trường học" → { ico: "🏫", name: "Trường học" } */
+export const topicName = (vi = "") => { const m = vi.match(/^(\S+)\s+(.*)$/); return m && !/[\p{L}\p{N}]/u.test(m[1]) ? { ico: m[1], name: m[2] } : { ico: "", name: vi }; };
 export const LANGS = {
   en: { vi: "Tiếng Anh", short: "EN", flag: "Aa", tts: "en-GB", hint: "phiên âm" },
   zh: { vi: "Tiếng Trung", short: "中", flag: "中", tts: "zh-CN", hint: "pinyin" },
@@ -36,6 +44,7 @@ export const LEVEL_TAG = {
   "ja-core/N5": "N5", "ja-core/N4": "N4", "ja-core/N3": "N3", "ja-core/N2": "N2", "ja-core/N1": "N1",
   "en-business/BIZ": "Chuyên ngành", "en-life/LIFE": "Đời thường", "zh-life/LIFE": "Đời thường", "ja-life/LIFE": "Đời thường",
 };
+for (const p of [enTopic, zhTopic, jaTopic]) for (const l of p.levels) LEVEL_TAG[`${p.id}/${l.id}`] = topicName(l.vi).name;
 export const LADDERS = {
   en: [["en-yle/STARTERS", "en-yle/MOVERS", "en-yle/FLYERS"], ["en-exam/A1", "en-core/A2", "en-core/B1", "en-core/B2", "en-exam/C1"]],
   zh: [["zh-core/HSK1", "zh-core/HSK2", "zh-core/HSK3", "zh-hsk/HSK4", "zh-hsk/HSK5", "zh-hsk/HSK6"]],

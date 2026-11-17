@@ -3,7 +3,7 @@ export const APP = {
   name: "Purrsona",
   tagline: "Mèo đanh đá dạy chữ · Anh – Trung – Nhật",
   saveKey: "purrsona.save.v2",      // v2: bản học chữ (không đọc bản lưu nuôi mèo cũ)
-  version: "2.8.0",
+  version: "3.0.0",
 };
 
 // ------------------------------------------------------------------ GÓI (free / plus / pro)
@@ -31,6 +31,7 @@ export const FEATURES = {
   "read.ai": "pro",             // mèo đọc bằng AI: giải nghĩa từ lạ theo ngữ cảnh
   "trend.all": "plus",          // Chữ nóng: Free 2 chữ/ngày mỗi thứ tiếng, Plus đủ cả mẻ
   "trend.archive": "pro",       // xem lại chữ nóng 30 ngày trước
+  "theme.art": "free",          // giao diện Hội hoạ (bóng đổ, nắng theo giờ) – đổi thành "plus" nếu muốn bán riêng
   "vibe.plus": "plus",          // vibe Trung Hoa, Ý, Pháp (Free: Nhà + Nhật Bản; khoá thì xem thử 30 giây)
   "vibe.pro": "pro",            // vibe Thượng Hải xưa (lọc màu ảnh cũ)
   "weather.pick": "plus",       // tự chọn thời tiết cho vườn (Free: theo trời thật hoặc tự đổi)

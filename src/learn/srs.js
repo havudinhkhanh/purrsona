@@ -3,7 +3,7 @@ import { BOOK_LIMIT, TREND_FREE, DAILY_OPTS, can } from "../config.js";
 // Đúng → lên hộp, ôn lại sau 1, 2, 4, 8, 16, 35 ngày. Sai → về hộp 1, ôn lại sau 10 phút.
 // Hộp ≥ 4 = "thuộc" → nở thành 1 bông hoa trong vườn.
 import { dayKey, rng, clamp } from "../core/util.js";
-import { allCards, levelsOf, cardsOfLevel, nextLevel, START_LEVEL, levelTag, LADDERS, LEVEL_TAG } from "./packs.js";
+import { allCards, levelsOf, cardsOfLevel, nextLevel, START_LEVEL, levelTag, LADDERS, LEVEL_TAG, isTopic } from "./packs.js";
 
 const DAY = 864e5, MIN = 6e4;
 export const BOX_IV = [10 * MIN, 1 * DAY, 2 * DAY, 4 * DAY, 8 * DAY, 16 * DAY, 35 * DAY];
@@ -42,6 +42,11 @@ export function createLearn(game) {
     const no = new Set(skip.map((c) => (typeof c === "string" ? c : c?.id)));      // so theo id: thẻ được tạo mới mỗi lần gọi
     const fresh = (key) => { const r = rng(L.lang + "|" + key); return cardsOfLevel(key, L.custom).filter((c) => c.lang === L.lang && !L.cards[c.id] && !no.has(c.id)).map((c) => [r(), c]).sort((a, b) => a[0] - b[0]).map((x) => x[1]); };
     let key = L.level[L.lang], out = fresh(key);
+    if (isTopic(key)) {      // học theo chủ đề: hết chữ của chủ đề thì quay về lộ trình kỳ thi; thiếu thì bù bằng cấp ở lộ trình (không lấy gói lạc đề)
+      const home = L.home?.[L.lang] || START_LEVEL[L.lang];
+      if (!out.length) { L.level[L.lang] = key = home; out = fresh(key); setTimeout(() => game.emit("topicdone", { key: home }), 0); }
+      else { if (out.length < L.daily) out = out.concat(fresh(home)); return out; }
+    }
     if (!out.length) { const nx = nextLevel(key); if (nx && tierOk(nx)) { L.level[L.lang] = key = nx; out = fresh(key); setTimeout(() => game.emit("levelup", { key, tag: levelTag({ pack: key.split("/")[0], level: key.split("/")[1] }) }), 0); } }
     else if (out.length < L.daily) { const nx = nextLevel(key); if (nx && tierOk(nx)) out = out.concat(fresh(nx)); }
     if (out.length < L.daily) for (const fk of FALLBACK(L.lang)) { if (fk === key) continue; for (const c of fresh(fk)) if (!out.some((x) => x.id === c.id)) out.push(c); if (out.length >= L.daily + 3) break; }
@@ -138,7 +143,9 @@ export function createLearn(game) {
     studiedToday() { const d = L.days[dayKey()]; return !!d && d.right + d.wrong > 0; },
     day,
     setLang(l) { if (L.lang === l) return; L.lang = l; L.combo = 0; game.emit("lang", l); },
-    setLevel(key) { L.level[L.lang] = key; L.today.d = ""; game.emit("lang", L.lang); },
+    setLevel(key) { const was = L.level[L.lang]; if (isTopic(key) && !isTopic(was)) (L.home ||= {})[L.lang] = was; else if (!isTopic(key) && L.home) delete L.home[L.lang]; L.level[L.lang] = key; L.today.d = ""; game.emit("lang", L.lang); },
+    /** cấp ở lộ trình kỳ thi đang tạm gác lại khi học theo chủ đề */
+    homeLevel() { const k = L.level[L.lang]; return isTopic(k) ? L.home?.[L.lang] || START_LEVEL[L.lang] : k; },
     setDaily(n, auto = false) { L.daily = n; if (!auto) L.dailySetAt = Date.now(); L.today.d = ""; pickToday(); },
     levels: () => levelsOf(L.lang, L.custom),
     /** n lựa chọn: đáp án đúng + từ nhiễu. Nhiễu cũng là chữ ĐANG HỌC (bài hôm nay, chữ đang ôn) để mỗi con bướm đều là

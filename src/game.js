@@ -254,6 +254,7 @@ export async function createGame(root) {
   setTimeout(() => learn.autoTune?.(), 6000);      // tự chỉnh nhịp học mỗi ngày
   ev.on("lexicon", (e) => { if (e.fresh) setTimeout(() => game.jab?.("lex_new", { n: e.fresh }, true), 12000); });
   ev.on("tune", (e) => setTimeout(() => game.jab?.(e.to > e.from ? "tune_up" : "tune_down", { n: e.to }, true), 9000));
+  ev.on("topicdone", () => { setTimeout(() => game.fx.stamp("chủ đề", "xong"), 400); setTimeout(() => game.jab?.("topicdone", {}, true), 1200); game.journal?.("topicdone", "✓ Xong một chủ đề"); });
   ev.on("levelup", (e) => { const tag = e.tag || e.key?.split("/")[1] || ""; setTimeout(() => game.fx.stamp(tag, e.jump ? "nhảy lớp" : "lên cấp"), 400); setTimeout(() => game.jab?.(e.jump ? "levelup_jump" : "levelup", { tag }, true), 1200); game.journal?.("levelup", `⬆ Lên ${tag}`); });
   ev.on("hot", (e) => { if (e.fresh) setTimeout(() => { const h = learn.hotToday()[0]; if (h && h.card.lang === learn.lang) game.jab("hot_new", { w: h.card.w }, true); }, 2500); });      // đọc lại lúc nói: người dùng có thể vừa đổi tiếng
 
