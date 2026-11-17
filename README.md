@@ -13,6 +13,9 @@ Màn hình là một khu vườn nhìn từ trên xuống, hơi xiên, có căn 
 - **Đọc to**: chạm vào chữ lớn là nghe, từ mới tự đọc khi hiện (tắt được trong Cài đặt). Dùng giọng có sẵn của máy (Web Speech), chạy offline sau lần mở đầu.
 - **Sổ của tôi**: bấm ☆ ở chữ trên tường để lưu. Sổ là tab đầu tiên trong Sổ từ, có nút "Học sổ này". Từ lạ lưu từ web thì tự điền nghĩa, mèo mới đố.
 - **Chữ nóng hôm nay**: mỗi sáng một mẻ 6–10 chữ đang nổi trên báo và mạng (Anh + Trung), kèm nghĩa, câu ví dụ tự viết, lý do đang hot và link tin gốc. Hiện ngay trên tường, có tab riêng trong Sổ từ, tối đa 2 chữ vào bài học hôm nay.
+- **Sân chơi & đồ vật**: xích đu, cầu tuột, giàn bầu (mỗi ngày bạn học dây bầu leo thêm, ra trái), luống hồng, chậu cây. Mèo tự ra đu, tuột, trèo giàn, cào cây, đào đất (có khi làm gãy hồng), xô đổ chậu. Bày bừa thì để nguyên tới hôm sau; sáng ra vườn sạch, mèo làm bộ ngẫm nghĩ "Sen cuối cùng cũng biết động tay động chân". Chạm đồ chơi là mèo ra chơi, chạm chậu đổ hay lỗ đất là dọn liền.
+- **Mèo làm gì học nấy**: mỗi việc của mèo hiện chữ đó cạnh mèo theo tiếng đang học (đào → dig · 挖 wā, đất → soil · 泥土, nhào bột → make biscuits · 踩奶 cǎi nǎi). Chạm chữ để nghe, ☆ để lưu sổ. Gói "Chữ trong vườn" (Free) có 35 chữ mỗi thứ tiếng, học như gói thường.
+- **Thời tiết**: nắng chói, mây, gió, mưa, giông theo trời thật (Open-Meteo) hoặc tự đổi; mèo trú mưa, nằm bóng cây, vồ lá.
 - **Đọc cùng mèo**: dán một đoạn văn (hoặc bấm Chia sẻ → Purrsona trên điện thoại). Mèo quét, chỉ ra chữ trong gói và chữ lạ đáng lưu, rồi kháy một câu.
 - **Tiện ích Chrome "Mèo đọc ké"** (thư mục `extension/`): mèo ngồi góc mọi trang, gạch dưới chữ đã học, rê chuột vào ra nghĩa, bôi đen chữ là lưu vô sổ, kháy theo loại trang (mạng xã hội, báo, mua sắm, làm việc…). Mở app là sổ tự đồng bộ.
 

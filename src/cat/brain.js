@@ -47,7 +47,7 @@ export function createBrain(game) {
     } else { await goUV(sp.u, sp.v, gait); B.perch = null; }
     return sp;
   }
-  const spotsWith = (use) => Object.entries(SPOTS).filter(([, s]) => s.use.includes(use)).map(([id, s]) => ({ id, s }));
+  const spotsWith = (use) => Object.entries(SPOTS).filter(([, s]) => s.use.includes(use) && (!game.weather?.raining || s.zone === "house")).map(([id, s]) => ({ id, s }));      // mưa: chỉ chỗ trong nhà
   const near = (c) => (c.id === game.today.spot ? 2.2 : 1) * (c.id === game.obsession.spot ? 3 : 1) * game.quirks.reduce((v, q) => v * ((q.spot || {})[c.id] || 1), 1);
   /** tới phía trước khu vườn, gần chỗ bạn nhìn (lệch khỏi chữ ở góc trái) */
   const wx = () => game.weather || {};
@@ -128,7 +128,7 @@ export function createBrain(game) {
         if (todo().due + todo().neu > 0) { await B.act("look_up", 600); game.nag(); }
       } },
     { id: "wander", score: () => 0.5,
-      async run() { const me = uv(); let p = Y.rand(); for (let i = 0; i < 8 && Math.hypot(p.u - me.u, p.v - me.v) > 26; i++) p = Y.rand(); await goUV(p.u, p.v); await B.act(pick(["idle", "idle_tail", "loaf", "look_up"]), rand(6, 14) * 1000); } },
+      async run() { const me = uv(), z = game.weather?.raining ? "house" : undefined; let p = Y.rand(z); for (let i = 0; i < 8 && Math.hypot(p.u - me.u, p.v - me.v) > 26; i++) p = Y.rand(z); await goUV(p.u, p.v); await B.act(pick(["idle", "idle_tail", "loaf", "look_up"]), rand(6, 14) * 1000); } },
     // ---- theo thời tiết
     { id: "rainwatch", score: () => (wx().raining ? 0.9 + T().curious * 0.4 : 0),
       async run() { await goUV(rand(70, 94), rand(23, 27)); B.faceTo(-1); await B.act("loaf", rand(8, 16) * 1000); if (Math.random() < 0.4) say("wx_rainwatch"); await B.act("look_up", 2500); await B.act("idle_tail", rand(6, 12) * 1000); } },
@@ -154,8 +154,10 @@ export function createBrain(game) {
   ];
 
   // việc ngoài vườn: trời mưa thì thôi
-  const OUTDOOR = new Set(["sniff", "sunbathe", "sitpretty", "pondgaze", "scratchtree", "flowerpounce", "chase", "zoomies", "explore", "watch", "perch", "sulk"]);
+  const OUTDOOR = new Set(["swing", "slide", "trellis", "dig", "knockpot", "sniff", "sunbathe", "sitpretty", "pondgaze", "scratchtree", "flowerpounce", "chase", "zoomies", "explore", "watch", "perch", "sulk"]);
   const wxMod = (id) => (wx().raining && OUTDOOR.has(id) ? 0 : wx().hot && id === "sunbathe" ? 0 : 1);
+  // đồ chơi trong vườn (xích đu, cầu tuột, giàn bầu, đào đất, xô chậu) – world/play.js
+  ACTS.push(...(game.play?.acts({ goUV, down, say, cool, used, T, N }) || []));
   function choose() {
     const kid = game.age.stage === "kitten";
     const scored = ACTS.map((a) => ({ a, s: Math.max(0, a.score()) * qmod(a.id) * wxMod(a.id) * (kid && ["selfplay", "zoomies", "explore", "chase"].includes(a.id) ? 1.6 : 1) * (a.id === st.cur ? 0.35 : 1) * rand(0.75, 1.25) }));

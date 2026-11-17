@@ -3,8 +3,10 @@
 import enCore from "./packs/en-core.js";
 import zhCore from "./packs/zh-core.js";
 import enBiz from "./packs/en-business.js";
+import enScene from "./packs/en-scene.js";
+import zhScene from "./packs/zh-scene.js";
 
-export const PACKS = [enCore, zhCore, enBiz];
+export const PACKS = [enCore, zhCore, enBiz, enScene, zhScene];
 export const LANGS = {
   en: { vi: "Tiếng Anh", short: "EN", flag: "Aa", tts: "en-GB", hint: "phiên âm" },
   zh: { vi: "Tiếng Trung", short: "中", flag: "中", tts: "zh-CN", hint: "pinyin" },

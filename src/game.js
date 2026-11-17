@@ -18,6 +18,7 @@ import { createLearn } from "./learn/srs.js";
 import { LANGS } from "./learn/packs.js";
 import { speak, onSpeakIssue, unlockSpeech } from "./learn/tts.js";
 import { createWeather } from "./world/weather.js";
+import { createPlay } from "./world/play.js";
 import { noteToday } from "./meta/note.js";
 import { createCloseup } from "./ui/closeup.js";
 import { createWall } from "./ui/wall.js";
@@ -67,6 +68,10 @@ export async function createGame(root) {
   B.speedMul = (0.92 + ((game.today.mood.speed || 1) - 1) * 0.4) * game.age.speed * CHILL.speed; B.ageScale = game.age.scale; R.durMul = CHILL.transition; B.runMul = CHILL.run; B.accelT = CHILL.accel; game.chill = CHILL;
   const critters = createCritters(game); game.critters = critters;
   const weather = createWeather(game); game.weather = weather;
+  const play = createPlay(game); game.play = play; yard.redraw();
+  // mèo làm gì → chữ của việc đó hiện cạnh mèo (sau 1,5 giây, khi mèo đã bắt đầu làm)
+  const ACT_WORD = { scratchtree: "scratchtree", sunbathe: "sunbathe", shadenap: "shade", rainwatch: "puddle", chaseleaf: "wind", flowerpounce: "pounce", chase: "pounce", zoomies: "zoomies", knead: "knead", nap: "nap", groom: "groom", pondgaze: "pond", sleepnear: "nap" };
+  game.on("activity", (id) => { const w = ACT_WORD[id]; if (w) setTimeout(() => { if (brain.activity === id) play.sceneWord(w); }, 1800); });
   // trời đổi → mèo nói 1 câu, bướm ong trốn mưa
   game.on("weather", ({ kind, prev }) => {
     if (kind === "rain" || kind === "storm" || prev === "rain" || prev === "storm") critters.ambient();
@@ -168,7 +173,7 @@ export async function createGame(root) {
     const dt = last ? Math.min(0.05, (t - last) / 1000) : 0; last = t;
     B.tick(dt);
     catUV = yard.unP(B.x, B.y); s.cat.uv = catUV;
-    critters.tick(dt); weather.tick(dt);
+    critters.tick(dt); weather.tick(dt); play.tick(dt);
     if (t - tLight > 30000) { tLight = t; yard.light(); if (dayKey() !== game.today.key) { game.today = todayOf(game.cat); ev.emit("mood"); } }
     if (t - tNeeds > 10000) { const h = (t - tNeeds) / 3600e3; tNeeds = t; if (h < 0.01) decay(N, h, brain.sleeping); s.cat.x = B.x; s.cat.y = B.y; save(s); }      // lưu thưa: ghi bộ nhớ mỗi giây làm khựng hình
     if (t - tHud > 400) { tHud = t; ev.emit("tick"); }
@@ -196,7 +201,7 @@ export async function createGame(root) {
     if (gap > 3 && bond.at("known")) setTimeout(() => brain.interrupt(() => brain.ACTS.find((a) => a.id === "greet").run(), "greet"), 1600);
     else if (gap > 48) setTimeout(() => game.say("back", null, 3600, { d: Math.floor(gap / 24) }), 1200);
     else setTimeout(() => game.say(h < 10 ? "morning" : h >= 22 ? "night" : game.age.stage === "kitten" ? "kitten" : "hello", null, 3200, { n: t.neu + t.due }), 1100);
-    brain.start(); jabLoop();
+    brain.start(); jabLoop(); play.morning();
   };
   game.setSkin = (k) => { if (!game.skinOpen(k)) return false; s.skin = k; R.setSkin(k); save(s); return true; };
   game.setHour = (h) => { s.settings.hour = h; yard.S.forceHour = h; yard.light(); save(s); };
@@ -294,8 +299,9 @@ function interactions(game, root) {
   vp.addEventListener("pointerdown", (e) => {
     game.lastInput = Date.now(); game.musicResume?.(); snd.unlock();
     if (e.target.closest(".cat-hit")) { vp.setPointerCapture(e.pointerId); petStart(e); return; }
-    // chạm hoa → đọc chữ của bông hoa
+    // chạm hoa → đọc chữ của bông hoa; chạm đồ chơi → mèo ra chơi, chạm đồ đổ → dọn
     const p = scene.toRoom(e.clientX, e.clientY);
+    if (game.play?.tap(p)) return;
     if (scene.flowerSpots?.length) { let best = null, bd = 34; for (const f of scene.flowerSpots) { const d = Math.hypot(f.x - p.x, f.y - p.y); if (d < bd) { bd = d; best = f; } } if (best) { game.emit("flower", best.card); game.speakCard(best.card, false, true); return; } }
     // chạm đúp xuống đất = gọi mèo
     if (Date.now() - lastGround < 380) { lastGround = 0; game.call(); } else lastGround = Date.now();

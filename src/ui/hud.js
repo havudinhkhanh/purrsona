@@ -12,7 +12,7 @@ import { line } from "../cat/lines.js";
 import { BOX_IV, MASTER } from "../learn/srs.js";
 import { icon } from "./icons.js";
 
-const ACT_VI = { nap: "Đang ngủ", watch: "Ngắm trời", explore: "Đi dạo", groom: "Liếm lông", zoomies: "Chạy rần rần", selfplay: "Tự chơi", perch: "Leo trèo", chase: "Đuổi bướm", seek: "Tìm bạn", sulk: "Đang dỗi", write: "Viết bậy lên tường", nag: "Kháy bạn", quizme: "Đố bạn", headbutt: "Dụi đầu", blinkat: "Chớp mắt", knead: "Nhào bột", bellyup: "Khoe bụng", pawtap: "Gõ màn hình", sleepnear: "Ngủ cạnh bạn", sniff: "Ngửi hoa", sunbathe: "Phơi nắng", sitpretty: "Ngồi ngắm bạn", pondgaze: "Ngắm ao", scratchtree: "Mài móng vô cây", yarn: "Chơi cuộn len", flowerpounce: "Vồ hoa", rainwatch: "Ngồi coi mưa", shadenap: "Nằm bóng cây", chaseleaf: "Vồ lá bay", greet: "Đón bạn", follow: "Đi theo bạn", wander: "Thong thả", pet: "Được vuốt ve", sleep: "Ngủ" };
+const ACT_VI = { nap: "Đang ngủ", watch: "Ngắm trời", explore: "Đi dạo", groom: "Liếm lông", zoomies: "Chạy rần rần", selfplay: "Tự chơi", perch: "Leo trèo", chase: "Đuổi bướm", seek: "Tìm bạn", sulk: "Đang dỗi", write: "Viết bậy lên tường", nag: "Kháy bạn", quizme: "Đố bạn", headbutt: "Dụi đầu", blinkat: "Chớp mắt", knead: "Nhào bột", bellyup: "Khoe bụng", pawtap: "Gõ màn hình", sleepnear: "Ngủ cạnh bạn", sniff: "Ngửi hoa", sunbathe: "Phơi nắng", sitpretty: "Ngồi ngắm bạn", pondgaze: "Ngắm ao", scratchtree: "Mài móng vô cây", yarn: "Chơi cuộn len", flowerpounce: "Vồ hoa", rainwatch: "Ngồi coi mưa", swing: "Đu xích đu", slide: "Chơi cầu tuột", trellis: "Trèo giàn bầu", dig: "Đào đất", knockpot: "Xô đổ chậu cây", tidy: "Ngẫm nghĩ", shadenap: "Nằm bóng cây", chaseleaf: "Vồ lá bay", greet: "Đón bạn", follow: "Đi theo bạn", wander: "Thong thả", pet: "Được vuốt ve", sleep: "Ngủ" };
 const planChip = (p) => (p === "free" ? "" : `<span class="chip chip-${p}">${PLANS[p].vi}</span>`);
 
 export function createHud(game, root) {
@@ -170,6 +170,7 @@ export function createHud(game, root) {
         <label class="row"><span>${esc(game.cat.name)} gọi bạn là</span><input class="nick" type="text" maxlength="16" value="${esc(s.profile.nick || "Sen")}" data-nick placeholder="Sen"></label>
         <label class="row"><span>Đọc to từ vựng</span><input type="checkbox" data-set="tts" ${s.settings.tts ? "checked" : ""}></label>
         <label class="row"><span>Từ mới tự đọc khi hiện</span><input type="checkbox" data-set="autoSay" ${s.settings.autoSay !== false ? "checked" : ""}></label>
+        <label class="row"><span>Hiện chữ theo việc mèo làm</span><input type="checkbox" data-set="sceneWords" ${s.settings.sceneWords !== false ? "checked" : ""}></label>
         <label class="row"><span>Mèo kháy thường xuyên</span><input type="checkbox" data-set="nag" ${s.settings.nag !== false ? "checked" : ""}></label>
         <div class="row"><span>Tốc độ đọc</span><span class="seg">${[[0.7, "Chậm"], [0.9, "Vừa"], [1.05, "Nhanh"]].map(([v, k]) => `<button data-rate="${v}" class="${(s.settings.rate || 0.9) === v ? "on" : ""}">${k}</button>`).join("")}</span></div>
         <div class="row"><span>Cỡ giao diện</span><span class="seg">${[["s", "Nhỏ"], ["m", "Vừa"], ["l", "Lớn"]].map(([k, v]) => `<button data-ui="${k}" class="${(s.settings.ui || "m") === k ? "on" : ""}">${v}</button>`).join("")}</span></div>

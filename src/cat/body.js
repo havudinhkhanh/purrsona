@@ -97,6 +97,8 @@ export function createBody(R, scene, opts = {}) {
       B.h = u < 0.5 ? lerp(j.h0, top, ease.out(u * 2)) : lerp(top, j.h1, 1 - ease.out(1 - (u - 0.5) * 2));
       if (u >= 1) { B.h = j.h1; B.jump = null; }
     }
+    // đang ngồi trên đồ vật chuyển động (xích đu, cầu tuột): vị trí do đồ vật quyết định
+    if (B.ride) { const r = B.ride(dt); if (r) { B.x = r.x; B.y = r.y; B.h = r.h; B.move = null; } }
     // nghiêng người theo đường bay: lao lên thì ngóc đầu, rơi xuống thì chúi
     const vh = dt > 0 ? (B.h - prevH) / dt : 0; prevH = B.h;
     tilt = lerp(tilt, B.jump ? clamp(-vh * 0.03, -16, 16) : 0, 1 - Math.exp(-dt * 12));

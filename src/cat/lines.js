@@ -68,6 +68,17 @@ const L = {
   wx_leaf: ["Bắt được! …À, lá.", "Lá này dám bay ngang tui."],
   wx_cloudy: ["Âm u. Hợp học bài.", "Trời xám. Tui cũng xám."],
   wx_after: ["Tạnh rồi. Ra vườn.", "Hết mưa. Chữ còn không?"],
+  // ---- sân chơi & đồ vật
+  play_swing: ["Đu đưa. Đừng làm phiền.", "Đẩy tui đi.", "Nhẹ thôi. Tui là mèo sang."],
+  play_slide: ["Wheee. …Không có gì.", "Lần nữa.", "Tuột xong. Vẫn sang."],
+  play_trellis: ["Trên này thấy hết.", "Bầu của tui.", "Leo lên rồi. Xuống tính sau."],
+  play_dig: ["Đào. Đừng hỏi.", "Tui tìm kho báu.", "Đất này của tui."],
+  play_snap: ["Không phải tui.", "Nó tự gãy.", "Hoa yếu quá."],
+  play_pot: ["Nó tự đổ.", "Tui chỉ chạm nhẹ.", "Nhìn gì? Trọng lực đó."],
+  play_rosetap: ["Gãy rồi. Mai mọc lại.", "Không phải tui. Thật."],
+  tidy_now: ["Dọn lẹ vậy. Để tui làm đổ lại.", "Ừ, dọn đi. Tui coi.", "Siêng ghê. Học cũng siêng vậy đi."],
+  tidy_morning: ["Ồ. Dọn rồi hả. Sen cuối cùng cũng biết động tay động chân.", "Vườn sạch ghê. Tui suy nghĩ… ai dọn ta. À, Sen. Tạm được.", "Hôm qua ai bày vậy? Không nhớ. Hôm nay sạch. Tốt.", "Dọn rồi hả. Để tui bày lại từ từ."],
+  vine_grow: ["Giàn bầu lên thêm khúc nữa. Nhờ {sen} học đó.", "Dây bầu mọc. Chữ trong đầu {sen} cũng nên mọc."],
   // ---- đọc ké (dán đoạn văn / chia sẻ)
   read_none: ["Đọc gì mà không dính chữ nào.", "Toàn chữ lạ. Dịch máy hả?"],
   read_unlearned: ["{n} chữ trong gói. Chưa học chữ nào.", "Có {n} chữ đáng học. Đợi gì?"],

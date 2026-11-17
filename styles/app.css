@@ -482,3 +482,16 @@ button,a,[data-say],[data-w],.bfly{touch-action:manipulation;-webkit-tap-highlig
 .card.mini:not(.open) .vi:not(.w){font-size:1.05rem}
 .card.mini:not(.open) .acts .btn{min-height:36px;font-size:1rem;padding:0 12px}
 .card .btn::after{content:"";position:absolute;inset:-8px -5px}
+/* ---- sân chơi: ghế xích đu, đất văng, chữ hiện cạnh mèo */
+.seat{position:absolute;inset:0;pointer-events:none}.seat .spr{position:absolute;inset:0}
+.dirt{position:absolute;width:5px;height:5px;margin:-2px;border-radius:50%;background:#3a3a3a;animation:dirt .65s cubic-bezier(.2,.7,.4,1) forwards}
+@keyframes dirt{to{transform:translate(var(--dx),var(--dy)) scale(.4);opacity:0}}
+.wtag{position:absolute;left:0;top:0;display:flex;align-items:stretch;gap:2px;padding:4px;border-radius:14px;background:var(--glass);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1.5px dashed var(--line);box-shadow:var(--pop);pointer-events:auto;max-width:min(320px,80vw)}
+.wtag.in{animation:wtag .35s cubic-bezier(.3,1.5,.5,1)}
+@keyframes wtag{from{opacity:0;scale:.7}to{opacity:1;scale:1}}
+.wtag .wt{display:flex;flex-direction:column;align-items:flex-start;padding:4px 10px;border-radius:10px;text-align:left;min-height:44px;justify-content:center}
+.wtag .wt:active{background:color-mix(in srgb,var(--ink) 8%,transparent)}
+.wtag .wt b{font:400 1.45rem/1 var(--hand)}.wtag .wt b.zh{font-family:var(--zh);font-size:1.5rem}
+.wtag .wt small{font:500 .7rem var(--font);color:var(--ink-2)}.wtag .wt i{font:500 .74rem/1.2 var(--font);font-style:normal;color:var(--ink)}
+.wtag .wt.sm b{font-size:1.15rem}.wtag .wt.sm{border-left:1px solid color-mix(in srgb,var(--ink) 15%,transparent)}
+.wtag .wstar{width:34px;display:grid;place-items:center;border-radius:10px}.wtag .wstar .ico{width:18px;height:18px}.wtag .wstar.on .ico path{fill:currentColor}

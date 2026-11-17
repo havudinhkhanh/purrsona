@@ -125,6 +125,7 @@ export function createYard(root) {
     for (let v = HOUSE.v1 + 2; v <= UH; v += 4) fr += post(UW, v); fr += D.line(P(UW, HOUSE.v1, 2.4), P(UW, UH, 2.4), { strokeWidth: 1.3 });
     for (let u = 4; u < UW; u += 4) ff += post(u, UH); ff += D.line(P(0, UH, 2.4), P(UW, UH, 2.4), { strokeWidth: 1.3 });
     sprite("fence-back", P(0, 0)[1] - 50, fb); sprite("fence-left", P(0, 0)[1], fl); sprite("fence-right", P(UW, HOUSE.v1)[1], fr); sprite("fence-front", 99999, ff);
+    api.extraDraw?.({ D, P, sprite, k, ring, rect });      // đồ vật sân chơi (world/play.js)
     flowers();
     paint();
   }
@@ -189,6 +190,7 @@ export function createYard(root) {
       vp.style.setProperty("--shadeA", a.toFixed(3)); S.night = clamp(a / 0.42, 0, 1); S.day = a < 0.05; vp.dataset.night = S.night > 0.5 ? "1" : "0";
     },
     resize: layout,
+    redraw() { draw(); },
     /** cây (và bụi) lắc theo gió: a = -1…1 */
     sway(a) {
       if (Math.abs(a - (api._sw || 0)) < 0.01) return; api._sw = a;
