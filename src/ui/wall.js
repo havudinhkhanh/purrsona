@@ -32,9 +32,9 @@ export function createWall(game, root) {
 
   // ------------------------------------------------------------------ từ đang treo (đổi theo giờ)
   function features() {
-    const T = learn.todayCards(), due = learn.due(), weak = learn.weak(4), mast = learn.mastered().filter((c) => c.lang === learn.lang);
+    const T = learn.todayCards(), hot = learn.hotToday().map((h) => h.card), due = learn.due(), weak = learn.weak(4), mast = learn.mastered().filter((c) => c.lang === learn.lang);
     const seen = new Set(), out = [];
-    for (const c of [...T, ...due, ...weak, ...mast.slice(-6)]) if (c && !seen.has(c.id)) { seen.add(c.id); out.push(c); }
+    for (const c of [...T, ...hot, ...due, ...weak, ...mast.slice(-6)]) if (c && !seen.has(c.id)) { seen.add(c.id); out.push(c); }
     return out;
   }
   function featured() {
@@ -42,7 +42,9 @@ export function createWall(game, root) {
     const mins = Math.floor((Date.now() - new Date().setHours(0, 0, 0, 0)) / 60000), every = s.settings.rotate || 15;
     return L[(Math.floor(mins / every) + shift) % L.length];
   }
-  const lab = (c) => { const st = learn.stat(c.id); if (!st || !st.seen) return "từ mới hôm nay"; if (st.box >= 4) return "đã thuộc · nhắc lại cho vui"; if (st.due <= Date.now() && st.right + st.wrong > 0) return "tới lúc ôn"; return "đang học"; };
+  const hotInfo = (c) => { const h = learn.hotOf(c.id); return h && s.learn.hot?.items?.includes(h) ? h : null; };
+  const why = (c) => { const h = hotInfo(c); return h ? `<p class="why">${esc(h.why)}${h.src?.[0] ? ` <a href="${esc(h.src[0].u)}" target="_blank" rel="noopener">${esc(h.src[0].t)} ↗</a>` : ""}</p>` : ""; };
+  const lab = (c) => { const st = learn.stat(c.id); if (hotInfo(c) && (!st || st.box < 4)) return `chữ nóng hôm nay · ${hotInfo(c).tag}`; if (!st || !st.seen) return "từ mới hôm nay"; if (st.box >= 4) return "đã thuộc · nhắc lại cho vui"; if (st.due <= Date.now() && st.right + st.wrong > 0) return "tới lúc ôn"; return "đang học"; };
   function write(html, cls = "") { tl.className = "tl " + cls; tl.innerHTML = html; tl.classList.remove("in"); void tl.offsetWidth; tl.classList.add("in"); shownAt = Date.now(); }
   const say = (c) => (s.settings.tts ? `<button class="sp" data-say="${esc(c.id)}" aria-label="Nghe">${icon("speaker")}</button>` : "");
   const star = (c) => `<button data-star="${esc(c.id)}" class="${learn.booked(c.id) ? "on" : ""}">${learn.booked(c.id) ? "★ trong sổ" : "☆ lưu sổ"}</button>`;
@@ -56,7 +58,7 @@ export function createWall(game, root) {
     cur = c; tl.dataset.id = c.id;
     const st = learn.stat(c.id), isNew = !st || !st.seen;
     write(`<p class="k">${lab(c)}</p>${wordH(c)}<p class="ph">${esc(c.ph || "")}${c.pos ? ` · ${esc(c.pos)}` : ""}</p><p class="vi">${esc(c.vi)}</p>
-      ${c.ex ? `<p class="ex ${c.lang}">${esc(c.ex)}${c.exPh ? `<small>${esc(c.exPh)}</small>` : ""}<i>${esc(c.exVi || "")}</i></p>` : ""}
+      ${c.ex ? `<p class="ex ${c.lang}">${esc(c.ex)}${c.exPh ? `<small>${esc(c.exPh)}</small>` : ""}<i>${esc(c.exVi || "")}</i></p>` : ""}${why(c)}
       <p class="acts">${isNew ? `<button data-w="seen">nhớ rồi ✓</button>` : `<button data-w="quizme">đố từ này</button>`}${star(c)}<button data-w="next">từ khác →</button></p>`);
     if (isNew) autoSay(c);
   }
@@ -103,7 +105,7 @@ export function createWall(game, root) {
   /** "học": từ mới hiện lên từng từ, bấm nhớ rồi → bướm đố ngay; xong tới các từ cần ôn */
   function lesson(kind = "full") {
     if (!s.onboarded) return onboard();
-    const neu = kind === "full" ? learn.newToday() : kind === "book" ? learn.book().map((b) => b.card).filter((c) => c.vi && c.lang === learn.lang && !(learn.stat(c.id)?.right + learn.stat(c.id)?.wrong > 0)) : [], due = kind === "fun" ? [] : kind === "book" ? learn.book().map((b) => b.card).filter((c) => c.vi && c.lang === learn.lang && learn.stat(c.id)?.seen) : learn.due().slice(0, kind === "review" ? 8 : 12);
+    const neu = kind === "full" ? learn.newToday() : kind === "hot" ? learn.hotToday().map((h) => h.card).filter((c) => !(learn.stat(c.id)?.right + learn.stat(c.id)?.wrong > 0)) : kind === "book" ? learn.book().map((b) => b.card).filter((c) => c.vi && c.lang === learn.lang && !(learn.stat(c.id)?.right + learn.stat(c.id)?.wrong > 0)) : [], due = kind === "fun" || kind === "hot" ? [] : kind === "book" ? learn.book().map((b) => b.card).filter((c) => c.vi && c.lang === learn.lang && learn.stat(c.id)?.seen) : learn.due().slice(0, kind === "review" ? 8 : 12);
     series = []; neu.forEach((c) => series.push(Object.assign(Object.create(c), { __new: 1 })));
     due.filter((c) => !neu.some((n) => n.id === c.id)).forEach((c) => series.push(c));
     if (!series.length) { const pool = [...learn.learning(), ...learn.mastered().filter((c) => c.lang === learn.lang)]; if (!pool.length) { whisper(game.lineOf("idle_tap")); return; } series = [pick(pool)]; }
@@ -112,7 +114,7 @@ export function createWall(game, root) {
   function showNew(c0) {
     const c = Object.getPrototypeOf(c0); mode = "new"; cur = c; tl.dataset.id = c.id;
     write(`<p class="k">từ mới${series.filter((x) => x.__new).length ? ` · còn ${series.filter((x) => x.__new).length} từ nữa` : ""}</p>${wordH(c)}<p class="ph">${esc(c.ph || "")}${c.pos ? ` · ${esc(c.pos)}` : ""}</p><p class="vi">${esc(c.vi)}</p>
-      ${c.ex ? `<p class="ex ${c.lang}">${esc(c.ex)}${c.exPh ? `<small>${esc(c.exPh)}</small>` : ""}<i>${esc(c.exVi || "")}</i></p>` : ""}<p class="acts"><button data-w="seen-next">nhớ rồi, đố đi ✓</button>${star(c)}</p>`, "new");
+      ${c.ex ? `<p class="ex ${c.lang}">${esc(c.ex)}${c.exPh ? `<small>${esc(c.exPh)}</small>` : ""}<i>${esc(c.exVi || "")}</i></p>` : ""}${why(c)}<p class="acts"><button data-w="seen-next">nhớ rồi, đố đi ✓</button>${star(c)}</p>`, "new");
     autoSay(c);
     game.sayLine(game.lineOf("newword", { w: c.w }), 3000);
   }
@@ -155,6 +157,7 @@ export function createWall(game, root) {
   // dòng mèo viết lề hết đúng nữa thì tự xoá (vd: "chưa học chữ nào" sau khi đã học)
   game.on("learn", () => { const t = learn.todo(), n0 = (s.wall || []).length; s.wall = (s.wall || []).filter((n) => !((n.kind === "new" && !t.neu) || (n.kind === "due" && !t.due))); if (s.wall.length !== n0) drawScribs(false); });
   game.on("lang", () => { shift = 0; ambient(true); });
+  game.on("hot", (e) => { if (mode !== "ambient") return; const h = learn.hotToday()[0]; if (e.fresh && h) { const L = features(), i = L.findIndex((c) => c.id === h.card.id); if (i >= 0) { const mins = Math.floor((Date.now() - new Date().setHours(0, 0, 0, 0)) / 60000); shift = ((i - Math.floor(mins / (s.settings.rotate || 15))) % L.length + L.length) % L.length; } } ambient(true); });
   clock(); ambient(true); drawScribs(false);
   return { ambient, quiz, lesson, whisper, scribble, clock, get mode() { return mode; } };
 }

@@ -1,6 +1,7 @@
 import { createGame } from "./game.js";
 import { createHud } from "./ui/hud.js";
 import { connectBridge } from "./meta/bridge.js";
+import { loadTrends } from "./learn/trends.js";
 
 const root = document.getElementById("app");
 try {
@@ -10,6 +11,9 @@ try {
   game.start();
   setTimeout(() => game.welcome(), 600);
   connectBridge(game);
+  // chữ nóng: lấy mẻ mới khi mở app và mỗi lần quay lại app (tối đa 1 lần/30 phút)
+  let lastHot = 0; const hot = () => { if (Date.now() - lastHot < 30 * 60e3) return; lastHot = Date.now(); loadTrends(game); };
+  setTimeout(hot, 1500); addEventListener("visibilitychange", () => { if (!document.hidden) hot(); });
   document.getElementById("boot")?.classList.add("gone");
   window.PURR = game;      // tiện gỡ lỗi trên console
 } catch (e) {

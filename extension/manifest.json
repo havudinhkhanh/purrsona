@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Purrsona · Mèo đọc ké",
   "short_name": "Purrsona",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Con mèo chì ngồi góc trang: gạch dưới chữ bạn đã học, rê vào ra nghĩa, bôi đen là lưu vô sổ, và kháy theo trang bạn đọc.",
   "icons": {
     "16": "icons/16.png",

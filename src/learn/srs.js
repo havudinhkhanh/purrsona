@@ -1,4 +1,4 @@
-import { BOOK_LIMIT, can } from "../config.js";
+import { BOOK_LIMIT, TREND_FREE, can } from "../config.js";
 // BỘ HỌC: chọn từ mới mỗi ngày + ôn lặp lại ngắt quãng (hộp Leitner 0–6).
 // Đúng → lên hộp, ôn lại sau 1, 2, 4, 8, 16, 35 ngày. Sai → về hộp 1, ôn lại sau 10 phút.
 // Hộp ≥ 4 = "thuộc" → nở thành 1 bông hoa trong vườn.
@@ -26,6 +26,8 @@ export function createLearn(game) {
   function pickToday() {
     const d = dayKey(); if (L.today.d === d && L.today.lang === L.lang) return L.today.ids;
     const booked = L.book.map((b) => get(b.id)).filter((c) => c && c.lang === L.lang && c.vi && !L.cards[c.id]);      // từ trong sổ được học trước
+    const hot = api.hotToday().map((h) => h.card).filter((c) => c.vi && !L.cards[c.id] && !booked.includes(c)).slice(0, 2);      // tối đa 2 chữ nóng vào bài hôm nay
+    booked.push(...hot);
     const pool = cardsOfLevel(L.level[L.lang], L.custom).filter((c) => c.lang === L.lang && !L.cards[c.id] && !booked.includes(c));
     const r = rng(L.lang + "|" + L.level[L.lang]); const order = pool.map((c) => [r(), c]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
     const keep = L.today.d === d ? L.today.ids.filter((id) => get(id)?.lang === L.lang) : [];
@@ -90,6 +92,11 @@ export function createLearn(game) {
       const out = [c]; const r = Math.random; while (out.length < n && pool.length) { const x = pool.splice(Math.floor(r() * pool.length), 1)[0]; if (!out.some((o) => o.w === x.w || o.vi === x.vi)) out.push(x); }
       return out.sort(() => r() - 0.5);
     },
+    // ---- CHỮ NÓNG HÔM NAY (src/learn/trends.js nạp vào L.hot)
+    hotItems: (lang = L.lang) => (L.hot?.items || []).filter((h) => h.lang === lang).map((h) => ({ ...h, card: get(h.id) })).filter((h) => h.card),
+    hotToday(lang = L.lang) { const all = api.hotItems(lang); return can(s.plan, "trend.all") ? all : all.slice(0, TREND_FREE); },
+    hotLocked(lang = L.lang) { return api.hotItems(lang).length - api.hotToday(lang).length; },
+    hotOf: (id) => (L.hot?.items || []).find((h) => h.id === id) || (L.hot?.archive || []).flatMap((a) => a.items).find((h) => h.id === id),
     // ---- SỔ CỦA TÔI: lưu từ từ app, từ đoạn đọc ké, từ tiện ích Chrome
     booked: (id) => L.book.some((b) => b.id === id),
     book() { return L.book.map((b) => ({ ...b, card: get(b.id) })).filter((b) => b.card); },

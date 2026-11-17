@@ -11,10 +11,11 @@ Màn hình là một khu vườn nhìn từ trên xuống, hơi xiên, có căn 
 - **Giấy nhắn mỗi sáng**: mèo viết lại kết quả học hôm qua.
 - **Đọc to**: chạm vào chữ lớn là nghe, từ mới tự đọc khi hiện (tắt được trong Cài đặt). Dùng giọng có sẵn của máy (Web Speech), chạy offline sau lần mở đầu.
 - **Sổ của tôi**: bấm ☆ ở chữ trên tường để lưu. Sổ là tab đầu tiên trong Sổ từ, có nút "Học sổ này". Từ lạ lưu từ web thì tự điền nghĩa, mèo mới đố.
+- **Chữ nóng hôm nay**: mỗi sáng một mẻ 6–10 chữ đang nổi trên báo và mạng (Anh + Trung), kèm nghĩa, câu ví dụ tự viết, lý do đang hot và link tin gốc. Hiện ngay trên tường, có tab riêng trong Sổ từ, tối đa 2 chữ vào bài học hôm nay.
 - **Đọc cùng mèo**: dán một đoạn văn (hoặc bấm Chia sẻ → Purrsona trên điện thoại). Mèo quét, chỉ ra chữ trong gói và chữ lạ đáng lưu, rồi kháy một câu.
 - **Tiện ích Chrome "Mèo đọc ké"** (thư mục `extension/`): mèo ngồi góc mọi trang, gạch dưới chữ đã học, rê chuột vào ra nghĩa, bôi đen chữ là lưu vô sổ, kháy theo loại trang (mạng xã hội, báo, mua sắm, làm việc…). Mở app là sổ tự đồng bộ.
 
-Gói: **Free** (A2, HSK 1, tối đa 5 từ/ngày, sổ 30 từ, đọc ké 1.500 ký tự) · **Plus** (đến B2 và HSK 3, câu nghe, 20 từ/ngày, thống kê 30 ngày, sổ không giới hạn, đọc ké bài dài) · **Pro** (gói tiếng Anh tài chính – kinh doanh, tự nhập từ bằng CSV, mèo kháy bằng AI). Mọi chỗ khoá đều đi qua `can()` trong `src/config.js`.
+Gói: **Free** (A2, HSK 1, tối đa 5 từ/ngày, sổ 30 từ, đọc ké 1.500 ký tự, 2 chữ nóng/ngày) · **Plus** (đến B2 và HSK 3, câu nghe, 20 từ/ngày, thống kê 30 ngày, sổ không giới hạn, đọc ké bài dài, đủ mẻ chữ nóng) · **Pro** (gói tiếng Anh tài chính – kinh doanh, tự nhập từ bằng CSV, mèo kháy bằng AI, kho chữ nóng 30 ngày). Mọi chỗ khoá đều đi qua `can()` trong `src/config.js`.
 
 ---
 
@@ -77,7 +78,16 @@ Sau khi sửa gói từ hoặc `src/learn/scan.js`, chạy `node tools/build-ext
 
 **Quyền riêng tư:** tiện ích đọc chữ trên trang ngay trong máy, không gửi nội dung đi đâu, không có mạng. Không chạy trên trang có ô mật khẩu, trang thanh toán, Gmail, Outlook, trang đăng nhập. Ẩn mèo theo từng trang trong popup. Chỉ đồng bộ với app qua `postMessage` trong cùng thẻ trang app.
 
-### Bước 9 – Phát hành bản mới
+### Bước 9 – Chữ nóng hằng ngày
+
+Mỗi ngày một file `data/trends/YYYY-MM-DD.json` (mẫu: file ngày đầu tiên). Soạn xong chạy:
+
+```bash
+node tools/trend-check.mjs data/trends/2026-11-17.json
+```
+Lệnh này kiểm tra (đủ trường, đủ hai thứ tiếng, không trùng 30 ngày, link https, câu ví dụ chứa chữ) rồi xuất `latest.json` và `index.json`. `git push` là app nhận mẻ mới lần mở kế tiếp. Câu ví dụ luôn tự viết, không chép câu trong bài báo.
+
+### Bước 10 – Phát hành bản mới
 
 1. Tăng `VERSION` trong `sw.js`.
 2. Tăng `APP.version` trong `src/config.js` (và `version` trong `extension/manifest.json` nếu tiện ích đổi).

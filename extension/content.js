@@ -26,7 +26,7 @@
 
   // ------------------------------------------------------------------ cầu nối với app (khi đang mở app Purrsona)
   const cut = (x, n) => String(x ?? "").slice(0, n);
-  const clean = (L) => L.slice(0, 5000).filter((k) => k && typeof k.w === "string").map((k) => ({ id: cut(k.id, 80), w: cut(k.w, 40), lang: k.lang === "zh" ? "zh" : "en", vi: cut(k.vi, 80), ph: cut(k.ph, 60), m: k.m ? 1 : 0 }));
+  const clean = (L) => L.slice(0, 5000).filter((k) => k && typeof k.w === "string").map((k) => ({ id: cut(k.id, 80), w: cut(k.w, 40), lang: k.lang === "zh" ? "zh" : "en", vi: cut(k.vi, 80), ph: cut(k.ph, 60), m: k.m ? 1 : 0, s: k.s === 0 ? 0 : 1, h: k.h ? 1 : 0 }));
   function bridge() {
     const send = (type, extra) => window.postMessage({ src: "purrsona-ext", type, ...extra }, location.origin);
     window.addEventListener("message", (e) => {
@@ -42,13 +42,14 @@
   }
 
   // ------------------------------------------------------------------ chỉ mục từ
-  let idx, byLow, knownMap;
+  let idx, byLow, knownMap, hotIds = new Set();
   function index() {
     const cards = globalThis.PURR_WORDS.map(([id, lang, w, ph, vi, pack, level]) => ({ id, lang, w, ph, vi, pack, level }));
     const have = new Set(cards.map((c) => c.id));
     for (const k of st.known) if (k.vi && !have.has(k.id)) cards.push({ id: String(k.id), lang: k.lang === "zh" ? "zh" : "en", w: String(k.w), ph: String(k.ph || ""), vi: String(k.vi) });
     idx = buildIndex(cards); byLow = new Map(cards.map((c) => [c.w.toLowerCase(), c]));
-    knownMap = new Map(st.known.map((k) => [k.id, k.m ? "m" : "l"]));
+    knownMap = new Map(st.known.filter((k) => k.s !== 0).map((k) => [k.id, k.m ? "m" : "l"]));      // chữ nóng chưa học thì không tính là đã học
+    hotIds = new Set(st.known.filter((k) => k.h).map((k) => k.id));
   }
   const state = (c) => knownMap.get(c.id) || "n";
   const look = (w) => { for (const x of globalThis.PURR_SCAN.forms(w.toLowerCase())) { const c = byLow.get(x); if (c) return c; } return null; };
@@ -138,6 +139,8 @@
   function opener() {
     const k = kind(), kn = res.kn.length;
     if (res.vi > 200 && res.found.length < 3) return say(pick(L.vi), true);
+    const hw = res.found.find((f) => hotIds.has(f.card.id));
+    if (hw) return say(fill(pick(L.hot), { w: hw.card.w }), true);
     const lw = res.kn.find((f) => state(f.card) === "l");
     if (lw && Math.random() < 0.45) return say(fill(pick(L.learning), { w: lw.card.w }), true);
     if (k && Math.random() < 0.6 && (kn || !/\{n\}/.test(L[k].join("")))) return say(fill(pick(L[k]), { n: kn }), true);

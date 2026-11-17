@@ -1,4 +1,4 @@
-# Kiến trúc · Purrsona 1.1
+# Kiến trúc · Purrsona 1.2
 
 Không có bước build. ES modules chạy thẳng trên trình duyệt, PWA cache bằng `sw.js`.
 
@@ -65,3 +65,11 @@ Nối thanh toán thật chỉ cần ghi `save.plan` sau khi xác thực.
 - Mèo kháy định kỳ: `game.jab(key)` mỗi 18–45 giây khi người dùng đang nhìn, có giãn cách 6 giây và không chen câu đang nói. Phản ứng giao diện: `ui_next`, `ui_skip`, `ui_menu`, `ui_speak`, `book`.
 - `extension/`: Manifest V3. `content.js` dùng CSS Custom Highlight API để gạch dưới (không sửa DOM của trang), giao diện trong shadow DOM đóng, lưu từ vào `chrome.storage.local.pending`. Tiện ích không gọi mạng.
 - Khoá theo gói: `book.unlimited` (Plus), `read.long` (Plus), `read.ai` (Pro, để dành cho giải nghĩa từ lạ bằng AI).
+
+## Chữ nóng hôm nay (1.2)
+
+- `data/trends/YYYY-MM-DD.json` → `tools/trend-check.mjs` kiểm và xuất `latest.json`, `index.json`.
+- `src/learn/trends.js` tải `latest.json` khi mở app và khi quay lại app (tối đa 30 phút/lần). Chữ có sẵn trong gói thì dùng thẻ của gói; chữ mới thành thẻ `lang:hot:chữ` (pack `trend`) trong `s.learn.custom`. `s.learn.hot = { d, sig, items, archive }`, giữ 30 ngày; thẻ cũ chưa học, không nằm trong sổ thì dọn.
+- `learn.hotToday()` áp giới hạn gói (`TREND_FREE`, `trend.all`). `pickToday` lấy tối đa 2 chữ nóng; mẻ mới về khi hôm nay chưa trả lời câu nào thì tính lại danh sách hôm nay.
+- Tường hiện nhãn "chữ nóng hôm nay · chủ đề" + lý do + link tin gốc. Tab "Chữ nóng" trong Sổ từ; kho 30 ngày là `trend.archive` (Pro).
+- Tiện ích nhận chữ nóng qua cầu nối (cờ `h`), chưa học thì không gạch như đã học; gặp trên trang thì mèo nhắc.

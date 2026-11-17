@@ -42,6 +42,20 @@ export function createHud(game, root) {
   const host = (u) => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return ""; } };
 
   const tabBar = (tabs) => `<div class="tabs scroll">${tabs.map(([k, v]) => `<button data-wtab="${k}" class="${wordsTab === k ? "on" : ""}">${v}${k === "book" && s.learn.book.length ? ` <small>${s.learn.book.length}</small>` : ""}</button>`).join("")}</div>`;
+  function hotList() {
+    const H = learn.hotToday(), locked = learn.hotLocked(), d = s.learn.hot?.d;
+    const row = (h) => { const c = h.card, on = learn.booked(c.id), st = learn.stat(c.id) || {};
+      return `<li class="hrow"><button class="sp" data-bsay="${esc(c.id)}" aria-label="Nghe">${icon("speaker")}</button>
+        <div><span class="tag">${esc(h.tag)}${h.level ? ` · ${esc(h.level)}` : ""}</span><br><span class="w ${c.lang}">${esc(c.w)}</span><span class="ph">${esc(c.ph || "")}</span><span class="vi">${esc(c.vi)}</span>
+        <span class="hw">${esc(h.why)}${(h.src || []).map((x) => ` <a href="${esc(x.u)}" target="_blank" rel="noopener">${esc(x.t)} ↗</a>`).join("")}</span></div>
+        ${st.seen ? boxDots(st.box || 0) : `<button data-hstar="${esc(c.id)}">${on ? "★" : "☆"}</button>`}</li>`; };
+    const arch = (s.learn.hot?.archive || []).map((a) => ({ d: a.d, items: a.items.filter((h) => h.lang === learn.lang).map((h) => ({ ...h, card: learn.card(h.id) })).filter((h) => h.card) })).filter((a) => a.items.length);
+    return `<p class="muted">${d ? `Mẻ ngày ${new Date(d).toLocaleDateString("vi-VN", { day: "numeric", month: "numeric" })} · ` : ""}chữ đang nổi trên báo và mạng. Câu ví dụ tự viết, bấm ↗ để đọc tin gốc.</p>
+      ${H.some((h) => !learn.stat(h.card.id)?.seen) ? `<button class="primary" data-a="learnhot">${icon("bolt")} Học chữ nóng (${H.filter((h) => !learn.stat(h.card.id)?.seen).length})</button>` : ""}
+      <ol class="hlist">${H.map(row).join("") || `<p class="muted">Chưa có mẻ nào. Mở mạng một lần để mèo lấy chữ mới.</p>`}</ol>
+      ${locked > 0 ? `<button class="locked" data-a="plans">${icon("lock")} Còn ${locked} chữ nóng nữa hôm nay · Plus</button>` : ""}
+      ${arch.length ? (lock("trend.archive") ? `<button class="locked" data-a="plans">${icon("lock")} Xem lại chữ nóng ${arch.length} ngày trước · Pro</button>` : arch.map((a) => `<details class="harch"><summary>${new Date(a.d).toLocaleDateString("vi-VN", { weekday: "short", day: "numeric", month: "numeric" })} · ${a.items.length} chữ</summary><ol class="hlist">${a.items.map(row).join("")}</ol></details>`).join("")) : ""}`;
+  }
   function bookList() {
     const B = learn.book().filter((b) => b.card.lang === learn.lang), lim = can(s.plan, "book.unlimited") ? 0 : BOOK_LIMIT.free, ready = B.filter((b) => b.card.vi).length;
     const row = (b) => { const c = b.card, st = learn.stat(c.id) || {}, src = host(b.url) || (b.src === "read" ? "đọc ké" : b.src === "ext" ? "tiện ích" : "");
@@ -60,8 +74,9 @@ export function createHud(game, root) {
       const lists = { today: learn.todayCards(), learning: learn.learning(), mastered: learn.mastered().filter((c) => c.lang === learn.lang), weak: learn.weak(30) };
       const L = lists[wordsTab] || [];
       const row = (c) => { const st = learn.stat(c.id) || {}; return `<li><button class="wrow" data-wd="${esc(c.id)}"><span class="w ${c.lang}">${esc(c.w)}</span><span class="vi">${esc(c.vi)}</span>${boxDots(st.box || 0)}</button><div class="wex" hidden>${esc(c.ph || "")}${c.ex ? `<br><i>${esc(c.ex)}</i>${c.exPh ? `<br><small>${esc(c.exPh)}</small>` : ""}<br><small>${esc(c.exVi || "")}</small>` : ""}${st.seen ? `<br><small>Đúng ${st.right || 0} · sai ${st.wrong || 0}${st.due ? ` · ôn lại ${st.due <= Date.now() ? "ngay" : new Date(st.due).toLocaleDateString("vi-VN")}` : ""}</small>` : ""}</div></li>`; };
-      const tabs = [["book", "Sổ của tôi"], ["today", "Hôm nay"], ["learning", "Đang học"], ["mastered", "Đã thuộc"], ["weak", "Hay sai"]];
+      const tabs = [["book", "Sổ của tôi"], ["hot", "Chữ nóng"], ["today", "Hôm nay"], ["learning", "Đang học"], ["mastered", "Đã thuộc"], ["weak", "Hay sai"]];
  if (wordsTab === "book") return head("Sổ từ", `${LANGS[learn.lang].vi}`) + tabBar(tabs) + bookList();
+      if (wordsTab === "hot") return head("Sổ từ", `${LANGS[learn.lang].vi}`) + tabBar(tabs) + hotList();
       return head("Sổ từ", `${LANGS[learn.lang].vi} · ${esc(learn.levels().find((l) => l.key === s.learn.level[learn.lang])?.vi || "")}`) + tabBar(tabs) + `
         ${wordsTab === "weak" && lock("stats.full") ? `<button class="locked" data-a="plans">${icon("lock")} Danh sách từ hay sai có trong Plus</button>` : `<ol class="wlist">${L.map(row).join("") || `<p class="muted">Trống. ${wordsTab === "mastered" ? "Học đều tay thì sẽ có." : "Bấm Học để bắt đầu."}</p>`}</ol>`}`;
     },
@@ -164,8 +179,9 @@ export function createHud(game, root) {
   // ------------------------------------------------------------------ bấm nút
   el.addEventListener("click", (e) => {
     unlock(); game.lastInput = Date.now(); game.musicResume?.();
-    const b = e.target.closest("[data-a],[data-plan],[data-skin],[data-ui],[data-setlang],[data-level],[data-daily],[data-wtab],[data-wd],[data-rate],[data-rot],[data-bsay],[data-unbook],[data-rsave],[data-rnew]"); if (!b || !el.contains(b)) return;
+    const b = e.target.closest("[data-a],[data-plan],[data-skin],[data-ui],[data-setlang],[data-level],[data-daily],[data-wtab],[data-wd],[data-rate],[data-rot],[data-bsay],[data-unbook],[data-rsave],[data-rnew],[data-hstar]"); if (!b || !el.contains(b)) return;
     if (b.dataset.bsay) { game.speakCard(learn.card(b.dataset.bsay)); return; }
+    if (b.dataset.hstar) { const id = b.dataset.hstar; if (learn.booked(id)) learn.unbook(id); else { const h = learn.hotOf(id), r = learn.bookmark({ ...learn.card(id), src: "hot", url: h?.src?.[0]?.u || "" }, s.plan); if (r.full) return toast("Sổ đầy rồi. Plus lưu thoải mái."); game.jab?.("book"); } save(s); show("words"); return; }
     if (b.dataset.unbook) { learn.unbook(b.dataset.unbook); save(s); show("words"); return; }
     if (b.dataset.rsave || b.dataset.rnew) { const c = b.dataset.rsave ? learn.card(b.dataset.rsave) : null, id = c ? c.id : `en:my:${b.dataset.rnew}`;
       if (learn.booked(id)) learn.unbook(id); else { const ctx = (readText.match(new RegExp(`[^.!?。！？\\n]*${(c?.lang === "zh" ? "" : "\\b") + (c ? c.w : b.dataset.rnew).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}[^.!?。！？\\n]*`, "i")) || [""])[0].trim();
@@ -186,6 +202,7 @@ export function createHud(game, root) {
       case "close": return close();
       case "learn": close(); return game.wall.lesson("full");
       case "learnbook": close(); return game.wall.lesson("book");
+      case "learnhot": close(); return game.wall.lesson("hot");
       case "scan": { const ta = q("[data-rtext]"); readText = (ta?.value || "").slice(0, READ_LIMIT[s.plan] || READ_LIMIT.free); readRes = runScan(readText); show("read"); game.sayLine?.(readRes.say, 4200); return; }
       case "review": close(); return game.wall.lesson(learn.todo().due ? "review" : "fun");
       case "call": return game.call();

@@ -18,7 +18,8 @@ export function connectBridge(game) {
   // (2) tiện ích Chrome
   // gửi tiện ích: mọi từ đã gặp (cả 2 thứ tiếng) + từ trong sổ – để gạch dưới đúng và không mời lưu lại
   const known = () => { const ids = new Set([...Object.keys(s.learn.cards).filter((id) => s.learn.cards[id].seen), ...s.learn.book.map((b) => b.id)]);
-    return [...ids].slice(0, 5000).map((id) => learn.card(id)).filter(Boolean).map((c) => ({ id: c.id, w: c.w, lang: c.lang, vi: c.vi || "", ph: c.ph || "", m: (learn.stat(c.id)?.box || 0) >= MASTER ? 1 : 0 })); };
+    const hot = new Set([...learn.hotToday("en"), ...learn.hotToday("zh")].map((h) => h.id)); hot.forEach((id) => ids.add(id));
+    return [...ids].slice(0, 5000).map((id) => learn.card(id)).filter(Boolean).map((c) => ({ id: c.id, w: c.w, lang: c.lang, vi: c.vi || "", ph: c.ph || "", s: learn.stat(c.id)?.seen ? 1 : 0, m: (learn.stat(c.id)?.box || 0) >= MASTER ? 1 : 0, h: hot.has(c.id) ? 1 : 0 })); };
   const reply = (type, extra) => window.postMessage({ src: "purrsona-app", type, ...extra }, location.origin);
   window.addEventListener("message", (e) => {
     if (e.source !== window || e.origin !== location.origin) return;

@@ -343,3 +343,16 @@ html[data-uisize=s] .typo{zoom:.86}html[data-uisize=l] .typo{zoom:1.14}
 .rchip{display:inline-flex;flex-direction:column;align-items:flex-start;padding:5px 10px 6px;border:1.5px solid var(--line);border-radius:10px;font:400 1.15rem/1.05 var(--hand);text-align:left}
 .rchip small{font:400 .7rem/1.2 inherit;font-family:var(--ui,system-ui);color:var(--ink-3);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rchip.zh{font-family:var(--zh)}.rchip.k-m{background:var(--ink);color:var(--paper)}.rchip.k-m small{color:var(--paper);opacity:.75}.rchip.k-l{border-style:dashed}
+/* ---- chữ nóng hôm nay */
+.tl .why{font:500 .82rem/1.45 var(--font);color:var(--ink-2);margin-top:.6em;max-width:34em;padding-left:.7em;border-left:2px solid var(--ink-3)}
+.tl .why a{color:var(--ink-2);text-decoration:underline dotted;white-space:nowrap}
+.hlist{list-style:none;margin:0;padding:0}
+.hrow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 10px;align-items:start;padding:10px 2px;border-bottom:1.5px dashed var(--ink-3)}
+.hrow .w{font:400 1.45rem/1.05 var(--hand)}.hrow .w.zh{font-family:var(--zh)}.hrow .ph{color:var(--ink-3);font-size:.78rem;margin-left:6px}
+.hrow .vi{display:block;font-size:.88rem;color:var(--ink)}.hrow .hw{display:block;font-size:.78rem;color:var(--ink-2);margin-top:3px}
+.hrow .hw a{color:var(--ink-2)}.hrow .tag{font:700 .62rem var(--font);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3)}
+.hrow [data-hstar]{font:400 1.05rem var(--hand);border-bottom:1.4px solid var(--ink)}.hrow .sp{width:30px;height:30px;display:grid;place-items:center;border-radius:50%}.hrow .sp .ico{width:16px;height:16px}
+.harch summary{cursor:pointer;font:400 1.15rem var(--hand);padding:8px 0}
+/* chữ trên tường đè lên hình vườn: lót một lớp giấy mờ phía sau để luôn đọc được */
+.tl{isolation:isolate}
+.tl::before{content:"";position:absolute;inset:-28px -48px -28px -40px;z-index:-1;pointer-events:none;background:radial-gradient(ellipse 75% 70% at 38% 45%,var(--paper) 58%,color-mix(in srgb,var(--paper) 70%,transparent) 76%,transparent 100%)}

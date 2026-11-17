@@ -169,6 +169,7 @@ export async function createGame(root) {
   addEventListener("visibilitychange", () => { if (document.hidden) save(s, true); });
   addEventListener("pagehide", () => save(s, true));
   ev.on("bloom", plant);
+  ev.on("hot", (e) => { const h = learn.hotToday()[0]; if (e.fresh && h) setTimeout(() => game.jab("hot_new", { w: h.card.w }, true), 2500); });
 
   game.start = () => {
     game.wall = createWall(game, root);

@@ -17,7 +17,7 @@ function card(pack, level, row) {
 }
 let ALL = null; const MIX = { ref: null, n: -1, v: -1, m: null };      // bộ nhớ đệm khi có từ riêng
 /** từ lưu từ web/đọc ké nằm trong custom với pack "book": không phải danh sách tự nhập (CSV) */
-const imported = (custom) => custom.filter((c) => c.pack !== "book" && c.vi);
+const imported = (custom) => custom.filter((c) => c.pack !== "book" && c.pack !== "trend" && c.vi);
 export function allCards(custom = []) {
   if (!ALL) { ALL = new Map(); for (const p of PACKS) for (const l of p.levels) for (const r of l.words) { const c = card(p, l, r); if (!ALL.has(c.id)) ALL.set(c.id, c); } }
   if (!custom.length) return ALL;

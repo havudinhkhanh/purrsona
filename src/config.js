@@ -3,15 +3,15 @@ export const APP = {
   name: "Purrsona",
   tagline: "Mèo đanh đá dạy chữ · Anh – Trung",
   saveKey: "purrsona.save.v2",      // v2: bản học chữ (không đọc bản lưu nuôi mèo cũ)
-  version: "1.1.0",
+  version: "1.2.0",
 };
 
 // ------------------------------------------------------------------ GÓI (free / plus / pro)
 // Khi nối thanh toán thật: chỉ cần ghi save.plan = "plus" | "pro" sau khi xác thực. Mọi chỗ khoá đều gọi can().
 export const PLANS = {
   free: { vi: "Miễn phí", price: "0đ", note: "Học mỗi ngày, cấp cơ bản A2 / HSK 1" },
-  plus: { vi: "Plus", price: "39.000đ/tháng", note: "Mọi cấp độ, nghe & gõ, 20 từ/ngày" },
-  pro:  { vi: "Pro", price: "79.000đ/tháng", note: "Gói chuyên ngành, tự nhập từ, mèo AI" },
+  plus: { vi: "Plus", price: "39.000đ/tháng", note: "Mọi cấp độ, nghe & gõ, 20 từ/ngày, đủ chữ nóng mỗi ngày" },
+  pro:  { vi: "Pro", price: "79.000đ/tháng", note: "Gói chuyên ngành, tự nhập từ, mèo AI, kho chữ nóng 30 ngày" },
 };
 const RANK = { free: 0, plus: 1, pro: 2 };
 // tính năng → gói tối thiểu
@@ -29,7 +29,10 @@ export const FEATURES = {
   "book.unlimited": "plus",     // Sổ của tôi: Free 30 từ, Plus trở lên không giới hạn
   "read.long": "plus",          // Đọc cùng mèo: Free quét 1.500 ký tự, Plus 60.000
   "read.ai": "pro",             // mèo đọc bằng AI: giải nghĩa từ lạ theo ngữ cảnh
+  "trend.all": "plus",          // Chữ nóng: Free 2 chữ/ngày mỗi thứ tiếng, Plus đủ cả mẻ
+  "trend.archive": "pro",       // xem lại chữ nóng 30 ngày trước
 };
+export const TREND_FREE = 2;
 export const BOOK_LIMIT = { free: 30 };
 export const READ_LIMIT = { free: 1500, plus: 60000, pro: 60000 };
 export const can = (plan, feat) => RANK[plan || "free"] >= RANK[FEATURES[feat] || "free"];

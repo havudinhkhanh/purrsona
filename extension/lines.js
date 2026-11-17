@@ -1,14 +1,14 @@
-// LỜI MÈO TRÊN WEB – cộc, khinh khỉnh, kiệm lời. {n} số chữ, {w} một chữ, {vi} nghĩa.
+// LỜI MÈO TRÊN WEB – cộc, khinh khỉnh, kiệm lời. Chỉ kháy chuyện lười/né/lướt, không chê đầu óc, tiền bạc, con người. {n} số chữ, {w} một chữ, {vi} nghĩa.
 globalThis.PURR_LINES = {
   social: ["Lướt nữa hả.", "Feed không dạy chữ đâu.", "Caption cũng là chữ đó.", "Lướt cả buổi rồi đó."],
   video: ["Coi thì bật phụ đề Anh.", "Ngồi coi. Tui ngồi chấm.", "Coi hoài. Bài đâu?"],
   news: ["Đọc báo hả. Sang ghê.", "Bài có {n} chữ học rồi.", "Đọc hết hông đó?"],
-  shopping: ["Mua nữa hả.", "Giỏ đầy, đầu rỗng.", "Đọc mô tả bằng tiếng Anh coi."],
+  shopping: ["Mua nữa hả.", "Giỏ đầy rồi. Sổ thì chưa.", "Đọc mô tả bằng tiếng Anh coi."],
   work: ["Làm đi. Tui không phá.", "Email tiếng Anh. Đừng dịch máy.", "Ừ, làm việc. Hiếm."],
-  finance: ["Nhìn nến hoài. Chữ đâu?", "Cháy tài khoản rồi học chữ.", "Chart không dạy chữ."],
+  finance: ["Nhìn nến hoài. Chữ đâu?", "Chart không dạy chữ."],
   learn: ["Ủa, học thiệt hả?", "Hiếm à nha.", "Đọc kỹ. Tui hỏi đó."],
   dict: ["Tra xong nhớ lưu sổ.", "Tra hoài không nhớ.", "Lại tra. Hôm qua tra rồi."],
-  vi: ["Toàn tiếng Việt. Lười.", "Không có chữ Anh nào. Né hả?", "Trang này tui khỏi đọc."],
+  vi: ["Toàn tiếng Việt. Khỏe ha.", "Không có chữ Anh nào. Né hả?", "Trang này tui khỏi đọc."],
   none: ["Trang này không có chữ tui dạy.", "Toàn chữ lạ. Bôi đen lưu đi."],
   some: ["{n} chữ quen. Thấy không?", "Có {n} chữ học rồi. Ít."],
   unlearned: ["Bài có {n} chữ tui dạy. Chưa học chữ nào.", "Có {n} chữ đáng học. Mở app đi.", "{n} chữ quen mặt. Mà chưa học."],
@@ -16,9 +16,10 @@ globalThis.PURR_LINES = {
   learning: ["'{w}' kìa. Nghĩa gì?", "'{w}'. Học rồi đó.", "'{w}' đó. Quên chưa?"],
   mastered: ["'{w}' thuộc rồi. Lướt đi.", "'{w}'. Dễ."],
   poke: ["Gì.", "Đọc đi.", "Bôi đen chữ lạ là lưu.", "Bấm tui chi.", "Rảnh ghê."],
-  book: ["Lưu rồi. Rồi có học không?", "Lưu cho có hả?", "Ừ. Sổ dày mà đầu rỗng.", "Lưu. Mở app mà học."],
+  book: ["Lưu rồi. Rồi có học không?", "Lưu cho có hả?", "Lưu nhiều. Học ít.", "Lưu. Mở app mà học."],
   full: ["Sổ đầy rồi. Mở app coi."],
   quiz: ["'{w}' là gì?", "'{w}'. Lẹ."],
   reveal: ["= {vi}. Biết mà.", "{vi}. Nhớ chưa."],
+  hot: ["'{w}' đang hot đó. Biết nghĩa chưa?", "Chữ nóng nè: '{w}'."],
   hide: ["Ừ. Đi."],
 };

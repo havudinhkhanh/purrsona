@@ -1,5 +1,6 @@
 // LỜI CỦA MÈO – cộc, khinh khỉnh, kiệm lời. Xưng "tui", gọi chủ là {sen}. Đa số dưới 6 chữ.
 // Không giảng giải, không động viên kiểu sách vở. Khen thì nhỏ giọt, chê thì thẳng.
+// GIỚI HẠN: chỉ kháy chuyện lười, né, quên, lướt. Không chê đầu óc, ngoại hình, tiền bạc, con người.
 // Khoá theo tình huống; tâm trạng có câu riêng ("tình huống.tâm trạng"). Biến: {cat} {sen} {n} {w} {vi} {d} {site}.
 const L = {
   // ---- chào
@@ -8,13 +9,13 @@ const L = {
   "hello.grumpy": ["Hừ.", "Giờ mới mò tới."],
   morning: ["Sáng rồi. Học.", "Dậy rồi thì học {n} chữ.", "Đánh răng xong chưa? Học."],
   night: ["Khuya rồi. Chưa ôn.", "Thức làm gì. Ôn đi.", "Mắt díp rồi còn lướt."],
-  back: ["{d} ngày. Biến đâu vậy?", "Đi {d} ngày. Quên sạch chớ gì.", "Tưởng bỏ học luôn rồi."],
+  back: ["{d} ngày. Biến đâu vậy?", "Đi {d} ngày. Còn nhớ chữ nào hông?", "Tưởng bỏ học luôn rồi."],
   // ---- học
   ok: ["Ờ.", "Trúng. Hên.", "Đoán đúng thôi.", "Ừ, vậy đó.", "Hừ. Được.", "Tạm."],
   "ok.diva": ["Tạm chấp nhận.", "Ừ. Lần này thôi."],
   "ok.clingy": ["Giỏi. Xíu xíu.", "Ừa, đúng rồi đó."],
   combo: ["{n} câu liền. Ai nhắc vậy?", "Nay uống nhầm thuốc hả?", "{n} câu. Nghi lắm."],
-  wrong: ["Sai.", "Chậc.", "Vậy cũng sai.", "Đoán mò hả?", "Có mắt mà.", "Não cá vàng.", "Gà ghê.", "Hôm qua mới học đó."],
+  wrong: ["Sai.", "Chậc.", "Vậy cũng sai.", "Đoán mò hả?", "Nhìn kỹ chưa?", "Quên lẹ ghê.", "Ủa?", "Hôm qua mới học đó."],
   "wrong.grumpy": ["Sai nữa. Mệt.", "Trời đất."],
   "wrong.clingy": ["Sai rồi. Lại nha.", "Gần trúng. Mà sai."],
   lapse: ["'{w}' lần {n}. Thù hả?", "'{w}' = {vi}. Nói hoài.", "Lại '{w}'. Hết nói."],
@@ -34,17 +35,19 @@ const L = {
   jab_idle: ["Ngồi ngó gì?", "Chán ghê.", "Tui ngáp nè.", "Lướt nữa đi. Cho quên hết.", "Đang học hay đang mơ?", "Im ru vậy?"],
   jab_wrong_recent: ["Câu hồi nãy sai đó. Nhớ chưa?", "'{w}' hồi nãy sai. Ghi vô đầu.", "Vừa sai '{w}' xong."],
   jab_done: ["Học xong rồi còn ngồi đó.", "Đi làm việc khác đi.", "Ừ, nay được."],
-  jab_misc: ["Hừ.", "Xì.", "Nhìn tui làm gì.", "Bài đâu?", "Nhìn mà ngán.", "Mèo còn nhớ hơn."],
+  jab_misc: ["Hừ.", "Xì.", "Nhìn tui làm gì.", "Bài đâu?", "Ngáp.", "Mèo còn nhớ hơn."],
   // ---- phản ứng khi bấm giao diện
   ui_next: ["Né từ khó hả?", "Đổi hoài.", "Chạy trốn."],
-  ui_skip: ["Bỏ chạy hả?", "Hèn.", "Không biết thì nói."],
+  ui_skip: ["Bỏ chạy hả?", "Né hả?", "Không biết thì nói."],
   ui_menu: ["Lục lọi gì?", "Tìm gì? Bài ở ngoài."],
   ui_lang: ["Cái kia chưa xong.", "Đổi qua đổi lại."],
   ui_speak: ["Nghe kỹ.", "Lặp theo đi.", "Nghe nữa cũng vậy."],
-  book: ["Lưu rồi. Rồi có học không?", "Lưu cho có hả?", "Ừ. Sổ dày mà đầu rỗng."],
+  book: ["Lưu rồi. Rồi có học không?", "Lưu cho có hả?", "Lưu nhiều. Học ít."],
+  // ---- chữ nóng hôm nay
+  hot_new: ["Báo nay nói '{w}' hoài. Biết hông?", "Chữ nóng: '{w}'. Học kẻo quê.", "'{w}' đang hot. {sen} chưa biết hả?"],
   // ---- đọc ké (dán đoạn văn / chia sẻ)
   read_none: ["Đọc gì mà không dính chữ nào.", "Toàn chữ lạ. Dịch máy hả?"],
-  read_unlearned: ["{n} chữ trong gói. Chưa học chữ nào.", "Có {n} chữ đáng học. Lười hả?"],
+  read_unlearned: ["{n} chữ trong gói. Chưa học chữ nào.", "Có {n} chữ đáng học. Đợi gì?"],
   read_some: ["Có {n} chữ đã học. Ít.", "Biết {n} chữ. Đọc nổi hông?"],
   read_lots: ["{n} chữ quen. Cũng được.", "Đọc ổn. Đừng tưởng bở."],
   read_short: ["Có nhiêu đó mà nhờ đọc.", "Ngắn ghê."],
