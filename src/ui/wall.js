@@ -135,12 +135,14 @@ export function createWall(game, root) {
     const line = game.react(r, c); game.sayLine(line, 3200);
     const res = document.createElement("p"); res.className = "res " + (ok ? "ok" : "bad"); res.innerHTML = ok ? `${icon("check")}Đúng${r.combo >= 3 ? ` · ${r.combo} câu liền` : ""}` : `Sai · <b>${esc(c.w)}</b> = ${esc(c.vi)}`;
     tl.querySelector(".acts")?.replaceWith(res); game.buzz?.(ok ? 8 : [20, 50, 20]); if (ok) game.speakCard(c, false, false);
+    // cảm giác game: đúng → nổ hạt ở con bướm / nút đúng + điểm bay lên; sai → thẻ rung
+    const fx = game.fx; if (fx) { if (ok) { const [x, y] = fx.center(bf?.el || tl.querySelector(".opt.right") || tl); fx.burst(x, y, { n: r.combo >= 3 ? 16 : 11 }); fx.float(x, y - 24, `+${r.xp}`); if (r.combo >= 3) setTimeout(() => fx.float(x, y - 70, `${r.combo} câu liền!`, "big"), 180); if (r.box >= 2 && learn.stat(c.id)?.skip) fx.float(x, y + 30, "nhảy cóc", "sm"); } else fx.shake(tl); }
     if (!ok && !c._retry) { c._retry = 1; series.push(c); }
     setTimeout(next, ok ? 2000 : 3200);
   }
   function next() {
     if (series.length) { const n = series.shift(); if (n.__new) return showNew(n); return quiz(n); }
-    if (mode === "result" || mode === "quiz") { ambient(true); if (learn.doneToday()) { const fast = (learn.pace() ?? 0) >= 0.75 && learn.canExtra(); game.say(fast ? "pace_fast" : "done"); game.emit("lesson-done"); askRemind(); } }
+    if (mode === "result" || mode === "quiz") { ambient(true); if (learn.doneToday()) { const fast = (learn.pace() ?? 0) >= 0.75 && learn.canExtra(); game.say(fast ? "pace_fast" : "done"); game.emit("lesson-done"); game.fx?.burst(innerWidth / 2, innerHeight * 0.22, { n: 22, spread: 160, size: 16 }); game.fx?.float(innerWidth / 2, innerHeight * 0.3, "Xong bài!", "big"); askRemind(); } }
   }
   /** học xong bài đầu tiên: rủ bật nhắc (hỏi đúng 1 lần) */
   function askRemind() {

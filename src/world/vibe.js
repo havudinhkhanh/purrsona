@@ -1,3 +1,4 @@
+import { fitSvg } from "../render/fit.js";
 // VIBE KHU VƯỜN: đổi phong cách sân – Nhật Bản, Trung Hoa, Thượng Hải xưa, Ý, Pháp.
 // Mỗi vibe = vài món đồ vẽ chì ở các ô trống của sân (không đè xích đu, cầu tuột, giàn bầu, luống hoa),
 // chữ riêng của vibe (gói en-vibe / zh-vibe), mèo ra ngồi chơi với đồ, chạm đồ là hiện chữ.
@@ -286,7 +287,7 @@ export function createVibe(game) {
     }
     if (caught) { caught.t += dt; const x = B.x + (B.face || 1) * Y.S.catH * 0.45, y = B.y - B.h - Y.S.catH * (0.55 + Math.sin(caught.t * 9) * 0.05); g += drawFish(x, y, -1.2 + Math.sin(caught.t * 14) * 0.6, k * 1.1, caught.f.c, Math.sin(caught.t * 20)); }
     koiEl.style.zIndex = Math.round(Y.P(POND.u, POND.v - POND.ry - 1.8)[1]) - 1;
-    koiEl.innerHTML = `<svg class="spr" viewBox="0 0 ${Y.S.vw} ${Y.S.vh}">${g}</svg>`;
+    koiEl.innerHTML = `<svg class="spr" viewBox="0 0 ${Y.S.vw} ${Y.S.vh}">${g}</svg>`; fitSvg(koiEl.firstChild, 10);
   }
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   function koiAct(h) {

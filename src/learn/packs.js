@@ -46,6 +46,17 @@ export const START_LEVEL = { en: "en-core/A2", zh: "zh-core/HSK1", ja: "ja-core/
 export function nextLevel(key) { for (const L of Object.values(LADDERS)) for (const tr of L) { const i = tr.indexOf(key); if (i >= 0) return tr[i + 1] || null; } return null; }
 export const levelTag = (c) => (c ? LEVEL_TAG[`${c.pack}/${c.level}`] || (c.pack === "trend" ? "chữ nóng" : "") : "");
 
+/** KHO MỞ RỘNG (data/lexicon): việc chạy mỗi ngày thêm chữ vào đúng gói/cấp. Trả về số chữ thật sự được thêm. */
+export function addLexicon(items = []) {
+  let n = 0;
+  for (const it of items) {
+    const p = PACKS.find((x) => x.id === it.pack), l = p?.levels.find((x) => x.id === it.level); if (!l || !Array.isArray(it.rows)) continue;
+    const have = new Set(l.words.map((r) => r[0])), size = p.lang === "en" ? 6 : 7;
+    for (const r of it.rows) if (Array.isArray(r) && r.length === size && r.every((x) => typeof x === "string" && x.length < 260) && !have.has(r[0])) { l.words.push(r); have.add(r[0]); n++; }
+  }
+  if (n) { ALL = null; MIX.ref = null; }
+  return n;
+}
 /** thẻ chuẩn: { id, lang, pack, level, w, ph, pos, vi, ex, exPh, exVi } */
 function card(pack, level, row) {
   if (pack.lang === "zh" || pack.lang === "ja") { const [w, ph, pos, vi, ex, exPh, exVi] = row; return { id: `${pack.lang}:${w}`, lang: pack.lang, pack: pack.id, level: level.id, w, ph, pos, vi, ex, exPh, exVi }; }

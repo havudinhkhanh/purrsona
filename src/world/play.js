@@ -1,3 +1,4 @@
+import { fitSvg } from "../render/fit.js";
 // SÂN CHƠI & ĐỒ VẬT trong vườn: xích đu, cầu tuột, giàn bầu (lớn dần theo ngày bạn học), luống hồng để mèo đào,
 // chậu cây để mèo xô đổ. Bày bừa thì để nguyên cả ngày; qua đêm "Sen" dọn lại, sáng ra mèo làm bộ ngẫm nghĩ.
 // Mèo làm gì → hiện chữ của việc đó cạnh mèo (gói "Chữ trong vườn"), chạm vào là nghe, ☆ là lưu sổ.
@@ -91,7 +92,7 @@ export function createPlay(game) {
     const sv = v + Math.sin(sw.a) * len, sh = top - Math.cos(sw.a) * len;
     const [a1, a2] = [Y.P(u - 2.2, v, top), Y.P(u + 2.2, v, top)], [b1, b2] = [Y.P(u - 2.2, sv, sh), Y.P(u + 2.2, sv, sh)], [c1, c2] = [Y.P(u - 2.2, sv + 1.2, sh), Y.P(u + 2.2, sv + 1.2, sh)];
     seat.style.zIndex = Math.round(Y.P(u, sv)[1]) - 2;      // ghế nằm sau thân mèo đang ngồi
-    seat.innerHTML = `<svg class="spr" viewBox="0 0 ${Y.S.vw} ${Y.S.vh}"><g stroke="#262626" stroke-linecap="round" fill="none"><path d="M${a1}L${b1}M${a2}L${b2}" stroke-width="1.4"/><path d="M${b1}L${b2}L${c2}L${c1}Z" fill="#FBFAF6" stroke-width="1.8"/></g></svg>`;
+    seat.innerHTML = `<svg class="spr" viewBox="0 0 ${Y.S.vw} ${Y.S.vh}"><g stroke="#262626" stroke-linecap="round" fill="none"><path d="M${a1}L${b1}M${a2}L${b2}" stroke-width="1.4"/><path d="M${b1}L${b2}L${c2}L${c1}Z" fill="#FBFAF6" stroke-width="1.8"/></g></svg>`; fitSvg(seat.firstChild);
     return { sv, sh };
   }
 

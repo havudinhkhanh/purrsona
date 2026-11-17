@@ -1,3 +1,4 @@
+import { fitSvg } from "../render/fit.js";
 // ĐỜI THƯỜNG CỦA MÈO: lâu lâu mèo bày một trò trong nhà / ngoài vườn – kéo khăn rớt, chôm vớ, xô ly nước,
 // ngồi lên điện thoại, nằm lên tờ báo… Mỗi trò hiện chữ của đồ vật + hành động theo tiếng đang học (Anh / Trung / Nhật)
 // và một câu lẫy. Đồ bày ra nằm đó, chạm vào là "nhặt lên" (cũng ra chữ).
@@ -54,7 +55,7 @@ export function createLife(game) {
     const it = { id: Math.random().toString(36).slice(2, 7), kind, u, v, st: o.st || "", dz: o.dz || 0, until: Date.now() + (o.ms || 90e3), tap: o.tap, drop: o.drop };
     it.el = document.createElement("div"); it.el.className = "seat lifeprop" + (o.drop ? " drop-in" : ""); layer.appendChild(it.el); items.push(it); draw(it); return it;
   }
-  function draw(it) { const [x, y] = Y.P(it.u, it.v), u = Y.S.k * 1.1; it.el.style.zIndex = Math.round(y) + it.dz; it.el.innerHTML = `<svg class="spr" viewBox="0 0 ${Y.S.vw} ${Y.S.vh}">${PROPS[it.kind](x, y, u, it.st)}</svg>`; }
+  function draw(it) { const [x, y] = Y.P(it.u, it.v), u = Y.S.k * 1.1; it.el.style.zIndex = Math.round(y) + it.dz; it.el.innerHTML = `<svg class="spr" viewBox="0 0 ${Y.S.vw} ${Y.S.vh}">${PROPS[it.kind](x, y, u, it.st)}</svg>`; fitSvg(it.el.firstChild); }
   function remove(it) { it.el.classList.add("gone"); setTimeout(() => it.el.remove(), 350); items = items.filter((x) => x !== it); }
   const redrawAll = () => items.forEach(draw);
   const prevLayout = Y.onLayout; Y.onLayout = () => { prevLayout?.(); redrawAll(); };

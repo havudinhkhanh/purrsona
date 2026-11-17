@@ -21,6 +21,7 @@ import { createWeather } from "./world/weather.js";
 import { createPlay } from "./world/play.js";
 import { createVibe } from "./world/vibe.js";
 import { createLife } from "./world/life.js";
+import { createFx } from "./ui/fx.js";
 import { noteToday } from "./meta/note.js";
 import { createCloseup } from "./ui/closeup.js";
 import { createWall } from "./ui/wall.js";
@@ -68,6 +69,7 @@ export async function createGame(root) {
   let catUV = { ...p0 };
   yard.onLayout = () => { const [x, y] = yard.P(catUV.u, catUV.v); B.cancel(); B.x = x; B.y = y; B.h = 0; B.perch = null; };
   B.speedMul = (0.92 + ((game.today.mood.speed || 1) - 1) * 0.4) * game.age.speed * CHILL.speed; B.ageScale = game.age.scale; R.durMul = CHILL.transition; B.runMul = CHILL.run; B.accelT = CHILL.accel; game.chill = CHILL;
+  game.fx = createFx(document.body);
   const critters = createCritters(game); game.critters = critters;
   const weather = createWeather(game); game.weather = weather;
   const play = createPlay(game); game.play = play;
@@ -195,7 +197,13 @@ export async function createGame(root) {
   addEventListener("visibilitychange", () => { if (document.hidden) save(s, true); });
   addEventListener("pagehide", () => save(s, true));
   ev.on("bloom", plant);
-  ev.on("levelup", (e) => { const tag = e.tag || e.key?.split("/")[1] || ""; setTimeout(() => game.jab?.(e.jump ? "levelup_jump" : "levelup", { tag }, true), 1200); game.journal?.("levelup", `⬆ Lên ${tag}`); });
+  // hoa mới nở: nổ cánh hoa đúng chỗ bông hoa trong vườn
+  ev.on("bloom", (c) => setTimeout(() => { const f = (yard.flowerSpots || []).find((x) => x.card?.id === c.id), r = yard.vp.getBoundingClientRect(); const [x, y] = f ? [r.left + f.x, r.top + f.y - 10] : [innerWidth / 2, innerHeight * 0.6]; game.fx.burst(x, y, { n: 16, spread: 70, kinds: ["petal", "petal", "spark"] }); game.fx.float(x, y - 30, "nở 1 bông", "sm"); }, 500));
+  ev.on("streak", (n) => { if (n > 1) { const el = document.querySelector(".chips .chip-s:nth-child(2)") || document.querySelector(".chips"); game.fx.pop(el); const [x, y] = game.fx.center(el); game.fx.float(x, y + 30, `🔥 ${n} ngày`, "sm"); } });
+  setTimeout(() => learn.autoTune?.(), 6000);      // tự chỉnh nhịp học mỗi ngày
+  ev.on("lexicon", (e) => { if (e.fresh) setTimeout(() => game.jab?.("lex_new", { n: e.fresh }, true), 12000); });
+  ev.on("tune", (e) => setTimeout(() => game.jab?.(e.to > e.from ? "tune_up" : "tune_down", { n: e.to }, true), 9000));
+  ev.on("levelup", (e) => { const tag = e.tag || e.key?.split("/")[1] || ""; setTimeout(() => game.fx.stamp(tag, e.jump ? "nhảy lớp" : "lên cấp"), 400); setTimeout(() => game.jab?.(e.jump ? "levelup_jump" : "levelup", { tag }, true), 1200); game.journal?.("levelup", `⬆ Lên ${tag}`); });
   ev.on("hot", (e) => { if (e.fresh) setTimeout(() => { const h = learn.hotToday()[0]; if (h && h.card.lang === learn.lang) game.jab("hot_new", { w: h.card.w }, true); }, 2500); });      // đọc lại lúc nói: người dùng có thể vừa đổi tiếng
 
   game.start = () => {

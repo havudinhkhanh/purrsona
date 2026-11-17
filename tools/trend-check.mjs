@@ -4,7 +4,7 @@ import { readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { allCards } from "../src/learn/packs.js";
 
 const TAGS = ["kinh tế", "công nghệ", "thế giới", "xã hội", "giải trí", "thể thao", "mạng xã hội", "sức khoẻ", "giáo dục"];
-const LEVELS = ["A2", "B1", "B2", "C1", "C2", "slang", "HSK1", "HSK2", "HSK3", "HSK4", "HSK5", "HSK6"];
+const LEVELS = ["A2", "B1", "B2", "C1", "C2", "slang", "HSK1", "HSK2", "HSK3", "HSK4", "HSK5", "HSK6", "N5", "N4", "N3", "N2", "N1"];
 const file = process.argv[2]; if (!file) { console.error("Thiếu đường dẫn file ngày"); process.exit(1); }
 const D = JSON.parse(readFileSync(file, "utf8")), err = [], warn = [];
 if (!/^\d{4}-\d{2}-\d{2}$/.test(D.d) || !file.endsWith(`${D.d}.json`)) err.push("d phải là YYYY-MM-DD và khớp tên file");
@@ -14,15 +14,15 @@ const past = new Set(); for (const f of readdirSync("data/trends").filter((f) =>
 const seen = new Set(), pack = allCards();
 for (const [i, x] of (D.words || []).entries()) {
   const at = `#${i + 1} ${x.w}`, k = `${x.lang}:${String(x.w).toLowerCase()}`;
-  if (!["en", "zh"].includes(x.lang)) err.push(`${at}: lang phải là en/zh`);
+  if (!["en", "zh", "ja"].includes(x.lang)) err.push(`${at}: lang phải là en/zh/ja`);
   for (const f of ["w", "ph", "pos", "vi", "ex", "exVi", "why", "tag", "level"]) if (!x[f] || typeof x[f] !== "string") err.push(`${at}: thiếu ${f}`);
-  if (x.lang === "zh" && !x.exPh) err.push(`${at}: chữ Hán cần exPh (pinyin câu ví dụ)`);
+  if ((x.lang === "zh" || x.lang === "ja") && !x.exPh) err.push(`${at}: tiếng Trung/Nhật cần exPh (cách đọc câu ví dụ)`);
   if (String(x.w).length > 40 || String(x.vi).length > 90 || String(x.ex).length > 160 || String(x.why).length > 140) err.push(`${at}: quá dài (w≤40, vi≤90, ex≤160, why≤140)`);
   if (!TAGS.includes(x.tag)) err.push(`${at}: tag "${x.tag}" không thuộc ${TAGS.join(", ")}`);
   if (!LEVELS.includes(x.level)) err.push(`${at}: level "${x.level}" không hợp lệ`);
   if (!Array.isArray(x.src) || !x.src.length || x.src.some((s) => !s.t || !/^https:\/\//.test(s.u || ""))) err.push(`${at}: cần src [{t, u https}]`);
   if (x.lang === "en" && x.ex && !x.ex.toLowerCase().includes(String(x.w).toLowerCase().split(" ")[0].slice(0, 5))) warn.push(`${at}: câu ví dụ không chứa chữ`);
-  if (x.lang === "zh" && x.ex && !x.ex.includes(x.w)) err.push(`${at}: câu ví dụ phải chứa ${x.w}`);
+  if ((x.lang === "zh" || x.lang === "ja") && x.ex && !x.ex.includes(x.w)) err.push(`${at}: câu ví dụ phải chứa ${x.w}`);
   if (seen.has(k)) err.push(`${at}: trùng trong ngày`); seen.add(k);
   if (past.has(k)) err.push(`${at}: đã đăng trong 30 ngày qua`);
   if (pack.has(k)) warn.push(`${at}: đã có trong gói từ – app sẽ dùng thẻ của gói`);

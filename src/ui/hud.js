@@ -78,7 +78,7 @@ export function createHud(game, root) {
   const boxDots = (b = 0) => `<i class="dots" title="Hộp ${b}/6">${Array.from({ length: 6 }, (_, i) => `<b class="${i < b ? "on" : ""}"></b>`).join("")}</i>`;
   const noteCard = (x, today) => `<article class="letter${today ? " today" : ""}"><header>${icon("letter")}<time>${x.d === dayKey() ? "Sáng nay" : new Date(x.d).toLocaleDateString("vi-VN", { weekday: "long", day: "numeric", month: "numeric" })}</time></header>${x.text.split("\n").map((l) => `<p>${esc(l)}</p>`).join("")}</article>`;
   let jumpQ = null;
-  let loginStep = "email", loginEmail = "", loginMsg = "";
+  let loginStep = "email", loginEmail = "", loginMsg = "", loginMode = "login";
   let wordsTab = "book", readRes = null, readText = "";
   const host = (u) => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return ""; } };
 
@@ -135,20 +135,29 @@ export function createHud(game, root) {
     book() { wordsTab = "book"; return SHEETS.words(); },
     account() {
       const A = game.account, U = A?.user;
-      if (!A?.on) return head("Tài khoản") + `<p class="muted">Máy chủ tài khoản chưa bật. Tiến độ đang lưu trong máy này. (Người quản trị: deploy <code>worker/api</code> rồi điền <code>ACCOUNT.endpoint</code>.)</p>`;
+      if (!A?.checked) return head("Tài khoản") + `<p class="muted">Đang hỏi máy chủ…</p>`;
+      if (!A.on) return head("Tài khoản") + `<p class="muted">Bản này chưa nối máy chủ tài khoản (bản xem thử). Mở app ở trang chính để đăng nhập; tiến độ trên máy này vẫn được giữ và gộp vào khi đăng nhập.</p>`;
       if (U) return head("Tài khoản") + `<div class="acct"><span class="av big">${esc((U.nick || U.email)[0].toUpperCase())}</span><div><b>${esc(U.nick || "Sen")}</b><small>${esc(U.email)}</small></div><span class="chip chip-${U.plan}">${PLANS[U.plan]?.vi || U.plan}</span></div>
         <p class="muted">${A.last ? `Đồng bộ lúc ${hhmm(A.last)}.` : "Chưa đồng bộ."} Học trên máy nào cũng cộng dồn.</p>
         <button class="primary" data-a="acct-sync">${icon("repeat")} Đồng bộ ngay</button>
         ${U.role === "admin" ? `<a class="ghost" href="admin.html" target="_blank" rel="noopener">${icon("settings")} Trang quản trị</a>` : ""}
         <button class="ghost" data-a="acct-out">Đăng xuất</button>
         <button class="ghost danger" data-a="acct-del">Xoá tài khoản</button>`;
-      return head("Đăng nhập", "Không cần mật khẩu. Mèo gửi mã 6 số qua email.") + `<form class="login" data-login>
+      const C = A.cfg || {}, msg = loginMsg ? `<p class="muted msg">${esc(loginMsg)}</p>` : "";
+      if (A.resetToken) return head("Đặt mật khẩu mới") + `<form class="login" data-login="reset"><label class="fld"><span>Mật khẩu mới</span><input type="password" name="password" autocomplete="new-password" minlength="6" required></label><button class="primary" type="submit">Lưu & đăng nhập</button>${msg}</form>`;
+      const tabs = [["login", "Đăng nhập"], ["register", "Tạo tài khoản"], ...(C.mail ? [["code", "Mã qua email"]] : [])];
+      return head(loginMode === "register" ? "Tạo tài khoản" : "Đăng nhập", "Giữ tiến độ khi đổi máy, mở khoá gói đã mua.") + `
+        ${C.google ? `<div class="gbtn" data-gbtn></div><p class="or"><span>hoặc</span></p>` : ""}
+        <div class="seg segfull">${tabs.map(([k, v]) => `<button data-lmode="${k}" class="${loginMode === k ? "on" : ""}">${v}</button>`).join("")}</div>
+        <form class="login" data-login="${loginMode}">
         <label class="fld"><span>Email</span><input type="email" name="email" autocomplete="email" inputmode="email" required placeholder="ban@email.com" value="${esc(loginEmail)}"></label>
-        ${loginStep === "code" ? `<label class="fld"><span>Mã 6 số</span><input name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required placeholder="••••••"></label>` : ""}
-        <button class="primary" type="submit">${loginStep === "code" ? "Đăng nhập" : "Gửi mã"}</button>
-        ${loginMsg ? `<p class="muted msg">${esc(loginMsg)}</p>` : ""}
-        ${loginStep === "code" ? `<button class="ghost" type="button" data-a="login-back">Đổi email / gửi lại mã</button>` : ""}</form>
-        <p class="muted">Đăng nhập để giữ tiến độ khi đổi máy và mở khoá gói đã mua. Tiến độ trên máy này được gộp vào tài khoản.</p>`;
+        ${loginMode === "register" ? `<label class="fld"><span>${esc(game.cat.name)} gọi bạn là</span><input name="nick" maxlength="16" placeholder="Sen" value="${esc(s.profile.nick || "")}"></label>` : ""}
+        ${loginMode === "code" ? (loginStep === "code" ? `<label class="fld"><span>Mã 6 số</span><input name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required placeholder="••••••"></label>` : "")
+          : `<label class="fld"><span>Mật khẩu</span><input type="password" name="password" autocomplete="${loginMode === "register" ? "new-password" : "current-password"}" minlength="6" required placeholder="ít nhất 6 ký tự"></label>`}
+        <button class="primary" type="submit">${loginMode === "register" ? "Tạo tài khoản" : loginMode === "code" ? (loginStep === "code" ? "Đăng nhập" : "Gửi mã") : "Đăng nhập"}</button>
+        ${msg}
+        ${loginMode === "login" ? `<button class="ghost" type="button" data-a="forgot">Quên mật khẩu?</button>` : ""}</form>
+        <p class="muted">Tiến độ trên máy này được gộp vào tài khoản khi đăng nhập.</p>`;
     },
     read() {
       const lim = READ_LIMIT[s.plan] || READ_LIMIT.free, r = readRes;
@@ -166,7 +175,12 @@ export function createHud(game, root) {
       const days = lock("stats.full") ? 7 : 30, arr = []; for (let i = days - 1; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); const k = dayKey(d), v = s.learn.days[k] || { right: 0, wrong: 0, new: 0 }; arr.push({ k, d, v }); }
       const max = Math.max(5, ...arr.map((x) => x.v.right + x.v.wrong)), c = learn.counts(), S2 = s.learn.streak;
       const all = arr.reduce((a, x) => ({ r: a.r + x.v.right, w: a.w + x.v.wrong }), { r: 0, w: 0 }), acc = all.r + all.w ? Math.round((all.r / (all.r + all.w)) * 100) : 0;
-      return head("Tiến độ", `${LANGS[learn.lang].vi}`) + `<div class="kpis"><div><b>🔥 ${learn.streakAlive()}</b><small>ngày liền · kỷ lục ${S2.best}</small></div><div><b>${c.mastered}</b><small>từ đã thuộc</small></div><div><b>${c.learning}</b><small>đang học</small></div><div><b>${acc}%</b><small>đúng ${days} ngày</small></div></div>
+      const A = learn.assess(), pct = (x) => (x === null ? "—" : `${Math.round(x * 100)}%`);
+      const selfEval = `<div class="assess"><div class="as-top"><span class="as-lv"><small>đang vững</small><b>${esc(A.solidTag || "chưa có")}</b></span><span class="as-arrow">→</span><span class="as-lv"><small>đang học</small><b>${esc(A.workingTag || "—")}</b></span></div>
+        <div class="as-kpi"><div><b>${pct(A.recall)}</b><small>nhớ lại khi ôn</small></div><div><b>${A.active}/14</b><small>ngày có học</small></div><div><b>${s.learn.daily}</b><small>chữ mới/ngày</small></div></div>
+        <ul class="as-tips">${A.tips.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>${A.log.length ? `<p class="muted">App tự chỉnh: ${A.log.map((l) => `${l.d.slice(5)} ${l.from}→${l.to} chữ (${esc(l.why)})`).join(" · ")}</p>` : ""}
+        ${A.recall !== null && A.recall >= 0.8 && nextLevel(s.learn.level[s.learn.lang]) ? `<button class="jumpbtn" data-a="jump">${icon("bolt")}<span><b>Thử nhảy lớp</b><small>Nhớ tốt rồi, thi 8 câu coi lên được không</small></span></button>` : ""}</div>`;
+      return head("Tiến độ", `${LANGS[learn.lang].vi} · tự đánh giá`) + selfEval + `<div class="kpis"><div><b>🔥 ${learn.streakAlive()}</b><small>ngày liền · kỷ lục ${S2.best}</small></div><div><b>${c.mastered}</b><small>từ đã thuộc</small></div><div><b>${c.learning}</b><small>đang học</small></div><div><b>${acc}%</b><small>đúng ${days} ngày</small></div></div>
         <h3>${days} ngày gần đây</h3><div class="bars">${arr.map((x) => `<div title="${x.k}: ${x.v.right} đúng, ${x.v.wrong} sai"><i style="height:${((x.v.right) / max) * 100}%"></i><i class="w" style="height:${(x.v.wrong / max) * 100}%"></i><small>${x.d.getDate()}</small></div>`).join("")}</div>
         <p class="muted">Cột đặc: câu đúng · cột gạch: câu sai. Cấp hiện tại: ${c.mastered + c.learning}/${c.total} từ đã gặp.</p>
         ${lock("stats.full") ? `<button class="locked" data-a="plans">${icon("lock")} Xem 30 ngày và từ hay sai với Plus</button>` : ""}
@@ -277,7 +291,7 @@ export function createHud(game, root) {
   // ------------------------------------------------------------------ bấm nút
   el.addEventListener("click", (e) => {
     unlock(); game.lastInput = Date.now(); game.musicResume?.();
-    const b = e.target.closest("[data-a],[data-plan],[data-skin],[data-ui],[data-setlang],[data-level],[data-daily],[data-wtab],[data-wd],[data-rate],[data-rot],[data-yard],[data-wxmode],[data-wxfix],[data-rtime],[data-bsay],[data-unbook],[data-rsave],[data-rnew],[data-hstar],[data-vibe],[data-zoom],[data-home],[data-jans]"); if (!b || !el.contains(b)) return;
+    const b = e.target.closest("[data-a],[data-plan],[data-skin],[data-ui],[data-setlang],[data-level],[data-daily],[data-wtab],[data-wd],[data-rate],[data-rot],[data-yard],[data-wxmode],[data-wxfix],[data-rtime],[data-bsay],[data-unbook],[data-rsave],[data-rnew],[data-hstar],[data-vibe],[data-zoom],[data-home],[data-jans],[data-lmode]"); if (!b || !el.contains(b)) return;
     if (b.dataset.bsay) { game.speakCard(learn.card(b.dataset.bsay)); return; }
     if (b.dataset.hstar) { const id = b.dataset.hstar; if (learn.booked(id)) learn.unbook(id); else { const h = learn.hotOf(id), r = learn.bookmark({ ...learn.card(id), src: "hot", url: h?.src?.[0]?.u || "" }, s.plan); if (r.full) return toast("Sổ đầy rồi. Plus lưu thoải mái."); game.jab?.("book"); } save(s); show("words"); return; }
     if (b.dataset.unbook) { learn.unbook(b.dataset.unbook); save(s); show("words"); return; }
@@ -299,6 +313,7 @@ export function createHud(game, root) {
     if (b.dataset.wd) { const ex = b.nextElementSibling; ex.hidden = !ex.hidden; game.speakCard(learn.card(b.dataset.wd)); return; }
     if (b.dataset.ui) { s.settings.ui = b.dataset.ui; applyUi(); save(s); show("settings"); return; }
     if (b.dataset.plan && game.account?.user) { toast("Gói theo tài khoản. Nâng cấp qua thanh toán (sắp có) hoặc nhờ quản trị bật."); return; }
+    if (b.dataset.lmode) { loginMode = b.dataset.lmode; loginStep = "email"; loginMsg = ""; loginEmail = q(".login [name=email]")?.value || loginEmail; show("account"); return; }
     if (b.dataset.jans) { const J = jumpQ, c = J.items[J.i], ok = b.dataset.jans === c.id; if (ok) { J.right++; J.known.push(c.id); } game.buzz?.(ok ? 8 : [10, 40, 10]); J.i++; if (J.i >= J.items.length && J.right >= J.need) { learn.jumpTo(J.key, J.known); save(s, true); refresh(); } show("jump"); return; }
     if (b.dataset.home) { s.settings.home = b.dataset.home; game.persist(); game.wall?.refresh?.(); show("settings"); return; }
     if (b.dataset.zoom) { s.settings.zoom = b.dataset.zoom; game.yard.setZoom(b.dataset.zoom); game.persist(); show("settings"); return; }
@@ -311,6 +326,7 @@ export function createHud(game, root) {
       case "learn": close(); return game.wall.lesson("full");
       case "learnbook": close(); return game.wall.lesson("book");
       case "learnhot": close(); return game.wall.lesson("hot");
+      case "forgot": { const em = (q(".login [name=email]")?.value || loginEmail).trim(); loginEmail = em; if (!game.account.cfg?.mail) { loginMsg = "Chưa bật gửi email. Nhờ quản trị vào trang quản trị bấm \"Link đặt lại\" gửi bạn."; show("account"); return; } if (!em) { loginMsg = "Nhập email trước."; show("account"); return; } game.account.forgot(em).then(() => { loginMsg = `Nếu ${em} có tài khoản, link đặt lại đã gửi tới.`; show("account"); }, () => { loginMsg = "Chưa gửi được. Thử lại."; show("account"); }); return; }
       case "login-back": loginStep = "email"; loginMsg = ""; show("account"); return;
       case "jump": { const L = s.learn, nx = nextLevel(L.level[L.lang]); if (!nx) return; if (!learn.tierOk(nx)) return show("plans");
         const C = cardsOfLevel(nx, L.custom).sort(() => Math.random() - 0.5).slice(0, 8);
@@ -341,17 +357,30 @@ export function createHud(game, root) {
   }
   game.readText = (text) => { readText = String(text || "").slice(0, READ_LIMIT[s.plan] || READ_LIMIT.free); readRes = runScan(readText); show("read"); game.sayLine?.(readRes.say, 4200); };
   // đăng nhập: gửi mã → nhập mã
-  const ERR = { email: "Email chưa đúng.", slow_down: "Gửi nhiều quá. Đợi chút rồi thử lại.", wrong: "Sai mã.", expired: "Mã hết hạn. Gửi mã mới.", too_many: "Sai quá 5 lần. Đợi 15 phút rồi gửi mã mới.", banned: "Tài khoản này bị khoá.", mail_not_ready: "Máy chủ chưa gửi được email.", no_endpoint: "Máy chủ tài khoản chưa bật." };
+  const ERR = { exists: "Email này có tài khoản rồi. Chuyển qua Đăng nhập.", weak: "Mật khẩu ít nhất 6 ký tự.", use_google: "Tài khoản này đăng nhập bằng Google.", no_pw: "Tài khoản chưa có mật khẩu. Bấm Quên mật khẩu hoặc dùng mã qua email.", google_bad: "Google chưa xác thực được. Thử lại.", mail_off: "Chưa bật gửi email. Nhờ quản trị tạo link đặt lại.", email: "Email chưa đúng.", slow_down: "Gửi nhiều quá. Đợi chút rồi thử lại.", wrong: "Sai email/mật khẩu hoặc sai mã.", expired: "Mã hết hạn. Gửi mã mới.", too_many: "Sai quá 5 lần. Đợi 15 phút rồi gửi mã mới.", banned: "Tài khoản này bị khoá.", mail_not_ready: "Máy chủ chưa gửi được email.", no_endpoint: "Máy chủ tài khoản chưa bật." };
   el.addEventListener("submit", async (e) => {
     if (!e.target.matches("[data-login]")) return; e.preventDefault();
     const f = new FormData(e.target), btn = e.target.querySelector("[type=submit]"); btn.disabled = true; loginEmail = String(f.get("email") || "").trim();
+    const A = game.account, mode = e.target.dataset.login, pw = String(f.get("password") || ""), hi = (u) => { loginStep = "email"; loginMsg = ""; toast(`Chào ${u.nick || "Sen"}. Tiến độ đã lưu vào tài khoản.`); };
     try {
-      if (loginStep === "email") { await game.account.start(loginEmail); loginStep = "code"; loginMsg = `Đã gửi mã tới ${loginEmail}. Coi cả hộp thư rác.`; }
-      else { const u = await game.account.verify(loginEmail, String(f.get("code") || "")); loginStep = "email"; loginMsg = ""; toast(`Chào ${u.nick || "Sen"}. Tiến độ đã lưu vào tài khoản.`); }
+      if (mode === "reset") { const u = await A.reset(A.resetToken, pw); A.resetToken = null; hi(u); }
+      else if (mode === "register") hi(await A.register(loginEmail, pw, String(f.get("nick") || "").trim()));
+      else if (mode === "login") hi(await A.login(loginEmail, pw));
+      else if (loginStep === "email") { await A.start(loginEmail); loginStep = "code"; loginMsg = `Đã gửi mã tới ${loginEmail}. Coi cả hộp thư rác.`; }
+      else hi(await A.verify(loginEmail, String(f.get("code") || "")));
     } catch (err) { loginMsg = ERR[err.code] || "Không kết nối được. Thử lại."; }
     show("account");
   });
   game.on("vibe", () => { if (!wrap.hidden && wrap.classList.contains("sh-vibe")) show("vibe"); });
+  // nút Google (Google Identity Services) – chỉ nạp script khi máy chủ có GOOGLE_CLIENT_ID
+  function googleBtn() {
+    const box = q("[data-gbtn]"), cid = game.account?.cfg?.google; if (!box || !cid) return;
+    const draw = () => { try { google.accounts.id.initialize({ client_id: cid, callback: (r) => game.account.google(r.credential).then((u) => { toast(`Chào ${u.nick || "Sen"}.`); show("account"); }, (err) => { loginMsg = ERR[err.code] || "Google chưa xác thực được."; show("account"); }) }); google.accounts.id.renderButton(box, { theme: "outline", size: "large", shape: "pill", text: "continue_with", width: Math.min(360, box.clientWidth || 320) }); } catch { /* */ } };
+    if (globalThis.google?.accounts?.id) return draw();
+    if (!document.querySelector("script[data-gsi]")) { const sc = document.createElement("script"); sc.src = "https://accounts.google.com/gsi/client"; sc.async = true; sc.dataset.gsi = "1"; sc.onload = draw; document.head.appendChild(sc); } else setTimeout(draw, 600);
+  }
+  new MutationObserver(() => { if (wrap.classList.contains("sh-account") && !wrap.hidden) googleBtn(); }).observe(body, { childList: true });
+  game.on("account", (e) => { if (e?.n === "cfg" && !wrap.hidden && wrap.classList.contains("sh-account")) show("account"); });
   game.on("account", () => { if (!wrap.hidden && (wrap.classList.contains("sh-account") || wrap.classList.contains("sh-menu"))) show(wrap.classList.contains("sh-account") ? "account" : "menu"); });
   el.addEventListener("input", (e) => { if (e.target.matches("[data-rtext]")) { readText = e.target.value; const m = q(".rlim"); if (m) m.textContent = `${readText.length}/${e.target.maxLength} ký tự`; } });
   el.addEventListener("change", (e) => {

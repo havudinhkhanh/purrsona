@@ -1,3 +1,4 @@
+import { fitSvg } from "../render/fit.js";
 // KHU VƯỜN NHÌN TỪ TRÊN XUỐNG (hơi xiên) – một cảnh duy nhất, vừa khít màn hình như hình nền.
 // Mặt đất là hình chữ nhật (u: 0..UW, v: 0..UH) chiếu lên màn hình bằng phép xoay + nén dọc.
 // Góc sau bên phải là căn nhà (tường thấp kiểu cắt ngang), còn lại là vườn: luống hoa, cây, ghế, ao, lối đá.
@@ -176,6 +177,8 @@ export function createYard(root) {
     const frag = document.createDocumentFragment();
     for (const sp of sprites) { const n = document.createElementNS("http://www.w3.org/2000/svg", "svg"); n.setAttribute("class", "spr"); n.dataset.id = sp.id; n.setAttribute("viewBox", `0 0 ${S.vw} ${S.vh}`); n.style.zIndex = sp.z; n.innerHTML = sp.svg; frag.appendChild(n); }
     world.insertBefore(frag, actors);
+    for (const n of world.querySelectorAll(".spr")) fitSvg(n);
+    api._sw = null; api.sway(api._swA || 0);
   }
 
   // ------------------------------------------------------------------ chỗ đi lại
@@ -212,9 +215,9 @@ export function createYard(root) {
     redraw() { draw(); },
     /** cây (và bụi) lắc theo gió: a = -1…1 */
     sway(a) {
-      if (Math.abs(a - (api._sw || 0)) < 0.01) return; api._sw = a;
+      api._swA = a; if (api._sw != null && Math.abs(a - api._sw) < 0.01) return; api._sw = a;
       const [x, y] = P(48, 9), deg = (a * 5).toFixed(2);
-      for (const n of world.querySelectorAll('.spr[data-id="tree"],.spr[data-id^="bush"]')) { n.style.transformOrigin = n.dataset.id === "tree" ? `${x}px ${y}px` : "50% 100%"; n.style.transform = Math.abs(a) < 0.01 ? "" : `skewX(${n.dataset.id === "tree" ? deg : (a * 1.5).toFixed(2)}deg)`; }
+      for (const n of world.querySelectorAll('.spr[data-id="tree"],.spr[data-id^="bush"]')) { const f = n._fit || { x: 0, y: 0 }; n.style.transformOrigin = n.dataset.id === "tree" ? `${x - f.x}px ${y - f.y}px` : "50% 100%"; n.style.transform = Math.abs(a) < 0.01 ? "" : `skewX(${n.dataset.id === "tree" ? deg : (a * 1.5).toFixed(2)}deg)`; }
     },
     setReserve(px) { px = Math.max(0, Math.round(px)); if (Math.abs(px - (S.reserve || 0)) < 24) return; S.reserve = px; layout(); },
     setZoom(z) { if (!ZOOM[z] || z === S.zoom) return; S.zoom = z; layout(); },

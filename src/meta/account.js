@@ -1,11 +1,12 @@
-// TÀI KHOẢN: đăng nhập bằng mã 6 số qua email, đồng bộ tiến độ giữa các máy, gói (free/plus/pro) do máy chủ quyết.
-// Máy chủ: worker/api (Cloudflare Worker + D1). Chưa điền ACCOUNT.endpoint thì app chạy như cũ, không có tài khoản.
+// TÀI KHOẢN: email + mật khẩu, Google, (tuỳ chọn) mã qua email · đồng bộ tiến độ giữa các máy · gói do máy chủ quyết.
+// Máy chủ nằm ngay trong trang (Cloudflare Pages Functions: /api, xem functions/api) – giống các trang khác của bạn.
+// Mở app từ nơi không có /api (bản xem thử) thì app chạy như cũ, tiến độ lưu trong máy.
 import { ACCOUNT, APP } from "../config.js";
 import { save } from "../core/store.js";
 const APP_KEY = APP.saveKey;
 
 const SKIP = new Set(["account", "device", "wxCache", "lastShared"]);
-const endpoint = () => { try { return localStorage.getItem("purrsona.api") || ACCOUNT.endpoint || ""; } catch { return ACCOUNT.endpoint || ""; } };
+const endpoint = () => { try { return localStorage.getItem("purrsona.api") || ACCOUNT.endpoint || "/api"; } catch { return ACCOUNT.endpoint || "/api"; } };
 
 /** gộp 2 bản tiến độ. `base` giữ cài đặt, mèo, gói…; phần học thì cộng dồn cả hai:
  *  thẻ học lấy bản đã trả lời nhiều hơn, ngày học lấy số lớn hơn, sổ & từ riêng gộp chung (trừ chữ đã xoá). */
@@ -39,7 +40,10 @@ export function createAccount(game) {
     return j;
   };
   const exportSave = () => Object.fromEntries(Object.entries(s).filter(([k]) => !SKIP.has(k)));
-  const summary = () => ({ lang: s.learn?.lang, streak: game.learn.streakAlive(), mastered: game.learn.counts?.().mastered || 0, vibe: game.vibe?.id || s.settings?.vibe || "home" });
+  // số liệu chữ ẩn danh: chỉ phần đúng/sai TĂNG THÊM kể từ lần gửi trước (máy chủ cộng dồn để biết chữ nào khó)
+  const delta = () => { const base = (A.ws ||= {}), out = []; for (const [id, c] of Object.entries(s.learn?.cards || {})) { const b = base[id] || [0, 0], r = (c.right || 0) - b[0], w = (c.wrong || 0) - b[1]; if (r > 0 || w > 0) out.push({ id, r, w, n: !base[id] }); if (out.length >= 200) break; } return out; };
+  const commitDelta = (d) => { const base = (A.ws ||= {}); for (const x of d) { const c = s.learn.cards[x.id]; if (c) base[x.id] = [c.right || 0, c.wrong || 0]; } };
+  const summary = (d) => ({ lang: s.learn?.lang, level: s.learn?.level?.[s.learn?.lang], streak: game.learn.streakAlive(), mastered: game.learn.counts?.().mastered || 0, vibe: game.vibe?.id || s.settings?.vibe || "home", delta: d || [] });
   const applyUser = (u) => { if (!u) return; A.user = u; if (u.plan && s.plan !== u.plan) { s.plan = u.plan; game.emit("plan", u.plan); } if (u.nick && (!s.profile.nick || s.profile.nick === "Sen")) s.profile.nick = u.nick; };
 
   let pushT = 0, busy = null;
@@ -48,7 +52,7 @@ export function createAccount(game) {
     if (!A.token) return Promise.resolve(false); if (busy) return opt.keepalive ? busy.then(() => push(opt)) : busy;
     busy = (async () => {
       for (let i = 0; i < 3; i++) {
-        try { const r = await api("/sync", { method: "PUT", body: { rev: A.rev, data: exportSave(), summary: summary() }, keepalive: opt.keepalive }); A.rev = r.rev; A.last = Date.now(); save(s); ev("synced"); return true; }
+        try { const d = delta(), r = await api("/sync", { method: "PUT", body: { rev: A.rev, data: exportSave(), summary: summary(d) }, keepalive: opt.keepalive }); commitDelta(d); A.rev = r.rev; A.last = Date.now(); save(s); ev("synced"); return true; }
         catch (e) {
           if (e.code !== "conflict") { ev("error", { code: e.code }); return false; }
           const m = mergeSaves(exportSave(), e.data.data); for (const k of ["learn", "play"]) if (m[k] && s[k]) refill(s[k], m[k]); else if (m[k]) s[k] = m[k];
@@ -62,29 +66,43 @@ export function createAccount(game) {
   const soon = (ms = 4000) => { if (!A.token) return; clearTimeout(pushT); pushT = setTimeout(push, ms); };
 
   const acc = {
-    get on() { return !!endpoint(); }, get user() { return A.user; }, get last() { return A.last; },
+    get on() { return !!cfg; }, get cfg() { return cfg; }, get checked() { return checked; }, get user() { return A.user; }, get last() { return A.last; },
     async start(email) { await api("/auth/start", { method: "POST", body: { email }, auth: false }); },
-    async verify(email, code) {
-      const r = await api("/auth/verify", { method: "POST", body: { email, code, nick: s.profile.nick }, auth: false });
+    verify: (email, code) => api("/auth/verify", { method: "POST", body: { email, code, nick: s.profile.nick }, auth: false }).then(after),
+    login: (email, password) => api("/auth/login", { method: "POST", body: { email, password }, auth: false }).then(after),
+    register: (email, password, nick) => api("/auth/register", { method: "POST", body: { email, password, nick: nick || s.profile.nick }, auth: false }).then(after),
+    google: (credential) => api("/auth/google", { method: "POST", body: { credential }, auth: false }).then(after),
+    forgot: (email) => api("/auth/forgot", { method: "POST", body: { email }, auth: false }),
+    reset: (token, password) => api("/auth/reset", { method: "POST", body: { token, password }, auth: false }).then(after),
+  };
+  // sau khi đăng nhập (mọi cách): lưu phiên, lấy gói, gộp tiến độ máy này với tài khoản
+  async function after(r) {
+    {
       A.token = r.token; applyUser(r.user); save(s, true);
       // lần đầu trên máy này: lấy bản trên máy chủ, gộp với tiến độ đang có, rồi tải lại app
       const sv = await api("/sync"); A.rev = sv.rev || 0;
       // máy này chưa từng đồng bộ → bản trên máy chủ làm gốc (cài đặt, mèo, ghi chú…), chỉ cộng thêm tiến độ học của máy này
       if (sv.data) { const m = mergeSaves(sv.data, exportSave()); const keep = { account: A, device: s.device }; localStorage.setItem(APP_KEY, JSON.stringify({ ...m, ...keep, plan: r.user.plan })); globalThis.__purrReset = true; await pushNow(m); location.reload(); return r.user; }
       await push(); ev("in"); return r.user;
-    },
+    }
+  }
+  Object.assign(acc, {
     async logout() { await push(); try { await api("/auth/logout", { method: "POST" }); } catch { /* đã hết phiên */ } A.token = ""; A.user = null; A.rev = 0; dropPlan(); save(s, true); ev("out"); },
     async remove() { await api("/me", { method: "DELETE" }); A.token = ""; A.user = null; A.rev = 0; dropPlan(); save(s, true); ev("out"); },
     sync: push, soon,
-  };
+  });
   async function pushNow(data) { try { const r = await api("/sync", { method: "PUT", body: { rev: A.rev, data, summary: summary() } }); A.rev = r.rev; A.last = Date.now(); s.account = A; localStorage.setItem(APP_KEY, JSON.stringify({ ...data, account: A, device: s.device, plan: s.plan })); } catch { /* lần sau */ } }
 
-  // mở app: làm mới gói/quyền, lấy thông báo chung (mèo đọc to lên), đẩy tiến độ khi học / khi ẩn app
-  if (endpoint()) {
+  // mở app: hỏi máy chủ có chạy không (/api/auth/config). Có → bật tài khoản, làm mới gói, đọc thông báo chung
+  let cfg = null, checked = false;
+  fetch(endpoint().replace(/\/$/, "") + "/auth/config", { cache: "no-store" }).then((r) => (r.ok ? r.json() : null)).then((c) => { cfg = c && c.password ? c : null; }).catch(() => {}).finally(() => { checked = true; ev("cfg"); if (cfg) boot(); });
+  function boot() {
     if (A.token) api("/me").then((r) => { applyUser(r.user); save(s); ev("in"); }).catch(() => {});
     api("/announce", { auth: false }).then((r) => { const seen = (s.annSeen ||= []); const it = (r.items || []).find((x) => !seen.includes(x.id) && (x.audience === "all" || x.audience === s.plan)); if (it) { seen.push(it.id); s.annSeen = seen.slice(-30); save(s); setTimeout(() => { game.sayLine?.(it.text, 6000); game.wall?.whisper(`📢 ${it.text}`, 8000); }, 5000); } }).catch(() => {});
     for (const k of ["learn", "book", "streak"]) game.on(k, () => soon());
     addEventListener("visibilitychange", () => { if (document.hidden) push({ keepalive: true }); });
+    // link đặt lại mật khẩu (#reset=…) → mở bảng tài khoản
+    const m = location.hash.match(/reset=([\w-]+)/); if (m) { acc.resetToken = m[1]; history.replaceState(null, "", location.pathname); setTimeout(() => game.showSheet?.("account"), 800); }
   }
   return acc;
 }

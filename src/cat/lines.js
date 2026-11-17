@@ -90,6 +90,9 @@ const L = {
   ambush_ok: ["Nhớ. Tạm tha.", "Ờ. Không mửa nữa.", "Được. Hôm nay khỏi ói."],
   ambush_fail: ["Ọe. Quên '{w}' là tui mửa.", "Thấy chưa. Cục lông. Tại {sen}.", "Quên chữ hôm qua. Tui ói cho coi."],
   // ---- học thích ứng
+  lex_new: ["Kho chữ mới thêm {n} chữ. Tui mới nhét vô.", "Có {n} chữ mới. Đừng giả bộ không thấy."],
+  tune_up: ["Nhớ tốt. Từ nay {n} chữ mỗi ngày.", "Đều tay ghê. Tăng lên {n} chữ."],
+  tune_down: ["Quên nhiều. Bớt còn {n} chữ, ôn cho chắc.", "Từ từ thôi. {n} chữ mỗi ngày."],
   pace_fast: ["Nhanh ghê. Học thêm 3 chữ không?", "Xong rồi? Nghi. Thêm 3 chữ coi.", "Hăng vậy thì bấm Học thêm."],
   pace_more: ["Ờ. Thêm 3 chữ.", "Tham ghê. Được."],
   levelup: ["Lên {tag} rồi. Đừng vênh.", "{tag}. Cấp mới, chữ khó hơn.", "Hết chữ cũ. Lên {tag}."],
@@ -180,3 +183,5 @@ export function line(key, mood, room, vars = {}) {
   return cand[Math.floor(Math.random() * cand.length)].replace(/\{(\w+)\}/g, (m, k) => (v[k] ?? m));
 }
 export const hasLine = (k) => !!L[k];
+/** câu mới từ kho mở rộng: chỉ thêm vào khoá đã có, câu ≤ 90 ký tự, không trùng */
+export function addLines(obj = {}) { let n = 0; for (const [k, arr] of Object.entries(obj)) { if (!L[k] || !Array.isArray(arr)) continue; for (const x of arr) if (typeof x === "string" && x.length <= 90 && !L[k].includes(x)) { L[k].push(x); n++; } } return n; }

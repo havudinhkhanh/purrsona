@@ -1,0 +1,37 @@
+{
+  "d": "2026-11-17",
+  "note": "Mẻ đầu: bơm thêm tiếng Nhật N5/N4 (kho còn mỏng), thêm A1 và HSK 1 đời thường.",
+  "add": [
+    { "pack": "ja-core", "level": "N5", "rows": [
+      ["本", "ほん · hon", "danh từ", "quyển sách", "猫が本の上で寝ている。", "Neko ga hon no ue de nete iru.", "Mèo ngủ trên quyển sách."],
+      ["家", "いえ · ie", "danh từ", "nhà", "家に帰ると猫が待っている。", "Ie ni kaeru to neko ga matte iru.", "Về nhà là có mèo đợi."],
+      ["朝ご飯", "あさごはん · asagohan", "danh từ", "bữa sáng", "朝ご飯はパンです。", "Asagohan wa pan desu.", "Bữa sáng là bánh mì."],
+      ["見る", "みる · miru", "động từ", "nhìn, xem", "猫が窓の外を見る。", "Neko ga mado no soto o miru.", "Mèo đang nhìn ra ngoài cửa sổ."],
+      ["行く", "いく · iku", "động từ", "đi", "明日、学校に行く。", "Ashita, gakkō ni iku.", "Mai tôi đi học."],
+      ["高い", "たかい · takai", "tính từ", "cao; đắt", "このキャットフードは高い。", "Kono kyattofūdo wa takai.", "Hạt mèo này đắt quá."]
+    ] },
+    { "pack": "ja-core", "level": "N4", "rows": [
+      ["思い出す", "おもいだす · omoidasu", "động từ", "nhớ ra", "昨日の単語を思い出した。", "Kinō no tango o omoidashita.", "Nhớ ra chữ hôm qua rồi."],
+      ["続ける", "つづける · tsuzukeru", "động từ", "tiếp tục", "毎日続けることが大切だ。", "Mainichi tsuzukeru koto ga taisetsu da.", "Quan trọng là ngày nào cũng tiếp tục."],
+      ["静か", "しずか · shizuka", "tính từ (na)", "yên tĩnh", "夜の庭はとても静かだ。", "Yoru no niwa wa totemo shizuka da.", "Vườn ban đêm rất yên tĩnh."],
+      ["練習", "れんしゅう · renshū", "danh từ", "luyện tập", "発音の練習をしよう。", "Hatsuon no renshū o shiyō.", "Luyện phát âm thôi."]
+    ] },
+    { "pack": "en-exam", "level": "A1", "rows": [
+      ["kitchen table", "/ˈkɪtʃɪn ˈteɪbl/", "n", "bàn bếp", "The cat sleeps on the kitchen table.", "Con mèo ngủ trên bàn bếp."],
+      ["tomorrow", "/təˈmɒrəʊ/", "adv", "ngày mai", "Let's study again tomorrow.", "Mai mình học tiếp nhé."],
+      ["lunch box", "/ˈlʌntʃ bɒks/", "n", "hộp cơm", "The cat sniffs my lunch box.", "Con mèo ngửi hộp cơm của tôi."],
+      ["clean", "/kliːn/", "v, adj", "dọn, sạch", "Please clean your room.", "Dọn phòng đi con."]
+    ] },
+    { "pack": "zh-core", "level": "HSK1", "rows": [
+      ["洗脸", "xǐliǎn", "động từ", "rửa mặt", "猫用爪子洗脸。", "Māo yòng zhuǎzi xǐliǎn.", "Mèo rửa mặt bằng chân."],
+      ["晚安", "wǎn'ān", "cụm từ", "chúc ngủ ngon", "学完五个词，晚安。", "Xuéwán wǔ ge cí, wǎn'ān.", "Học xong năm chữ, chúc ngủ ngon."],
+      ["喝水", "hē shuǐ", "động từ", "uống nước", "学习累了就喝水。", "Xuéxí lèi le jiù hē shuǐ.", "Học mệt thì uống nước."],
+      ["明天见", "míngtiān jiàn", "cụm từ", "mai gặp", "今天学完了，明天见！", "Jīntiān xuéwán le, míngtiān jiàn!", "Hôm nay học xong rồi, mai gặp!"]
+    ] }
+  ],
+  "lines": {
+    "nag_new": ["Chữ mới nằm đó. Nó không tự vô đầu đâu."],
+    "done": ["Xong. Mai nhớ quay lại, tui đếm đó."],
+    "idle_tap": ["Chọt tui không ra chữ. Bấm Học."]
+  }
+}

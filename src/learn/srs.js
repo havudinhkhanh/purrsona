@@ -1,9 +1,9 @@
-import { BOOK_LIMIT, TREND_FREE, can } from "../config.js";
+import { BOOK_LIMIT, TREND_FREE, DAILY_OPTS, can } from "../config.js";
 // BỘ HỌC: chọn từ mới mỗi ngày + ôn lặp lại ngắt quãng (hộp Leitner 0–6).
 // Đúng → lên hộp, ôn lại sau 1, 2, 4, 8, 16, 35 ngày. Sai → về hộp 1, ôn lại sau 10 phút.
 // Hộp ≥ 4 = "thuộc" → nở thành 1 bông hoa trong vườn.
 import { dayKey, rng, clamp } from "../core/util.js";
-import { allCards, levelsOf, cardsOfLevel, nextLevel, START_LEVEL, levelTag } from "./packs.js";
+import { allCards, levelsOf, cardsOfLevel, nextLevel, START_LEVEL, levelTag, LADDERS, LEVEL_TAG } from "./packs.js";
 
 const DAY = 864e5, MIN = 6e4;
 export const BOX_IV = [10 * MIN, 1 * DAY, 2 * DAY, 4 * DAY, 8 * DAY, 16 * DAY, 35 * DAY];
@@ -58,6 +58,35 @@ export function createLearn(game) {
     extra(n = 3) { pickToday(); const more = levelPool(L.today.ids).filter((c) => !L.today.ids.includes(c.id)).slice(0, n); L.today.ids.push(...more.map((c) => c.id)); game.emit("learn", { type: "extra", n: more.length }); return more.length; },
     /** hết chữ ở cấp đang học mà cấp kế bị khoá theo gói → { next, tier } để mời nâng cấp / thi nhảy lớp */
     stalled() { const key = L.level[L.lang], nx = nextLevel(key); const left = cardsOfLevel(key, L.custom).filter((c) => !L.cards[c.id]).length; return !left && nx && !tierOk(nx) ? { next: nx, tier: levelsOf(L.lang, L.custom).find((x) => x.key === nx)?.tier } : null; },
+    // ---- TỰ ĐÁNH GIÁ: nhớ lại được bao nhiêu, đều tay không, đang vững cấp nào, nên làm gì tiếp
+    assess() {
+      const days = [], now = new Date(); for (let i = 0; i < 14; i++) { const d = new Date(now); d.setDate(d.getDate() - i); days.push(L.days[dayKey(d)] || null); }
+      const active = days.filter((d) => d && d.right + d.wrong > 0).length, full = days.slice(0, 7).filter((d) => d && d.new >= Math.min(L.daily, 3)).length;
+      const tot = days.reduce((a, d) => ({ r: a.r + (d?.right || 0), w: a.w + (d?.wrong || 0) }), { r: 0, w: 0 }), acc = tot.r + tot.w >= 10 ? tot.r / (tot.r + tot.w) : null;      // chưa đủ 10 câu thì chưa kết luận
+      const recall = api.pace() ?? acc;
+      // cấp vững = cấp cao nhất trong lộ trình mà ≥ 50% chữ đã nhớ qua ít nhất 1 lần ôn (hộp ≥ 2)
+      let solid = null, working = L.level[L.lang];
+      for (const tr of LADDERS[L.lang] || []) for (const key of tr) { const C = cardsOfLevel(key, L.custom); if (!C.length) continue; const k = C.filter((c) => (L.cards[c.id]?.box || 0) >= 2).length / C.length; if (k >= 0.5) solid = key; }
+      const lapses = Object.entries(L.cards).filter(([id, c]) => c.lapses > 0 && get(id)?.lang === L.lang).length;
+      const tips = [];
+      if (recall !== null && recall < 0.6) tips.push("Nhớ lại dưới 60%: bớt chữ mới, ôn nhiều hơn. App đã tự giảm số chữ mới mỗi ngày.");
+      if (recall !== null && recall >= 0.85) tips.push("Nhớ rất tốt: có thể thi nhảy lớp hoặc tăng chữ mới.");
+      if (active < 7) tips.push(`Mới học ${active}/14 ngày. Đều tay 5 phút mỗi ngày nhớ lâu hơn học dồn.`);
+      if (lapses >= 5) tips.push(`${lapses} chữ quên đi quên lại: mở Sổ › Hay sai để ôn riêng.`);
+      if (!tips.length) tips.push("Nhịp ổn. Giữ chuỗi ngày là đủ.");
+      return { recall, acc, active, full, solid, solidTag: solid ? LEVEL_TAG[solid] : null, working, workingTag: LEVEL_TAG[working] || "", lapses, tips, log: (L.tuneLog || []).slice(-3) };
+    },
+    /** tự chỉnh số chữ mới mỗi ngày (1 lần/ngày): nhớ kém → giảm, nhớ tốt và đều tay → tăng; tôn trọng chỉnh tay trong 7 ngày */
+    autoTune() {
+      const d = dayKey(); if (L.tuneDay === d) return null; L.tuneDay = d;
+      if (L.dailySetAt && Date.now() - L.dailySetAt < 7 * 864e5) return null;
+      const opts = DAILY_OPTS[s.plan] || DAILY_OPTS.free, i = Math.max(0, opts.indexOf(L.daily)), a = api.assess(); let to = null, why = "";
+      if (a.recall !== null && a.recall < 0.55 && L.adapt.first.length >= 8 && i > 0) { to = opts[i - 1]; why = "nhớ lại kém – bớt chữ mới, tập trung ôn"; }
+      else if (a.recall !== null && a.recall >= 0.85 && a.full >= 5 && i < opts.length - 1) { to = opts[i + 1]; why = "nhớ tốt và đều tay – thêm chữ mới"; }
+      if (to === null || to === L.daily) return null;
+      const from = L.daily; api.setDaily(to, true); (L.tuneLog ||= []).push({ d, from, to, why }); L.tuneLog = L.tuneLog.slice(-10);
+      game.emit("tune", { from, to, why }); return { from, to, why };
+    },
     /** thi nhảy lớp đạt: đánh dấu các chữ đã biết + chuyển lên cấp mới */
     jumpTo(key, knownIds = []) { for (const id of knownIds) { const c = st(id); if (!c.seen) { c.seen = Date.now(); c.box = 3; c.right = 1; c.last = Date.now(); c.due = Date.now() + BOX_IV[3]; } } L.level[L.lang] = key; L.today.d = ""; game.emit("lang", L.lang); game.emit("levelup", { key, jump: true }); },
     get lang() { return L.lang; },
@@ -111,7 +140,7 @@ export function createLearn(game) {
     day,
     setLang(l) { if (L.lang === l) return; L.lang = l; L.combo = 0; game.emit("lang", l); },
     setLevel(key) { L.level[L.lang] = key; L.today.d = ""; game.emit("lang", L.lang); },
-    setDaily(n) { L.daily = n; L.today.d = ""; pickToday(); },
+    setDaily(n, auto = false) { L.daily = n; if (!auto) L.dailySetAt = Date.now(); L.today.d = ""; pickToday(); },
     levels: () => levelsOf(L.lang, L.custom),
     /** 4 lựa chọn: đáp án đúng + 3 từ cùng ngôn ngữ, ưu tiên cùng cấp */
     options(c, n = 4) {

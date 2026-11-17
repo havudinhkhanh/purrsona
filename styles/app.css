@@ -56,7 +56,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;paddin
 @keyframes bootbar{from{transform:translateX(-100%)}to{transform:translateX(260%)}}
 
 /* ------------------------------------------------------------- mèo (than chì) */
-.cat{transform-origin:0 0;will-change:transform}
+.cat{transform-origin:0 0}
 .cat-flip{position:absolute;left:0;top:0;transform-origin:0 -110px}
 .cr{position:absolute}
 .cr svg,.cr canvas{display:block;width:100%;height:100%;overflow:visible}
@@ -256,7 +256,7 @@ html[data-uisize=s] .typo{zoom:.86}html[data-uisize=l] .typo{zoom:1.14}
 .topfx{position:absolute;inset:0;z-index:5;pointer-events:none}
 .topfx>*{position:absolute;left:0;top:0}
 /* bướm & ong */
-.bfly{width:44px;height:36px;margin:-18px 0 0 -22px;pointer-events:auto;cursor:pointer;will-change:transform;transition:opacity .4s}
+.bfly{width:44px;height:36px;margin:-18px 0 0 -22px;pointer-events:auto;cursor:pointer;transition:opacity .4s}
 .bfly svg{width:100%;height:100%;overflow:visible;display:block}
 .bfly .wing{transform-origin:0 0;animation:flap .18s ease-in-out infinite alternate}
 @keyframes flap{to{transform:scaleX(.25)}}
@@ -639,3 +639,41 @@ body.sheet-on .talkfx,body.sheet-on .wtag{opacity:0;pointer-events:none;transiti
 .lvls small{display:block;line-height:1.35}.lvls small .ico{display:inline-block;vertical-align:-1px}
 .pick3 button span{white-space:nowrap;font-size:clamp(.7rem,3.2vw,.82rem)}
 @media (min-width:760px){.sheet .grab{display:none}.sh-head{touch-action:auto}}
+.segfull{display:flex;width:100%;margin:0 0 10px}.segfull button{flex:1}
+.gbtn{display:flex;justify-content:center;min-height:44px;margin:4px 0}
+.or{display:flex;align-items:center;gap:10px;color:var(--ink-3);font:600 .72rem var(--font);text-transform:uppercase;letter-spacing:.1em;margin:8px 0}.or::before,.or::after{content:"";flex:1;height:1px;background:color-mix(in srgb,var(--ink) 15%,transparent)}
+/* 2.5 · HIỆU ỨNG GAME */
+.fx{position:fixed;inset:0;z-index:60;pointer-events:none;overflow:hidden}
+.fxp{position:absolute;display:block;transform:translate(-50%,-50%);animation:fxp var(--t,800ms) cubic-bezier(.15,.7,.3,1) forwards;will-change:transform,opacity}
+.fxp svg{display:block}
+@keyframes fxp{0%{transform:translate(-50%,-50%) scale(.3) rotate(0);opacity:1}70%{opacity:1}100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy) + 40px)) scale(1) rotate(var(--r));opacity:0}}
+.fxring{position:absolute;width:20px;height:20px;margin:-10px 0 0 -10px;border:2px solid var(--ink);border-radius:50%;animation:fxring .6s ease-out forwards}
+@keyframes fxring{from{transform:scale(.4);opacity:.8}to{transform:scale(4.2);opacity:0}}
+.fxt{position:absolute;transform:translate(-50%,-50%);font:400 1.6rem var(--hand);color:var(--ink);text-shadow:0 0 8px var(--paper),0 0 2px var(--paper);white-space:nowrap;animation:fxt 1.2s cubic-bezier(.2,.8,.3,1) forwards}
+.fxt.big{font-size:2.2rem}.fxt.sm{font-size:1.15rem;color:var(--ink-2)}
+@keyframes fxt{0%{transform:translate(-50%,-30%) scale(.6);opacity:0}18%{transform:translate(-50%,-70%) scale(1.15);opacity:1}100%{transform:translate(-50%,-260%) scale(1);opacity:0}}
+.fxstamp{position:absolute;left:50%;top:34%;transform:translate(-50%,-50%) rotate(-6deg);padding:14px 28px 12px;border:3px solid var(--ink);border-radius:20px 24px 18px 22px;background:color-mix(in srgb,var(--paper) 88%,transparent);text-align:center;box-shadow:4px 6px 0 rgba(20,20,20,.18);animation:fxstamp 2.5s cubic-bezier(.2,1.4,.4,1) forwards}
+.fxstamp b{display:block;font:400 clamp(2.4rem,9vw,3.6rem)/1 var(--hand);letter-spacing:.02em}.fxstamp small{display:block;margin-top:4px;font:700 .72rem var(--font);text-transform:uppercase;letter-spacing:.16em;color:var(--ink-2)}
+@keyframes fxstamp{0%{transform:translate(-50%,-50%) rotate(-14deg) scale(2.2);opacity:0}14%{transform:translate(-50%,-50%) rotate(-6deg) scale(.94);opacity:1}22%{transform:translate(-50%,-50%) rotate(-6deg) scale(1)}82%{opacity:1}100%{transform:translate(-50%,-56%) rotate(-6deg) scale(1);opacity:0}}
+.fxstamp.still{animation:fxfade 2.5s forwards}@keyframes fxfade{0%,85%{opacity:1}100%{opacity:0}}
+.fxshake{animation:fxshake .45s cubic-bezier(.36,.07,.19,.97)}
+@keyframes fxshake{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(4px)}30%,50%,70%{transform:translateX(-7px)}40%,60%{transform:translateX(7px)}}
+.fxpop{animation:fxpop .42s cubic-bezier(.3,1.8,.5,1)}@keyframes fxpop{0%{transform:scale(1)}40%{transform:scale(1.28)}100%{transform:scale(1)}}
+.opt.right{animation:fxpop .42s cubic-bezier(.3,1.8,.5,1)}
+/* 2.5 · TỰ ĐÁNH GIÁ */
+.assess{padding:14px;border-radius:20px;background:var(--paper-2);margin-bottom:14px}
+.as-top{display:flex;align-items:center;gap:10px}.as-lv{display:flex;flex-direction:column}.as-lv small{font:700 .62rem var(--font);text-transform:uppercase;letter-spacing:.12em;color:var(--ink-2)}.as-lv b{font:400 1.9rem/1 var(--hand)}.as-arrow{font:400 1.6rem var(--hand);color:var(--ink-3)}
+.as-kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.as-kpi div{padding:8px 10px;border-radius:14px;background:var(--card)}.as-kpi b{display:block;font:400 1.4rem/1 var(--hand)}.as-kpi small{font:600 .66rem var(--font);color:var(--ink-2)}
+.as-tips{margin:12px 0 0;padding-left:18px;font:500 .82rem/1.5 var(--font)}.as-tips li{margin:2px 0}
+.assess .jumpbtn{margin-top:12px}
+
+/* ---- 2.5.1 iPhone/iPad: nhẹ bộ nhớ đồ hoạ (Safari tự tải lại trang khi hết bộ nhớ) ---- */
+html.lite .card,html.lite .wtag,html.lite .tabbar,html.lite .chip-s,html.lite .smudge,html.lite .sheet,html.lite .sheet *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html.lite .card:not(.poster){background:color-mix(in srgb,var(--paper) 90%,transparent)}
+html.lite .wtag{background:color-mix(in srgb,var(--paper) 92%,transparent)}
+html.lite .tabbar{background:color-mix(in srgb,var(--paper) 94%,transparent)}
+html.lite .viewport::after{mix-blend-mode:normal;opacity:.22}
+html.lite .viewport::before{mix-blend-mode:normal;opacity:calc(var(--sunA,0) * .3)}
+html.lite .shade{mix-blend-mode:normal;background:#2c2e35;opacity:calc(var(--shadeA,0) * .8)}
+html.lite .wxfog{mix-blend-mode:normal;background:#6a6d75}
+html.lite[data-vibe=shanghai] .viewport,html.lite [data-vibe=shanghai] .viewport{filter:none}

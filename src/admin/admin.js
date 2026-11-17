@@ -3,7 +3,7 @@
 import { ACCOUNT, PLANS } from "../config.js";
 import { esc } from "../core/util.js";
 
-const EP = (() => { try { return (localStorage.getItem("purrsona.api") || ACCOUNT.endpoint || "").replace(/\/$/, ""); } catch { return ACCOUNT.endpoint || ""; } })();
+const EP = (() => { try { return (localStorage.getItem("purrsona.api") || ACCOUNT.endpoint || "/api").replace(/\/$/, ""); } catch { return ACCOUNT.endpoint || "/api"; } })();
 const TK = "purrsona.admin.token";
 let token = localStorage.getItem(TK) || "", me = null, tab = "overview";
 const $ = (s) => document.querySelector(s), main = $("#main");
@@ -21,20 +21,18 @@ async function api(path, { method = "GET", body } = {}) {
 }
 
 // ------------------------------------------------------------------ đăng nhập
-let step = "email", email = "", msg = "";
+let email = "", msg = "";
 function login() {
   $(".a-tabs").innerHTML = ""; $(".a-me").innerHTML = "";
-  if (!EP) { main.innerHTML = `<div class="a-login panel"><h2>Chưa có máy chủ</h2><p class="muted2">Deploy <code>worker/api</code> rồi điền <code>ACCOUNT.endpoint</code> trong <code>src/config.js</code> (xem README, bước Tài khoản).</p></div>`; return; }
   main.innerHTML = `<form class="a-login panel" id="lf"><h2>Đăng nhập quản trị</h2>
-    <label class="fld"><span>Email quản trị</span><input type="email" name="email" required autocomplete="email" value="${esc(email)}"></label>
-    ${step === "code" ? `<label class="fld"><span>Mã 6 số</span><input name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required></label>` : ""}
-    <button class="btn2 pri" type="submit">${step === "code" ? "Vào trang quản trị" : "Gửi mã"}</button>${msg ? `<p class="muted2">${esc(msg)}</p>` : ""}</form>`;
+    <label class="fld"><span>Email</span><input type="email" name="email" required autocomplete="email" value="${esc(email)}"></label>
+    <label class="fld"><span>Mật khẩu</span><input type="password" name="password" required autocomplete="current-password"></label>
+    <button class="btn2 pri" type="submit">Vào trang quản trị</button>${msg ? `<p class="muted2">${esc(msg)}</p>` : ""}
+    <p class="muted2">Dùng tài khoản đã tạo trong app. Quản trị = email trong biến OWNER_EMAIL của dự án Pages (chưa đặt thì người đăng ký đầu tiên).</p></form>`;
   $("#lf").onsubmit = async (e) => {
     e.preventDefault(); const f = new FormData(e.target); email = String(f.get("email")).trim();
-    try {
-      if (step === "email") { await api("/auth/start", { method: "POST", body: { email } }); step = "code"; msg = "Đã gửi mã. Coi cả hộp thư rác."; }
-      else { const r = await api("/auth/verify", { method: "POST", body: { email, code: f.get("code") } }); if (r.user.role !== "admin") { msg = "Tài khoản này không có quyền quản trị."; step = "email"; } else { token = r.token; localStorage.setItem(TK, token); step = "email"; msg = ""; } }
-    } catch (err) { msg = { wrong: "Sai mã.", expired: "Mã hết hạn.", too_many: "Sai quá 5 lần. Đợi 15 phút.", slow_down: "Gửi nhiều quá, đợi chút.", email: "Email chưa đúng." }[err.code] || "Không kết nối được."; }
+    try { const r = await api("/auth/login", { method: "POST", body: { email, password: f.get("password") } }); if (r.user.role !== "admin") msg = "Tài khoản này không có quyền quản trị."; else { token = r.token; localStorage.setItem(TK, token); msg = ""; } }
+    catch (err) { msg = { wrong: "Sai email hoặc mật khẩu.", slow_down: "Thử nhiều quá, đợi chút.", no_db: "Chưa gắn D1 tên DB cho dự án Pages.", use_google: "Tài khoản này đăng nhập bằng Google: đặt mật khẩu qua Quên mật khẩu trong app." }[err.code] || "Không kết nối được."; }
     render();
   };
 }
@@ -60,7 +58,7 @@ const V = {
       <td><select data-f="plan">${Object.keys(PLANS).map((p) => `<option value="${p}"${u.plan === p ? " selected" : ""}>${PLANS[p].vi}</option>`).join("")}</select>${u.plan_until ? `<small>tới ${day(u.plan_until)}</small>` : ""}</td>
       <td><select data-f="role"${u.id === me.id ? " disabled title=\"Không tự đổi quyền của mình\"" : ""}><option value="user"${u.role === "user" ? " selected" : ""}>Người dùng</option><option value="admin"${u.role === "admin" ? " selected" : ""}>Quản trị</option></select></td>
       <td>${esc(u.lang || "—")}<small>${esc(u.vibe || "")}</small></td><td>🔥 ${u.streak} · 🌼 ${u.mastered}</td><td>${ago(u.last_seen)}<small>tạo ${day(u.created_at)}</small></td>
-      <td><button class="btn2 sm" data-ban="${u.banned ? 0 : 1}"${u.id === me.id ? " disabled" : ""}>${u.banned ? "Mở khoá" : "Khoá"}</button></td></tr>`;
+      <td><button class="btn2 sm" data-ban="${u.banned ? 0 : 1}"${u.id === me.id ? " disabled" : ""}>${u.banned ? "Mở khoá" : "Khoá"}</button> <button class="btn2 sm" data-rlink title="Tạo link đặt lại mật khẩu (72 giờ) để gửi cho người dùng">Link đặt lại</button></td></tr>`;
     return `<h2>Người dùng</h2><div class="tools"><input type="search" id="q" placeholder="Tìm email hoặc tên…" value="${esc(q)}"><select id="pf"><option value="">Mọi gói</option>${Object.keys(PLANS).map((p) => `<option value="${p}"${plan === p ? " selected" : ""}>${PLANS[p].vi}</option>`).join("")}</select></div>
       <div class="tblwrap"><table class="tbl"><thead><tr><th>Email</th><th>Gói</th><th>Quyền</th><th>Học</th><th>Tiến độ</th><th>Hoạt động</th><th></th></tr></thead><tbody>${V._rows.map(row).join("") || `<tr><td colspan="7">Không có ai.</td></tr>`}</tbody></table></div>
       ${r.items.length === 50 ? `<p><button class="btn2" id="more">Xem thêm</button></p>` : ""}`;
@@ -104,6 +102,7 @@ function bind() {
 document.addEventListener("click", async (e) => {
   const t = e.target.closest("[data-tab]"); if (t) { tab = t.dataset.tab; V._off = 0; return render(); }
   const d = e.target.closest("[data-del]"); if (d) { await api(`/admin/announcements/${d.dataset.del}`, { method: "DELETE" }); toast("Đã xoá."); return render(); }
+  const rl = e.target.closest("[data-rlink]"); if (rl) { const id = rl.closest("[data-u]").dataset.u; try { const r = await api(`/admin/users/${id}/reset-link`, { method: "POST" }); try { await navigator.clipboard.writeText(r.link); toast("Đã chép link đặt lại (72 giờ). Gửi cho người dùng."); } catch { prompt("Link đặt lại mật khẩu (72 giờ):", r.link); } } catch (err) { toast(`Không được (${err.code}).`); } return; }
   const bn = e.target.closest("[data-ban]"); if (bn) { const id = bn.closest("[data-u]").dataset.u; try { await api(`/admin/users/${id}`, { method: "PATCH", body: { banned: bn.dataset.ban === "1" } }); toast(bn.dataset.ban === "1" ? "Đã khoá." : "Đã mở khoá."); } catch (err) { toast(`Không được (${err.code}).`); } V._off = 0; return render(); }
 });
 document.addEventListener("change", async (e) => {

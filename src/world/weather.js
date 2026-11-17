@@ -39,7 +39,7 @@ export function createWeather(game) {
   const st = { kind: "clear", temp: null, place: (W.place || HCM).name, src: "sim", rain: 0, wind: 0, sun: 0, cloud: 0, flash: 0 };
   let drops = [], leaves = [], clouds = [], splashes = [], dpr = 1, nextBolt = 0, bolt = null;
 
-  function size() { dpr = Math.min(2, devicePixelRatio || 1); cv.width = S.vw * dpr; cv.height = S.vh * dpr; cv.style.width = S.vw + "px"; cv.style.height = S.vh + "px"; }
+  function size() { dpr = Math.min(document.documentElement.classList.contains("lite") ? 1.25 : 2, devicePixelRatio || 1); cv.width = S.vw * dpr; cv.height = S.vh * dpr; cv.style.width = S.vw + "px"; cv.style.height = S.vh + "px"; }
   const inHouse = (u, v) => u > HOUSE.u0 - 1 && v < HOUSE.v1 + 1;
   const newDrop = (fresh) => { let u, v; do { u = Math.random() * UW; v = Math.random() * UH; } while (inHouse(u, v)); return { u, v, h: fresh ? Math.random() * 60 : 50 + Math.random() * 20, sp: 70 + Math.random() * 40 }; };
   const newLeaf = () => ({ x: st.windDir > 0 ? -20 : S.vw + 20, y: S.vh * (0.25 + Math.random() * 0.6), ph: Math.random() * 6, sp: 120 + Math.random() * 140, r: Math.random() * 6 });

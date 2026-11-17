@@ -3,7 +3,7 @@ export const APP = {
   name: "Purrsona",
   tagline: "Mèo đanh đá dạy chữ · Anh – Trung – Nhật",
   saveKey: "purrsona.save.v2",      // v2: bản học chữ (không đọc bản lưu nuôi mèo cũ)
-  version: "2.4.0",
+  version: "2.5.1",
 };
 
 // ------------------------------------------------------------------ GÓI (free / plus / pro)
@@ -58,7 +58,7 @@ export const CHILL = { speed: 0.58, run: 1.1, transition: 1.5, idle: 2.2, camera
 
 // ------------------------------------------------------------------ GIỌNG AI (Pro) – điền địa chỉ Worker sau khi deploy worker/ai-voice
 export const AI = { endpoint: "", minGapMs: 30000, timeoutMs: 3000 };
-// ------------------------------------------------------------------ TÀI KHOẢN – điền địa chỉ Worker sau khi deploy worker/api
+// ------------------------------------------------------------------ TÀI KHOẢN – để trống = dùng /api cùng tên miền (functions/api trên Cloudflare Pages)
 export const ACCOUNT = { endpoint: "" };
 // ------------------------------------------------------------------ MÈO NHẮC (thông báo) – điền địa chỉ Worker sau khi deploy worker/remind
 // Chưa có Worker: vẫn nhắc được khi app còn mở/chạy nền (máy tính, Android). Có Worker: nhắc cả khi đã đóng app (Web Push).

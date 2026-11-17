@@ -114,21 +114,23 @@ npx wrangler deploy
 ```
 Sửa `ALLOWED_ORIGINS` trong `wrangler.toml` thành địa chỉ web, rồi dán địa chỉ worker vào `REMIND.endpoint` trong `src/config.js`. Tin push không chứa nội dung: máy người dùng tự soạn câu nhắc từ tình hình học lưu sẵn trong máy. Worker chỉ giữ giờ nhắc, múi giờ và "hôm nay đã học chưa". iPhone cần mở app từ màn hình chính (iOS 16.4 trở lên) mới nhận thông báo.
 
-### Bước 11 – (Tuỳ chọn) Tài khoản, đồng bộ và trang quản trị
+### Bước 11 – Tài khoản, đồng bộ và trang quản trị (2 phút, không cần deploy gì thêm)
 
-Chưa làm bước này thì app chạy như cũ, lưu trong máy. Muốn đăng nhập bằng email và đồng bộ nhiều máy (Cloudflare Worker + D1, gửi mã bằng Cloudflare Email Service):
+Máy chủ tài khoản nằm sẵn trong repo (`functions/api`) – Cloudflare Pages tự chạy nó cùng tên miền với app, giống các trang khác của bạn. Chỉ cần:
 
-```bash
-cd worker/api
-npx wrangler d1 create purrsona                       # dán database_id vào wrangler.toml
-npx wrangler d1 migrations apply purrsona --remote
-npx wrangler secret put PEPPER                        # chuỗi ngẫu nhiên dài, giữ bí mật
-npx wrangler email sending enable <tên-miền-của-bạn>  # tên miền gửi mã đăng nhập
-npx wrangler deploy
-```
-Trong `wrangler.toml`: sửa `ALLOWED_ORIGINS` thành địa chỉ web, `MAIL_FROM` thành địa chỉ gửi (thuộc tên miền vừa bật), `ADMIN_EMAILS` thành email được vào trang quản trị (đặt bằng biến môi trường trên Cloudflare nếu không muốn ghi vào kho mã). Dán địa chỉ worker vào `ACCOUNT.endpoint` trong `src/config.js`. Trang quản trị nằm ở `/admin.html`, đăng nhập cùng kiểu mã 6 số.
+1. Cloudflare › Workers & Pages › D1 › **Create database** (đặt tên gì cũng được, vd `purrsona`).
+2. Dự án Pages của Purrsona › Settings › **Bindings** › Add › D1 database: tên biến **`DB`**, chọn database vừa tạo. Bảng tự tạo ở lần chạy đầu.
+3. (Nên làm) Settings › Variables: `OWNER_EMAIL` = email quản trị (chưa đặt thì người đăng ký đầu tiên là quản trị).
+4. (Tuỳ chọn) `GOOGLE_CLIENT_ID` để có nút "Tiếp tục với Google" – dùng lại Client ID của trang khác cũng được, nhớ thêm tên miền Purrsona vào *Authorized JavaScript origins*. `RESEND_API_KEY` + `MAIL_FROM` để có "Quên mật khẩu" và mã đăng nhập qua email; chưa có thì quản trị bấm "Link đặt lại" trong trang quản trị rồi gửi cho người dùng.
+5. Retry deployment. Xong: app có Đăng nhập / Tạo tài khoản (email + mật khẩu), trang quản trị ở `/admin.html`.
 
-Máy chủ chỉ lưu: email, tên gọi, gói, bản sao tiến độ học và vài số tóm tắt (chuỗi ngày, số chữ đã thuộc, ngôn ngữ, vibe). Mã đăng nhập và phiên chỉ lưu dạng băm. Xoá tài khoản trong app là xoá hết dữ liệu trên máy chủ.
+Máy chủ chỉ lưu: email, tên gọi, mật khẩu đã băm (PBKDF2), gói, bản sao tiến độ học, vài số tóm tắt (chuỗi ngày, số chữ thuộc, ngôn ngữ, cấp, vibe) và số đúng/sai **ẩn danh theo chữ** (không gắn người) để việc nuôi kho chữ biết chữ nào khó. Xoá tài khoản trong app là xoá hết dữ liệu của người đó.
+
+### Kho chữ tự lớn mỗi ngày
+
+- **Chữ nóng** (5:41 sáng): đọc báo, chọn chữ Anh / Trung / Nhật đang nổi → `data/trends/`.
+- **Nuôi kho chữ** (4:17 sáng): xem cấp nào đang mỏng / đang có nhiều người học (`/api/insights`), viết thêm 24–40 chữ đúng cấp kỳ thi kèm câu ví dụ tự viết và vài câu mèo mới → `data/lexicon/`, kiểm bằng `node tools/lexicon-check.mjs`, rồi đẩy lên. App mở lên tự nạp, chữ mới vào đúng cấp – người học không phải cập nhật gì. Xem số chữ từng cấp: `node tools/lexicon-stats.mjs`.
+- **Tự đánh giá & tự chỉnh nhịp**: mỗi ngày app tự xem khả năng nhớ lại khi ôn và độ đều tay; nhớ kém thì giảm chữ mới, nhớ tốt và đều thì tăng (không vượt trần của gói; người dùng chỉnh tay thì app để yên 7 ngày). Tab Tiến độ hiện cấp đang vững, cấp đang học, gợi ý và những lần app đã tự chỉnh.
 
 ### Bước 12 – Phát hành bản mới
 
