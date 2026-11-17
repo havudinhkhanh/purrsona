@@ -1,4 +1,4 @@
-// Bộ máy BIẾN HÌNH đường viền – port nguyên từ na na (my-bit/site/mascot.js, 11/2026).
+// Bộ máy BIẾN HÌNH đường viền – port nguyên từ na (my-bit/site/mascot.js, 11/2026).
 // Một "dáng" = { id, w, h, eye:[x,y]|null, polys:[{t, p:Float32Array, n, cx, cy, ar}] }
 //   t: 0 = khối thân · 1 = lỗ (mắt, nét cắt) · 2 = băng vàng (phụ kiện) · 3 = lưỡi hồng
 // Gốc toạ độ: giữa thân, mặt đất y = 0, mèo hướng mặt sang PHẢI. Đơn vị = điểm ảnh bản vẽ gốc.

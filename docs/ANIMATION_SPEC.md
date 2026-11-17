@@ -93,7 +93,7 @@ Danh sách gốc nằm ở `src/render/clips.js`. Thêm tên mới = thêm 1 dò
 
 Rồi cắt lưới thành 8 file (hoặc khai báo `"atlas"` trong cat.json – xem `src/render/sprite/sprite-renderer.js`).
 
-**Mẹo giữ đúng 1 con mèo qua mọi động tác:** dùng chung 1 ảnh tham chiếu (mặt + thân) cho mọi lần tạo, và gửi kèm khung tham chiếu tư thế do `tools/bake_frames.py` xuất từ na na (đúng cỡ, đúng điểm neo).
+**Mẹo giữ đúng 1 con mèo qua mọi động tác:** dùng chung 1 ảnh tham chiếu (mặt + thân) cho mọi lần tạo, và gửi kèm khung tham chiếu tư thế do `tools/bake_frames.py` xuất từ na (đúng cỡ, đúng điểm neo).
 
 ## 6. Quy trình 5 bước
 

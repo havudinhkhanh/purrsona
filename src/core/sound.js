@@ -1,4 +1,4 @@
-// Âm thanh tổng hợp bằng Web Audio (không cần file): tiếng meo (từ na na – my-bit) + tiếng rừ rừ.
+// Âm thanh tổng hợp bằng Web Audio (không cần file): tiếng meo (từ na – my-bit) + tiếng rừ rừ.
 // Muốn dùng file thật: thay meow()/purr() bằng new Audio("assets/sfx/meow1.mp3").play().
 let AC = null, purrNode = null;
 const rnd = (a, b) => a + Math.random() * (b - a);

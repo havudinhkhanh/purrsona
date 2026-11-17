@@ -1,4 +1,4 @@
-// Bộ vẽ VECTOR (biến hình đường viền) – dùng cho na na. Tuân theo hợp đồng renderer (xem src/render/registry.js).
+// Bộ vẽ VECTOR (biến hình đường viền) – dùng cho na. Tuân theo hợp đồng renderer (xem src/render/registry.js).
 import { decodePose, mapOf, morph, morphMap, pathOf, extentOf, f1 } from "./morph.js";
 
 const NS = "http://www.w3.org/2000/svg";

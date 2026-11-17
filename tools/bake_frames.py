@@ -1,5 +1,5 @@
 """
-Xuất KHUNG HÌNH từ mèo vector (na na) ra file WebP trong suốt.
+Xuất KHUNG HÌNH từ mèo vector (na) ra file WebP trong suốt.
 Dùng để: (1) tạo mèo mẫu kiểu sprite (assets/cats/bong) chứng minh đường ống khung hình chạy được;
          (2) làm KHUNG THAM CHIẾU gửi Gemini / ChatGPT: đúng cỡ, đúng điểm neo, đúng chu kỳ → AI vẽ lại đẹp hơn rồi thả vào.
 

@@ -21,7 +21,9 @@ export function createBody(R, scene, opts = {}) {
     el, hit, R, room: null, x: 800, y: 780, h: 0, z: null, face: 1, faceShown: 1, v: 0, speedMul: 1,
     tok: 0, move: null, jump: null, sayUntil: 0, lift: 0, extraScale: 1, wobble: 0,
   };
-  function mount() { scene.actors.append(shadow, el); scene.topfx.append(bubble, eyes); }
+  // bóng chữ nằm lớp trên cùng (trên thẻ chữ) để không bị thẻ che; lớp này không bắt chạm
+  let talk = document.querySelector(".talkfx"); if (!talk) { talk = document.createElement("div"); talk.className = "talkfx"; (scene.vp?.parentElement || document.body).appendChild(talk); }
+  function mount() { scene.actors.append(shadow, el); scene.topfx.append(eyes); talk.append(bubble); }
 
   const guard = (t) => { if (t !== B.tok) throw CANCEL; };
   const frame = () => new Promise((r) => requestAnimationFrame(r));
@@ -36,12 +38,12 @@ export function createBody(R, scene, opts = {}) {
   B.faceTo = (dir) => { if (dir) B.face = dir > 0 ? 1 : -1; };
 
   /** đi bộ / chạy / rình tới (x, y) trên sàn */
-  B.walkTo = async (x, y, { gait = "walk", speed } = {}) => {
+  B.walkTo = async (x, y, { gait = "walk", speed, through = false } = {}) => {
     const t = B.tok; const clip = R.resolve(gait), inf = R.info(clip);
     const u = (speed || inf.speed || 160) * B.speedMul * (gait === "run" ? B.runMul ?? 0.7 : 1);      // đơn vị hình / giây
     const dx = x - B.x, dy = y - B.y, dist = Math.hypot(dx, dy * 1.6);
     if (dist < 4) return; if (Math.abs(dx) > 6) B.face = dx > 0 ? 1 : -1;
-    R.play(clip); B.move = { x, y, u, t };
+    R.play(clip); B.move = { x, y, u, t, through };
     while (B.move && B.move.t === t) { await frame(); guard(t); }
     guard(t);
   };
@@ -65,24 +67,25 @@ export function createBody(R, scene, opts = {}) {
     guard(t);
   };
   B.say = (text, ms = 4200) => {
-    if (!text) return; bubble.textContent = text; bubble.hidden = false; bubble.classList.remove("pop"); void bubble.offsetWidth; bubble.classList.add("pop");
+    if (!text) return; bubble.textContent = text; bubble.hidden = false; bubW = bubble.offsetWidth / 2; bubH = bubble.offsetHeight; bubble.classList.remove("pop"); void bubble.offsetWidth; bubble.classList.add("pop");
     B.sayUntil = performance.now() + ms;
   };
 
   /** gọi mỗi khung hình */
-  let vcur = 0, prevH = 0, tilt = 0, bobPh = 0;
+  let vcur = 0, prevH = 0, tilt = 0, bobPh = 0, bubW = 0, bubH = 0, crT = 0, crR = null;
+  const cardRect = () => { const n = performance.now(); if (n - crT > 400) { crT = n; const c = document.querySelector(".typo .card"); crR = c && c.offsetParent ? c.getBoundingClientRect() : null; } return crR; };
   B.tick = (dt) => {
     let v = 0, bob = 0;
     if (B.move) {
       // tăng tốc / giảm tốc tự nhiên: chân luôn khớp sàn vì clip đi chạy theo đúng tốc độ thật
       const m = B.move, d = D(B.y), dx = m.x - B.x, dy = m.y - B.y, dist = Math.hypot(dx, dy), pxPerU = k0 * d;
       const acc = m.u / (B.accelT || 0.48), remainU = dist / pxPerU;
-      const vEnd = Math.sqrt(2 * acc * 0.9 * remainU) + 18;
+      const vEnd = m.through ? m.u : Math.sqrt(2 * acc * 0.9 * remainU) + 18;      // điểm trung gian: đi xuyên qua, không thắng lại
       vcur = Math.min(m.u, vcur + acc * dt, vEnd);
       const px = vcur * pxPerU * dt;
-      if (dist <= px || dist < 0.6) { B.x = m.x; B.y = m.y; B.move = null; vcur = 0; }
+      if (dist <= px || dist < 0.6) { B.x = m.x; B.y = m.y; B.move = null; if (!m.through) vcur = 0; }
       else {
-        B.x += (dx / dist) * px; B.y += (dy / dist) * px; v = vcur; if (Math.abs(dx) > 3) B.face = dx > 0 ? 1 : -1;
+        B.x += (dx / dist) * px; B.y += (dy / dist) * px; v = vcur; if (Math.abs(dx) > 10 && Math.abs(dx) / dist > 0.3) B.face = dx > 0 ? 1 : -1;      // đi gần thẳng đứng thì giữ hướng, khỏi lật qua lật lại
         const depthShare = Math.abs(dy) / (dist || 1);
         bobPh += vcur * dt / 42; bob = depthShare > 0.25 ? -Math.abs(Math.sin(bobPh * Math.PI)) * 3.2 * depthShare : 0;     // đi xéo vào trong / ra ngoài: nhún nhẹ theo bước
       }
@@ -116,7 +119,15 @@ export function createBody(R, scene, opts = {}) {
     shadow.style.opacity = B.hidden ? 0 : (0.32 * air).toFixed(3); shadow.style.zIndex = el.style.zIndex - 1;
     if (!bubble.hidden) {
       if (performance.now() > B.sayUntil) bubble.hidden = true;
-      const hy = B.y - B.h - (R.box.ay - 30) * k * 0.82, bw = bubble.offsetWidth / 2, vw = scene.S?.vw || innerWidth, bx = Math.min(Math.max(B.x, bw + 10), vw - bw - 10); bubble.style.transform = `translate(${bx.toFixed(1)}px, ${hy.toFixed(1)}px) translate(-50%, -100%)`; bubble.style.setProperty("--tail", `${(B.x - bx).toFixed(0)}px`);
+      // đáy bóng chữ luôn cao hơn đỉnh tai (mắt − ~60 đơn vị hình) – không bao giờ che đầu mèo
+      const e0 = R.eye(), hx = e0 ? B.x + e0[0] * k * fx : B.x, earTop = e0 ? B.y - B.h + (e0[1] - 62) * k : B.y - B.h - (R.box.ay - 30) * k * 0.82;
+      const vw = scene.S?.vw || innerWidth, bw = bubW || 60, bh = bubH || 40;
+      let bx = Math.min(Math.max(hx, bw + 10), vw - bw - 10), by = Math.max(earTop - 16, bh + 12);
+      // đụng thẻ chữ phía trên → đặt bóng chữ sang ngang đầu mèo (không che đầu, không đè thẻ)
+      const cr = cardRect(), hit = cr && by - bh < cr.bottom + 4 && bx + bw > cr.left && bx - bw < cr.right;
+      if (hit) { const right = hx + 26 + 2 * bw < vw - 8; bx = right ? hx + 26 + bw : hx - 26 - bw; by = Math.max(cr.bottom + bh + 8, earTop + bh * 0.9); bx = Math.min(Math.max(bx, bw + 8), vw - bw - 8); }
+      bubble.classList.toggle("side", !!hit); bubble.classList.toggle("left", !!hit && bx < hx);
+      bubble.style.transform = `translate(${bx.toFixed(1)}px, ${by.toFixed(1)}px) translate(-50%, -100%)`; bubble.style.setProperty("--tail", `${clamp(hx - bx, -bw + 18, bw - 18).toFixed(0)}px`);
     }
     const e = R.eye(), n = scene.S.night || 0;
     if (e) { B.hx = B.x + e[0] * k * fx; B.hy = B.y - B.h + e[1] * k; B.k = k; }      // vị trí đầu – để ngậm quà

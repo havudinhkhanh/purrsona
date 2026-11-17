@@ -31,12 +31,12 @@ export function createBrain(game) {
     const from = zone(), to = Y.zoneOf(u, v);
     if (from !== to) {
       const d = Y.door; const a = from === "house" ? d.in : d.out, b = from === "house" ? d.out : d.in;
-      await walkUV(a.u, a.v, gait); await walkUV(b.u, b.v, gait);
+      await walkUV(a.u, a.v, gait, true); await walkUV(b.u, b.v, gait, true);      // qua cửa không dừng lại
       game.emit("zone", to); if (Math.random() < 0.4) game.say("enter", to);
     }
     await walkUV(u, v, gait);
   }
-  const walkUV = (u, v, gait) => { const [x, y] = Y.P(u, v); return B.walkTo(x, y, { gait }); };
+  const walkUV = (u, v, gait, through = false) => { const [x, y] = Y.P(u, v); return B.walkTo(x, y, { gait, through }); };
   async function goSpot(id, gait) {
     const sp = SPOTS[id]; if (!sp) return null;
     if (B.perch === id) return sp;

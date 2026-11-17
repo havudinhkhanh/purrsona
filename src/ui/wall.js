@@ -11,10 +11,16 @@ const norm = (s) => (s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,
 export function createWall(game, root) {
   const s = game.save, learn = game.learn, cr = game.critters;
   const el = document.createElement("div"); el.className = "typo"; root.appendChild(el);
-  el.innerHTML = `<section class="tl" aria-live="polite"></section>
-    <aside class="tr"><div class="clock"></div><div class="date"></div><div class="stat"></div></aside>
-    <div class="scribs"></div><p class="whisper" aria-live="polite"></p>
-    <nav class="bl"><button data-w="learn"></button><button data-w="review"></button><button data-w="book">sổ ★</button><button data-w="read">đọc ké</button><button data-w="menu" aria-label="Menu">${icon("menu")}</button></nav>`;
+  el.innerHTML = `<header class="hdr"><div class="when"><b class="clock"></b><span class="date"></span></div><div class="chips"></div></header>
+    <section class="tl card" aria-live="polite"></section>
+    <div class="scribs"></div><p class="whisper" role="status" aria-live="polite"></p>
+    <nav class="tabbar" aria-label="Điều hướng">
+      <button data-w="learn">${icon("bolt")}<span>Học</span><b class="badge" hidden></b></button>
+      <button data-w="review">${icon("repeat")}<span>Ôn</span><b class="badge" hidden></b></button>
+      <button data-w="book">${icon("book")}<span>Sổ</span></button>
+      <button data-w="read">${icon("eye")}<span>Đọc ké</span></button>
+      <button data-w="menu">${icon("menu")}<span>Thêm</span></button>
+    </nav>`;
   const q = (x) => el.querySelector(x), tl = q(".tl");
   let mode = "ambient", shift = 0, cur = null, series = [], quizT = 0, lastQuiz = Date.now(), shownAt = 0;
 
@@ -24,9 +30,10 @@ export function createWall(game, root) {
     q(".clock").textContent = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
     q(".date").textContent = `${WD[d.getDay()]}, ${d.getDate()}/${d.getMonth() + 1}`;
     const st = learn.streakAlive(), fl = learn.mastered().filter((c) => c.lang === learn.lang).length;
-    q(".stat").innerHTML = `${st ? `<span>🔥 ${st} ngày</span>` : `<span>chưa có chuỗi</span>`}<span>🌼 ${fl}</span>${t.due ? `<span>${t.due} từ chờ ôn</span>` : ""}`;
-    q("[data-w=learn]").textContent = t.neu ? `học ${t.neu} từ mới` : "học";
-    q("[data-w=review]").textContent = t.due ? `ôn ${t.due}` : "đố vui";
+    q(".chips").innerHTML = `<span class="chip-s" title="Chuỗi ngày học">🔥 ${st || 0}</span><span class="chip-s" title="Hoa (từ đã thuộc)">🌼 ${fl}</span>`;
+    const badge = (sel, n) => { const b = q(`[data-w=${sel}] .badge`); b.hidden = !n; b.textContent = n > 99 ? "99+" : n; };
+    badge("learn", t.neu); badge("review", t.due);
+    q("[data-w=review] span").textContent = t.due ? "Ôn" : "Đố vui";
     el.dataset.lang = learn.lang;
   }
 
@@ -43,30 +50,32 @@ export function createWall(game, root) {
     return L[(Math.floor(mins / every) + shift) % L.length];
   }
   const hotInfo = (c) => { const h = learn.hotOf(c.id); return h && s.learn.hot?.items?.includes(h) ? h : null; };
-  const why = (c) => { const h = hotInfo(c); return h ? `<p class="why">${esc(h.why)}${h.src?.[0] ? ` <a href="${esc(h.src[0].u)}" target="_blank" rel="noopener">${esc(h.src[0].t)} ↗</a>` : ""}</p>` : ""; };
+  const why = (c) => { const h = hotInfo(c); return h ? `<p class="why"><b>Vì sao nóng</b> ${esc(h.why)}</p>${h.src?.[0] ? `<p class="src"><a href="${esc(h.src[0].u)}" target="_blank" rel="noopener">Đọc tin: ${esc(h.src[0].t)} ↗</a></p>` : ""}` : ""; };
   const lab = (c) => { const st = learn.stat(c.id); if (hotInfo(c) && (!st || st.box < 4)) return `chữ nóng hôm nay · ${hotInfo(c).tag}`; if (!st || !st.seen) return "từ mới hôm nay"; if (st.box >= 4) return "đã thuộc · nhắc lại cho vui"; if (st.due <= Date.now() && st.right + st.wrong > 0) return "tới lúc ôn"; return "đang học"; };
-  function write(html, cls = "") { tl.className = "tl " + cls; tl.innerHTML = html; tl.classList.remove("in"); void tl.offsetWidth; tl.classList.add("in"); shownAt = Date.now(); }
-  const say = (c) => (s.settings.tts ? `<button class="sp" data-say="${esc(c.id)}" aria-label="Nghe">${icon("speaker")}</button>` : "");
-  const star = (c) => `<button data-star="${esc(c.id)}" class="${learn.booked(c.id) ? "on" : ""}">${learn.booked(c.id) ? "★ trong sổ" : "☆ lưu sổ"}</button>`;
-  const wordH = (c) => `<h1 class="w ${c.lang}"><span data-say="${esc(c.id)}" class="tapsay">${esc(c.w)}</span>${say(c)}</h1>`;
-  const autoSay = (c) => { if (s.settings.tts && s.settings.autoSay !== false && navigator.userActivation?.hasBeenActive && !document.hidden) setTimeout(() => game.speakCard(c), 500); };
+  function write(html, cls = "") { tl.className = "tl card " + cls; tl.innerHTML = html; tl.scrollTop = 0; tl.classList.remove("in"); void tl.offsetWidth; tl.classList.add("in"); shownAt = Date.now(); }
+  const say = (c, ex = false) => `<button class="ib${ex ? " sm" : ""}" ${ex ? "data-sayex" : "data-say"}="${esc(c.id)}" aria-label="${ex ? "Nghe câu ví dụ" : "Nghe"}">${icon("speaker")}</button>`;
+  const star = (c) => `<button class="ib star${learn.booked(c.id) ? " on" : ""}" data-star="${esc(c.id)}" aria-pressed="${learn.booked(c.id)}" aria-label="${learn.booked(c.id) ? "Bỏ khỏi sổ" : "Lưu vào sổ"}">${icon("star")}</button>`;
+  const top = (label, c) => `<div class="c-top"><span class="kick">${label}</span>${c ? star(c) : ""}</div>`;
+  const wordH = (c) => `<div class="c-word"><h1 class="w ${c.lang}" data-say="${esc(c.id)}">${esc(c.w)}</h1>${say(c)}</div>`;
+  const exBox = (c) => (c.ex ? `<div class="exbox"><div><p class="ex ${c.lang}">${esc(c.ex)}</p>${c.exPh ? `<p class="exph">${esc(c.exPh)}</p>` : ""}${c.exVi ? `<p class="exvi">${esc(c.exVi)}</p>` : ""}</div>${say(c, true)}</div>` : "");
+  const body = (c) => `${wordH(c)}<p class="ph">${esc(c.ph || "")}${c.pos ? ` · ${esc(c.pos)}` : ""}</p><p class="vi">${esc(c.vi)}</p>${exBox(c)}${why(c)}`;
+  const autoSay = (c) => { if (s.settings.tts && s.settings.autoSay !== false && navigator.userActivation?.hasBeenActive && !document.hidden) setTimeout(() => game.speakCard(c, false, false), 500); };
   function ambient(force) {
     if (!s.onboarded) return onboard();
     mode = "ambient"; const c = featured();
-    if (!c) { write(`<p class="k">${LANGS[learn.lang].vi}</p><h1 class="w">xong rồi</h1><p class="vi">Hôm nay hết chữ. Mai ${esc(game.cat.name)} đem chữ mới tới.</p>`); cur = null; return; }
+    if (!c) { write(`${top(LANGS[learn.lang].vi)}<h1 class="w">Xong rồi</h1><p class="lead">Hôm nay hết chữ. Mai ${esc(game.cat.name)} đem chữ mới tới.</p>`); cur = null; return; }
     if (!force && cur && cur.id === c.id && tl.dataset.id === c.id) return;
     cur = c; tl.dataset.id = c.id;
     const st = learn.stat(c.id), isNew = !st || !st.seen;
-    write(`<p class="k">${lab(c)}</p>${wordH(c)}<p class="ph">${esc(c.ph || "")}${c.pos ? ` · ${esc(c.pos)}` : ""}</p><p class="vi">${esc(c.vi)}</p>
-      ${c.ex ? `<p class="ex ${c.lang}">${esc(c.ex)}${c.exPh ? `<small>${esc(c.exPh)}</small>` : ""}<i>${esc(c.exVi || "")}</i></p>` : ""}${why(c)}
-      <p class="acts">${isNew ? `<button data-w="seen">nhớ rồi ✓</button>` : `<button data-w="quizme">đố từ này</button>`}${star(c)}<button data-w="next">từ khác →</button></p>`);
+    write(`${top(lab(c), c)}${body(c)}
+      <div class="acts">${isNew ? `<button class="btn pri" data-w="seen">${icon("check")}Nhớ rồi</button>` : `<button class="btn pri" data-w="quizme">${icon("bolt")}Đố từ này</button>`}<button class="btn" data-w="next">Từ khác${icon("arrow")}</button>${c.ex ? `<button class="btn text more" data-w="more">Ví dụ</button>` : ""}</div>`);
     if (isNew) autoSay(c);
   }
   function onboard() {
     mode = "onboard";
-    write(`<p class="k">chào, tui là ${esc(game.cat.name)}</p><h1 class="w">học gì nè?</h1>
-      <p class="acts big">${Object.entries(LANGS).map(([k, v]) => `<button data-picklang="${k}">${v.vi}</button>`).join("")}</p>
-      <p class="vi small">Mỗi ngày vài từ thôi. Tui viết lên đây, rồi thả bướm ra đố. Lười là tui biết liền.</p>`);
+    write(`${top(`chào, tui là ${esc(game.cat.name)}`)}<h1 class="w">Học gì nè?</h1>
+      <div class="acts stack">${Object.entries(LANGS).map(([k, v]) => `<button class="btn pri big" data-picklang="${k}"><b class="flag ${k}">${v.flag}</b>${v.vi}</button>`).join("")}</div>
+      <p class="lead">Mỗi ngày vài từ thôi. Tui viết lên đây, rồi thả bướm ra đố. Lười là tui biết liền.</p>`, "onb");
   }
 
   // ------------------------------------------------------------------ đố ngay trên cảnh
@@ -77,13 +86,14 @@ export function createWall(game, root) {
     const kind = plus && st.box >= 2 && Math.random() < 0.3 ? "listen" : Math.random() < 0.55 ? "mc" : "rev";
     const opts = learn.options(c, 4);
     const tag = (o) => (kind === "mc" ? o.vi : o.w);
-    const prompt = kind === "mc" ? `${wordH(c)}<p class="ph">${esc(c.ph || "")}</p><p class="hint">nghĩa là gì? bắt con bướm đúng nghĩa</p>`
-      : kind === "rev" ? `<h1 class="w vi">${esc(c.vi)}</h1><p class="hint">từ nào? bắt con bướm mang đúng chữ</p>`
-      : `<h1 class="w">nghe nè ${say(c)}</h1><p class="hint">nghe rồi bắt con bướm mang đúng chữ</p>`;
-    write(`<p class="k">${src === "cat" ? `${esc(game.cat.name)} đố` : "đố nè"}${series.length ? ` · còn ${series.length}` : ""}</p>${prompt}
-      <p class="opts">${opts.map((o) => `<button data-ans="${esc(o.id)}" class="${kind === "mc" ? "" : o.lang}">${esc(tag(o))}</button>`).join("")}</p><p class="acts"><button data-w="skip">bỏ qua</button></p>`, "quiz");
+    const prompt = kind === "mc" ? `${wordH(c)}<p class="ph">${esc(c.ph || "")}</p><p class="hint">Nghĩa là gì? Chọn, hoặc bắt con bướm đúng nghĩa.</p>`
+      : kind === "rev" ? `<h1 class="w vi">${esc(c.vi)}</h1><p class="hint">Chữ nào? Chọn, hoặc bắt bướm.</p>`
+      : `<div class="c-word"><h1 class="w">Nghe nè</h1>${say(c)}</div><p class="hint">Nghe rồi chọn đúng chữ.</p>`;
+    const long = kind === "mc" && opts.some((o) => (o.vi || "").length > 22);
+    write(`${top(`${src === "cat" ? `${esc(game.cat.name)} đố` : "đố nè"}${series.length ? ` · còn ${series.length}` : ""}`)}${prompt}
+      <div class="opts${long ? " one" : ""}">${opts.map((o, i) => `<button class="opt ${kind === "mc" ? "" : o.lang}" data-ans="${esc(o.id)}"><i>${i + 1}</i>${esc(tag(o))}</button>`).join("")}</div><div class="acts"><button class="btn text" data-w="skip">Bỏ qua</button></div>`, "quiz");
     cr.answers(opts.map((o) => ({ id: o.id, tag: tag(o), lang: kind === "mc" ? "vi" : o.lang })), (id, b) => answer(id, b));
-    if (kind === "listen") setTimeout(() => game.speakCard(c), 300);
+    if (kind === "listen") setTimeout(() => game.speakCard(c, false, true), 300);
     quizT = setTimeout(() => { if (mode === "quiz") { whisper(game.lineOf("pawtap_no")); cr.clearAnswers(); series = []; ambient(true); } }, 45000);
   }
   function answer(id, b) {
@@ -93,14 +103,22 @@ export function createWall(game, root) {
     const bf = game.critters.list.find((x) => x.answer && x.id === c.id); if (bf) cr.land(bf, true); if (b && !ok) cr.land(b, false);
     setTimeout(() => cr.clearAnswers(), 1400);
     const line = game.react(r, c); game.sayLine(line, 3200);
-    const res = document.createElement("p"); res.className = "res"; res.innerHTML = ok ? `đúng rồi ✓${r.combo >= 3 ? ` · ${r.combo} câu liền` : ""}` : `sai · <b>${esc(c.w)}</b> = ${esc(c.vi)}`;
-    tl.appendChild(res); game.buzz?.(ok ? 8 : [20, 50, 20]); if (ok) game.speakCard(c);
+    const res = document.createElement("p"); res.className = "res " + (ok ? "ok" : "bad"); res.innerHTML = ok ? `${icon("check")}Đúng${r.combo >= 3 ? ` · ${r.combo} câu liền` : ""}` : `Sai · <b>${esc(c.w)}</b> = ${esc(c.vi)}`;
+    tl.querySelector(".acts")?.replaceWith(res); game.buzz?.(ok ? 8 : [20, 50, 20]); if (ok) game.speakCard(c, false, false);
     if (!ok && !c._retry) { c._retry = 1; series.push(c); }
     setTimeout(next, ok ? 2000 : 3200);
   }
   function next() {
     if (series.length) { const n = series.shift(); if (n.__new) return showNew(n); return quiz(n); }
-    if (mode === "result" || mode === "quiz") { ambient(true); if (learn.doneToday()) { game.say("done"); game.emit("lesson-done"); } }
+    if (mode === "result" || mode === "quiz") { ambient(true); if (learn.doneToday()) { game.say("done"); game.emit("lesson-done"); askRemind(); } }
+  }
+  /** học xong bài đầu tiên: rủ bật nhắc (hỏi đúng 1 lần) */
+  function askRemind() {
+    const st = game.notify?.status(); if (s.askedRemind || !(st === "ask" || st === "ios-install")) return; s.askedRemind = Date.now(); game.persist();
+    setTimeout(() => { if (mode !== "ambient") return; mode = "ask";
+      write(`${top(`${esc(game.cat.name)} hỏi`)}<h1 class="w vi">Mai quên học thì sao?</h1><p class="lead">Để ${esc(game.cat.name)} nhắc mỗi tối. Học xong là im, hứa.${st === "ios-install" ? " Trên iPhone: thêm app vào màn hình chính trước đã." : ""}</p>
+        <div class="acts">${st === "ask" ? `<button class="btn pri" data-w="remind">${icon("bell")}Cho nhắc</button>` : ""}<button class="btn" data-w="later">Thôi</button></div>`);
+    }, 3500);
   }
   /** "học": từ mới hiện lên từng từ, bấm nhớ rồi → bướm đố ngay; xong tới các từ cần ôn */
   function lesson(kind = "full") {
@@ -113,8 +131,8 @@ export function createWall(game, root) {
   }
   function showNew(c0) {
     const c = Object.getPrototypeOf(c0); mode = "new"; cur = c; tl.dataset.id = c.id;
-    write(`<p class="k">từ mới${series.filter((x) => x.__new).length ? ` · còn ${series.filter((x) => x.__new).length} từ nữa` : ""}</p>${wordH(c)}<p class="ph">${esc(c.ph || "")}${c.pos ? ` · ${esc(c.pos)}` : ""}</p><p class="vi">${esc(c.vi)}</p>
-      ${c.ex ? `<p class="ex ${c.lang}">${esc(c.ex)}${c.exPh ? `<small>${esc(c.exPh)}</small>` : ""}<i>${esc(c.exVi || "")}</i></p>` : ""}${why(c)}<p class="acts"><button data-w="seen-next">nhớ rồi, đố đi ✓</button>${star(c)}</p>`, "new");
+    const left = series.filter((x) => x.__new).length;
+    write(`${top(`từ mới${left ? ` · còn ${left} từ nữa` : ""}`, c)}${body(c)}<div class="acts"><button class="btn pri" data-w="seen-next">${icon("check")}Nhớ rồi, đố đi</button>${c.ex ? `<button class="btn text more" data-w="more">Ví dụ</button>` : ""}</div>`, "new");
     autoSay(c);
     game.sayLine(game.lineOf("newword", { w: c.w }), 3000);
   }
@@ -131,8 +149,9 @@ export function createWall(game, root) {
   // ------------------------------------------------------------------ bấm
   el.addEventListener("click", (e) => {
     game.lastInput = Date.now();
+    const sx = e.target.closest("[data-sayex]"); if (sx) { game.speakCard(learn.card(sx.dataset.sayex), true); return; }
     const sp = e.target.closest("[data-say]"); if (sp) { game.speakCard(learn.card(sp.dataset.say)); if (Math.random() < 0.2) game.jab("ui_speak"); return; }
-    const stb = e.target.closest("[data-star]"); if (stb) { const id = stb.dataset.star; if (learn.booked(id)) { learn.unbook(id); stb.classList.remove("on"); stb.textContent = "☆ lưu sổ"; } else { const r = learn.bookmark(learn.card(id), s.plan); if (r.full) { whisper("Sổ đầy rồi. Gói Plus thì lưu thoải mái."); return; } stb.classList.add("on"); stb.textContent = "★ trong sổ"; game.jab("book"); } game.persist(); return; }
+    const stb = e.target.closest("[data-star]"); if (stb) { const id = stb.dataset.star; if (learn.booked(id)) { learn.unbook(id); stb.classList.remove("on"); whisper("Bỏ khỏi sổ."); } else { const r = learn.bookmark(learn.card(id), s.plan); if (r.full) { whisper("Sổ đầy rồi. Gói Plus thì lưu thoải mái."); return; } stb.classList.add("on"); whisper("Lưu vô sổ rồi."); game.jab("book"); } stb.setAttribute("aria-pressed", learn.booked(id)); game.buzz?.(8); game.persist(); return; }
     const an = e.target.closest("[data-ans]"); if (an) return answer(an.dataset.ans);
     const lg = e.target.closest("[data-picklang]"); if (lg) { learn.setLang(lg.dataset.picklang); s.onboarded = true; game.save && game.persist(); whisper(`Ok, học ${LANGS[lg.dataset.picklang].vi.replace(/^Tiếng/, "tiếng")}.`); ambient(true); clock(); return lesson("full"); }
     const b = e.target.closest("[data-w]"); if (!b) return; const a = b.dataset.w;
@@ -141,12 +160,21 @@ export function createWall(game, root) {
     if (a === "next") { shift++; if (Math.random() < 0.35) game.jab("ui_next"); return ambient(true); }
     if (a === "quizme" && cur) return quiz(cur);
     if (a === "skip") { cr.clearAnswers(); series = []; clearTimeout(quizT); game.jab("ui_skip"); return ambient(true); }
+    if (a === "more") { tl.classList.toggle("open"); b.textContent = tl.classList.contains("open") ? "Thu gọn" : "Ví dụ"; return; }
     if (a === "learn") return lesson("full");
+    if (a === "remind") { game.notify.enable().then((r) => whisper(r === "ok" ? "Ok. Tối nay tui nhắc." : "Chưa bật được. Vào Thêm › Cài đặt.")); return ambient(true); }
+    if (a === "later") { whisper("Ừ. Tự giác nha."); return ambient(true); }
     if (a === "menu" && Math.random() < 0.4) game.jab("ui_menu");
     if (a === "review") return learn.todo().due ? lesson("review") : lesson("fun");
     game.showSheet?.(a);
   });
 
+  // phím tắt: 1–4 chọn đáp án, Enter = nút chính
+  addEventListener("keydown", (e) => {
+    if (game.sheetOpen?.() || e.target.matches?.("input,textarea")) return;
+    const n = +e.key; if (n >= 1 && n <= 4) { tl.querySelectorAll(".opt:not(:disabled)")[n - 1]?.click(); return; }
+    if (e.key === "Enter") tl.querySelector(".btn.pri")?.click();
+  });
   // tự đố khi đang nhìn: 4–7 phút một lần, nếu có từ đã học
   setInterval(() => {
     clock();

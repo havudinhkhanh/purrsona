@@ -98,7 +98,7 @@ const L = {
   idle: ["…", "Hm.", "Nhìn gì."],
 };
 // tên mèo + cách mèo gọi bạn (mặc định "Sen") – điền lúc chạy
-const NAMES = { cat: "na na", sen: "Sen" };
+const NAMES = { cat: "na", sen: "Sen" };
 export function setNames(o) { Object.assign(NAMES, o); }
 export function line(key, mood, room, vars = {}) {
   const cand = (room && L[`${key}.${room}`]) || (mood && L[`${key}.${mood}`]) || L[key] || L.idle;

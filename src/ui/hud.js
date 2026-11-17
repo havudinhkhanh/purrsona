@@ -1,5 +1,5 @@
 // GIAO DIỆN nổi trên sân khấu chì: thẻ mèo, đảo thông báo, nút Học, bảng trượt (sheet).
-import { APP, PLANS, SKINS, DAILY_OPTS, BOOK_LIMIT, READ_LIMIT, can, planOf } from "../config.js";
+import { APP, PLANS, SKINS, DAILY_OPTS, BOOK_LIMIT, READ_LIMIT, REMIND, can, planOf } from "../config.js";
 import { TRAITS, ZONES, SPOTS } from "../cat/personality.js";
 import { esc, hhmm, dayKey } from "../core/util.js";
 import { save } from "../core/store.js";
@@ -48,13 +48,24 @@ export function createHud(game, root) {
       return `<li class="hrow"><button class="sp" data-bsay="${esc(c.id)}" aria-label="Nghe">${icon("speaker")}</button>
         <div><span class="tag">${esc(h.tag)}${h.level ? ` · ${esc(h.level)}` : ""}</span><br><span class="w ${c.lang}">${esc(c.w)}</span><span class="ph">${esc(c.ph || "")}</span><span class="vi">${esc(c.vi)}</span>
         <span class="hw">${esc(h.why)}${(h.src || []).map((x) => ` <a href="${esc(x.u)}" target="_blank" rel="noopener">${esc(x.t)} ↗</a>`).join("")}</span></div>
-        ${st.seen ? boxDots(st.box || 0) : `<button data-hstar="${esc(c.id)}">${on ? "★" : "☆"}</button>`}</li>`; };
+        ${st.seen ? boxDots(st.box || 0) : `<button class="ib star${on ? " on" : ""}" data-hstar="${esc(c.id)}" aria-label="${on ? "Bỏ khỏi sổ" : "Lưu vào sổ"}">${icon("star")}</button>`}</li>`; };
     const arch = (s.learn.hot?.archive || []).map((a) => ({ d: a.d, items: a.items.filter((h) => h.lang === learn.lang).map((h) => ({ ...h, card: learn.card(h.id) })).filter((h) => h.card) })).filter((a) => a.items.length);
     return `<p class="muted">${d ? `Mẻ ngày ${new Date(d).toLocaleDateString("vi-VN", { day: "numeric", month: "numeric" })} · ` : ""}chữ đang nổi trên báo và mạng. Câu ví dụ tự viết, bấm ↗ để đọc tin gốc.</p>
       ${H.some((h) => !learn.stat(h.card.id)?.seen) ? `<button class="primary" data-a="learnhot">${icon("bolt")} Học chữ nóng (${H.filter((h) => !learn.stat(h.card.id)?.seen).length})</button>` : ""}
       <ol class="hlist">${H.map(row).join("") || `<p class="muted">Chưa có mẻ nào. Mở mạng một lần để mèo lấy chữ mới.</p>`}</ol>
       ${locked > 0 ? `<button class="locked" data-a="plans">${icon("lock")} Còn ${locked} chữ nóng nữa hôm nay · Plus</button>` : ""}
       ${arch.length ? (lock("trend.archive") ? `<button class="locked" data-a="plans">${icon("lock")} Xem lại chữ nóng ${arch.length} ngày trước · Pro</button>` : arch.map((a) => `<details class="harch"><summary>${new Date(a.d).toLocaleDateString("vi-VN", { weekday: "short", day: "numeric", month: "numeric" })} · ${a.items.length} chữ</summary><ol class="hlist">${a.items.map(row).join("")}</ol></details>`).join("")) : ""}`;
+  }
+  function remindBlock() {
+    const N = game.notify; if (!N) return "";
+    const st = N.status(), R = N.R, on = R.on && st === "ok", max = N.maxTimes();
+    const note = { "ios-install": "iPhone chỉ nhận thông báo khi mở app từ màn hình chính: Safari › Chia sẻ › Thêm vào MH chính, rồi bật ở đây.", denied: "Bạn đã chặn thông báo. Vào cài đặt trình duyệt cho phép lại.", unsupported: "Trình duyệt này không hỗ trợ thông báo." }[st];
+    return `<div class="remind"><div class="row"><span>${icon("bell")} ${esc(game.cat.name)} nhắc học</span>${on ? `<input type="checkbox" data-remind checked>` : st === "ask" || (st === "ok" && !R.on) ? `<button class="btn pri sm" data-a="remind-on">Bật</button>` : ""}</div>
+      ${note ? `<p class="muted">${note}</p>` : ""}
+      ${on ? `<div class="row"><span>Giờ nhắc${max > 1 ? ` (tối đa ${max})` : ""}</span><span class="seg">${REMIND.presets.map((hm) => `<button data-rtime="${hm}" class="${R.times.includes(hm) ? "on" : ""}">${hm.replace(/^0/, "")}</button>`).join("")}</span></div>
+        ${max === 1 ? `<button class="locked" data-a="plans">${icon("lock")} Nhắc tới 3 lần/ngày + cứu chuỗi buổi tối · Plus</button>` : `<label class="row"><span>Nhắc cứu chuỗi lúc 21:30</span><input type="checkbox" data-rstreak ${R.streak ? "checked" : ""}></label>`}
+        <button class="ghost" data-a="remind-test">${icon("bell")} Thử nhắc ngay</button>
+        <p class="muted">${REMIND.endpoint ? "Nhắc cả khi đã đóng app." : "Hiện nhắc được khi app còn mở hoặc chạy nền. Muốn nhắc cả khi đóng app: bật máy chủ nhắc (xem README)."} Học xong bài trong ngày thì ${esc(game.cat.name)} im.</p>` : ""}</div>`;
   }
   function bookList() {
     const B = learn.book().filter((b) => b.card.lang === learn.lang), lim = can(s.plan, "book.unlimited") ? 0 : BOOK_LIMIT.free, ready = B.filter((b) => b.card.vi).length;
@@ -148,7 +159,7 @@ export function createHud(game, root) {
     },
     settings() {
       const h = s.settings.hour, L = s.learn;
-      return head("Cài đặt") + `<div class="settings">
+      return head("Cài đặt") + `<div class="settings">${remindBlock()}
         <button class="row link" data-a="lang"><span>Ngôn ngữ & trình độ</span><span>${LANGS[L.lang].vi} ›</span></button>
         <div class="row"><span>Từ mới mỗi ngày</span><span class="seg">${DAILY_OPTS[s.plan].map((n) => `<button data-daily="${n}" class="${L.daily === n ? "on" : ""}">${n}</button>`).join("")}</span></div>
         <div class="row"><span>Đổi chữ trên tường</span><span class="seg">${[5, 15, 60].map((n) => `<button data-rot="${n}" class="${(s.settings.rotate || 15) === n ? "on" : ""}">${n === 60 ? "1 giờ" : n + "′"}</button>`).join("")}</span></div>
@@ -180,7 +191,7 @@ export function createHud(game, root) {
   // ------------------------------------------------------------------ bấm nút
   el.addEventListener("click", (e) => {
     unlock(); game.lastInput = Date.now(); game.musicResume?.();
-    const b = e.target.closest("[data-a],[data-plan],[data-skin],[data-ui],[data-setlang],[data-level],[data-daily],[data-wtab],[data-wd],[data-rate],[data-rot],[data-yard],[data-bsay],[data-unbook],[data-rsave],[data-rnew],[data-hstar]"); if (!b || !el.contains(b)) return;
+    const b = e.target.closest("[data-a],[data-plan],[data-skin],[data-ui],[data-setlang],[data-level],[data-daily],[data-wtab],[data-wd],[data-rate],[data-rot],[data-yard],[data-rtime],[data-bsay],[data-unbook],[data-rsave],[data-rnew],[data-hstar]"); if (!b || !el.contains(b)) return;
     if (b.dataset.bsay) { game.speakCard(learn.card(b.dataset.bsay)); return; }
     if (b.dataset.hstar) { const id = b.dataset.hstar; if (learn.booked(id)) learn.unbook(id); else { const h = learn.hotOf(id), r = learn.bookmark({ ...learn.card(id), src: "hot", url: h?.src?.[0]?.u || "" }, s.plan); if (r.full) return toast("Sổ đầy rồi. Plus lưu thoải mái."); game.jab?.("book"); } save(s); show("words"); return; }
     if (b.dataset.unbook) { learn.unbook(b.dataset.unbook); save(s); show("words"); return; }
@@ -191,6 +202,7 @@ export function createHud(game, root) {
     if (b.dataset.setlang) { learn.setLang(b.dataset.setlang); save(s); show(wrap.classList.contains("sh-onboard") ? "onboard" : "lang"); refresh(); return; }
     if (b.dataset.level) { if (b.classList.contains("lockd")) return show("plans"); learn.setLevel(b.dataset.level); save(s); show(wrap.classList.contains("sh-onboard") ? "onboard" : "lang"); refresh(); return; }
     if (b.dataset.daily) { learn.setDaily(+b.dataset.daily); save(s); b.parentElement.querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b)); refresh(); return; }
+    if (b.dataset.rtime) { if (!game.notify.toggleTime(b.dataset.rtime)) toast(`Gói Free nhắc 1 giờ/ngày. Plus thì 3.`); show("settings"); return; }
     if (b.dataset.yard) { s.settings.yard = b.dataset.yard; game.yard.setDensity(b.dataset.yard); game.critters?.ambient(); save(s); show("settings"); return; }
     if (b.dataset.rot) { s.settings.rotate = +b.dataset.rot; save(s); show("settings"); game.wall?.ambient(true); return; }
     if (b.dataset.rate) { s.settings.rate = +b.dataset.rate; save(s); show("settings"); game.speakCard(learn.todayCards()[0] || learn.due()[0]); return; }
@@ -205,6 +217,8 @@ export function createHud(game, root) {
       case "learn": close(); return game.wall.lesson("full");
       case "learnbook": close(); return game.wall.lesson("book");
       case "learnhot": close(); return game.wall.lesson("hot");
+      case "remind-on": game.notify.enable().then((r) => { toast(r === "ok" ? `Ok. ${game.cat.name} sẽ nhắc. Đừng tắt.` : r === "denied" ? "Bị chặn rồi. Mở cài đặt trình duyệt cho phép lại." : r === "ios-install" ? "Thêm app vào màn hình chính trước đã." : "Chưa bật được thông báo."); show("settings"); }); return;
+      case "remind-test": game.notify.test(); return;
       case "scan": { const ta = q("[data-rtext]"); readText = (ta?.value || "").slice(0, READ_LIMIT[s.plan] || READ_LIMIT.free); readRes = runScan(readText); show("read"); game.sayLine?.(readRes.say, 4200); return; }
       case "review": close(); return game.wall.lesson(learn.todo().due ? "review" : "fun");
       case "call": return game.call();
@@ -226,6 +240,8 @@ export function createHud(game, root) {
   game.readText = (text) => { readText = String(text || "").slice(0, READ_LIMIT[s.plan] || READ_LIMIT.free); readRes = runScan(readText); show("read"); game.sayLine?.(readRes.say, 4200); };
   el.addEventListener("input", (e) => { if (e.target.matches("[data-rtext]")) { readText = e.target.value; const m = q(".rlim"); if (m) m.textContent = `${readText.length}/${e.target.maxLength} ký tự`; } });
   el.addEventListener("change", (e) => {
+    if (e.target.matches("[data-remind]")) { if (!e.target.checked) { game.notify.disable(); show("settings"); } return; }
+    if (e.target.matches("[data-rstreak]")) { game.notify.R.streak = e.target.checked; save(s); game.notify.sync(); return; }
     if (e.target.matches("[data-bvi]")) { if (e.target.value.trim()) { learn.setMeaning(e.target.dataset.bvi, e.target.value); save(s); show("words"); } return; }
     if (e.target.matches("[data-nick]")) { game.setNick(e.target.value); e.target.value = s.profile.nick; toast(`${game.cat.name} sẽ gọi bạn là “${s.profile.nick}”`); return; }
     if (e.target.matches("[data-csv]") && e.target.files[0]) { e.target.files[0].text().then((txt) => { const L = parseCsv(txt, learn.lang); s.learn.custom = [...s.learn.custom.filter((c) => c.lang !== learn.lang || c.pack === "book"), ...L]; learn.setLevel("custom/mine"); save(s, true); toast(`Đã nhập ${L.length} từ – đang học danh sách của bạn`); show("lang"); }); return; }

@@ -1,0 +1,16 @@
+name = "purrsona-remind"
+main = "worker.js"
+compatibility_date = "2026-11-01"
+
+[triggers]
+crons = ["*/15 * * * *"]
+
+[[kv_namespaces]]
+binding = "SUBS"
+id = "DÁN_ID_KV_VÀO_ĐÂY"
+
+[vars]
+# các địa chỉ web được phép gọi, cách nhau dấu phẩy
+ALLOWED_ORIGINS = "https://purrsona.pages.dev,http://localhost:8765"
+# VAPID_SUBJECT: địa chỉ liên hệ (https://… hoặc mailto:…) để dịch vụ push liên lạc khi có sự cố
+VAPID_SUBJECT = "https://purrsona.pages.dev"

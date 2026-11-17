@@ -6,6 +6,7 @@ Màn hình là một khu vườn nhìn từ trên xuống, hơi xiên, có căn 
 - **Như hình nền / màn hình khoá**: góc trái trên luôn có một từ (chữ, phiên âm hoặc pinyin, nghĩa, câu ví dụ). Từ tự đổi theo giờ (5, 15 hoặc 60 phút). Góc phải là giờ, ngày, chuỗi ngày học, số hoa.
 - **Học ngay trên cảnh, không có cửa sổ bật lên**: bấm "học" là từ mới hiện lên từng từ; bấm "nhớ rồi" thì bướm bay ra, mỗi con mang một đáp án. Chạm đúng con bướm là xong câu.
 - **Ôn lặp lại ngắt quãng** (hộp Leitner 0–6): đúng thì 1, 2, 4, 8, 16, 35 ngày sau mới hỏi lại; sai thì hỏi lại sau 10 phút. Lên hộp 4 là thuộc, ngoài vườn nở một bông hoa có ghi chữ đó.
+- **Mèo nhắc học**: thông báo hệ thống đúng giờ bạn chọn (Free 1 lần/ngày, Plus 3 lần + nhắc cứu chuỗi lúc 21:30). Học xong bài trong ngày thì mèo im.
 - **Mèo kháy**: viết câu ngắn ngay cạnh nó và ghi bậy ra lề giấy ("3 từ chưa ôn", "ôn đi trời"). Đúng thì khen nhỏ giọt, sai thì nói thẳng, sai một từ nhiều lần thì nhắc đích danh từ đó. Đang ngồi không lâu quá thì mèo tự chạy tới đố.
 - **Mèo có tính cách**: mỗi ngày một tâm trạng, có trí nhớ, biết giận khi bị bỏ bê, gắn bó tăng dần (dụi đầu vào màn hình, chớp mắt chậm, gõ kính đòi học, nhào bột, khoe bụng có bẫy).
 - **Giấy nhắn mỗi sáng**: mèo viết lại kết quả học hôm qua.
@@ -87,7 +88,21 @@ node tools/trend-check.mjs data/trends/2026-11-17.json
 ```
 Lệnh này kiểm tra (đủ trường, đủ hai thứ tiếng, không trùng 30 ngày, link https, câu ví dụ chứa chữ) rồi xuất `latest.json` và `index.json`. `git push` là app nhận mẻ mới lần mở kế tiếp. Câu ví dụ luôn tự viết, không chép câu trong bài báo.
 
-### Bước 10 – Phát hành bản mới
+### Bước 10 – (Tuỳ chọn) Mèo nhắc cả khi đã đóng app
+
+Chưa làm bước này thì mèo vẫn nhắc được khi app còn mở hoặc chạy nền (máy tính, Android). Muốn nhắc đúng giờ cả khi đã đóng app (Web Push):
+
+```bash
+node tools/vapid-keys.mjs                      # in ra VAPID_PUBLIC và VAPID_PRIVATE_JWK
+cd worker/remind
+npx wrangler kv namespace create SUBS          # dán id vào wrangler.toml
+npx wrangler secret put VAPID_PUBLIC
+npx wrangler secret put VAPID_PRIVATE_JWK
+npx wrangler deploy
+```
+Sửa `ALLOWED_ORIGINS` trong `wrangler.toml` thành địa chỉ web, rồi dán địa chỉ worker vào `REMIND.endpoint` trong `src/config.js`. Tin push không chứa nội dung: máy người dùng tự soạn câu nhắc từ tình hình học lưu sẵn trong máy. Worker chỉ giữ giờ nhắc, múi giờ và "hôm nay đã học chưa". iPhone cần mở app từ màn hình chính (iOS 16.4 trở lên) mới nhận thông báo.
+
+### Bước 11 – Phát hành bản mới
 
 1. Tăng `VERSION` trong `sw.js`.
 2. Tăng `APP.version` trong `src/config.js` (và `version` trong `extension/manifest.json` nếu tiện ích đổi).

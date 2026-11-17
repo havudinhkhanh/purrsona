@@ -58,7 +58,7 @@ export function createYard(root) {
     // màn dọc: xoay mạnh hơn + nhìn gần thẳng từ trên xuống để mảnh vườn cao lên, đầy màn hình hơn
     PHI = ((S.portrait ? -24 : -13) * Math.PI) / 180; TILT = S.portrait ? 0.7 : 0.56;
     // khung đặt khu vườn: chừa góc trên trái cho chữ, chừa đáy cho thanh chữ nhỏ
-    const R = S.portrait ? { x0: 0.06, x1: 0.94, y0: 0.38, y1: 0.86 } : { x0: 0.07, x1: 0.95, y0: 0.24, y1: 0.86 };
+    const R = S.portrait ? { x0: 0.06, x1: 0.94, y0: 0.45, y1: 0.885 } : { x0: 0.3, x1: 0.97, y0: 0.2, y1: 0.86 };      // chừa chỗ cho thẻ chữ (dọc: phía trên, ngang: bên trái)
     S.k = 1; S.ox = 0; S.oy = 0;
     const c = [P(0, 0), P(UW, 0), P(UW, UH), P(0, UH)], xs = c.map((p) => p[0]), ys = c.map((p) => p[1]);
     const bw = Math.max(...xs) - Math.min(...xs), bh = Math.max(...ys) - Math.min(...ys);

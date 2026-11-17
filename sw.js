@@ -1,15 +1,68 @@
 // Service worker: tải trước vỏ app, sau đó "mạng trước – lỗi thì dùng bản đã lưu" cho mọi file cùng nguồn.
 // Mỗi lần phát hành: tăng VERSION để máy người dùng lấy bản mới.
-const VERSION = "purrsona-1.3.0";
-const SHELL = ["./", "index.html", "styles/app.css", "manifest.webmanifest", "icons/icon.svg", "icons/apple-touch-icon.png", "src/main.js", "src/game.js", "src/config.js",
+const VERSION = "purrsona-2.0.0";
+const SHELL = ["./", "index.html", "styles/app.css", "manifest.webmanifest", "icons/icon.svg", "icons/apple-touch-icon.png", "assets/graphite.png", "src/main.js", "src/game.js", "src/config.js",
   "src/world/yard.js", "src/world/critters.js", "src/ui/wall.js", "src/ui/hud.js", "src/ui/icons.js", "src/ui/closeup.js", "src/vendor/rough.js",
-  "src/learn/srs.js", "src/learn/packs.js", "src/learn/tts.js", "src/learn/scan.js", "src/learn/trends.js", "src/meta/bridge.js", "src/learn/packs/en-core.js", "src/learn/packs/zh-core.js", "src/learn/packs/en-business.js",
+  "src/learn/srs.js", "src/learn/packs.js", "src/learn/tts.js", "src/learn/scan.js", "src/learn/trends.js", "src/meta/bridge.js", "src/meta/notify.js", "src/learn/packs/en-core.js", "src/learn/packs/zh-core.js", "src/learn/packs/en-business.js",
   "src/cat/brain.js", "src/cat/body.js", "src/cat/bond.js", "src/cat/lines.js", "src/cat/memory.js", "src/cat/personality.js", "src/meta/note.js",
   "assets/fonts/ph-latin-400.woff2", "assets/fonts/ph-vietnamese-400.woff2", "assets/fonts/bvp-latin-400.woff2", "assets/fonts/bvp-vietnamese-400.woff2",
   "assets/cats/index.json", "assets/cats/nana/cat.json", "assets/cats/nana/poses.json"];
 self.addEventListener("install", (e) => { e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())); });
-self.addEventListener("activate", (e) => { e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== VERSION).map((k) => caches.delete(k)))).then(() => self.clients.claim())); });
+self.addEventListener("activate", (e) => { e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== VERSION && k !== "purr-state").map((k) => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener("fetch", (e) => {
   const u = new URL(e.request.url); if (e.request.method !== "GET" || u.origin !== location.origin) return;
   e.respondWith(fetch(e.request).then((r) => { if (r.ok) { const c = r.clone(); caches.open(VERSION).then((ca) => ca.put(e.request, c)); } return r; }).catch(() => caches.match(e.request).then((m) => m || caches.match("index.html"))));
+});
+
+// ---------------------------------------------------------------- MÈO NHẮC: soạn thông báo từ "tình hình hôm nay" app đã lưu
+// Tin push không mang dữ liệu: service worker tự đọc Cache "purr-state" rồi chọn câu. Câu cộc, kháy chuyện lười – không chê người.
+const NAG = {
+  none: ["Chưa học chữ nào. Tính sao?", "Hôm nay chưa thấy mặt.", "Lướt đủ chưa? Vô học 2 phút.", "Tui ngồi đợi nãy giờ đó."],
+  due: ["{n} từ tới hạn ôn. Để mai là quên.", "{n} từ đang đợi. Tui cũng đợi.", "Ôn {n} từ thôi mà. Lẹ."],
+  streak: ["Chuỗi {s} ngày sắp đứt. Vô lẹ.", "{s} ngày đó. Bỏ hả?", "Còn mấy tiếng nữa là mất chuỗi {s} ngày."],
+  hot: ["Chữ nóng nay: '{w}'. Biết chưa?", "Báo nay nói '{w}' hoài. Vô coi."],
+  test: ["Ờ, nhắc được rồi đó. Giờ đi học."],
+};
+const pickL = (a) => a[Math.floor(Math.random() * a.length)];
+const fillL = (t, v) => t.replace(/\{(\w+)\}/g, (m, k) => (v[k] ?? m));
+async function readState() { try { const r = await (await caches.open("purr-state")).match("state.json"); return r ? await r.json() : null; } catch { return null; } }
+const todayLocal = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+// mỗi khung giờ chỉ nhắc 1 lần dù tới từ đâu (hẹn trong trang, đồng bộ nền, push)
+async function claim(slot) {
+  if (!slot) return true;
+  const c = await caches.open("purr-state"), r = await c.match("shown.json"), shown = r ? await r.json() : {}, key = `${todayLocal()} ${slot}`;
+  if (shown[key]) return false; shown[key] = 1; for (const k of Object.keys(shown)) if (!k.startsWith(todayLocal())) delete shown[k];
+  await c.put("shown.json", new Response(JSON.stringify(shown))); return true;
+}
+// khung giờ vừa tới (trong vòng `win` phút) theo danh sách giờ nhắc
+function slotNow(st, win = 15) { const n = new Date(), m = n.getHours() * 60 + n.getMinutes(); const all = [...(st?.times || []), ...(st?.streakNag ? ["21:30"] : [])]; return all.find((hm) => { const [h, mm] = hm.split(":").map(Number), t = h * 60 + mm; return m >= t && m - t < win; }) || null; }
+async function remind({ test = false, evening = false, slot = null } = {}) {
+  const st = await readState(); if (!st && !test) return;
+  if (!test && !(await claim(slot))) return false;
+  const fresh = st && st.d === todayLocal(), studied = fresh && st.studied;
+  if (!test && studied && !(st.due > 0)) return;      // học rồi, hết bài: khỏi nhắc
+  const v = { n: st?.due || st?.neu || 3, s: st?.streak || 0, w: st?.hot || "" };
+  const key = test ? "test" : evening && v.s > 1 && !studied ? "streak" : !studied && st?.hot && new Date().getHours() < 12 ? "hot" : fresh && st.due > 0 ? "due" : "none";
+  const body = fillL(pickL(NAG[key]), v);
+  return self.registration.showNotification(st?.cat || "na", { body, tag: "purr-remind", renotify: true, icon: "icons/icon-192.png", badge: "icons/icon-192.png", data: { url: "./" } });
+}
+self.addEventListener("message", (e) => { if (e.data?.type === "remind-now") e.waitUntil(remind({ test: !!e.data.test, evening: new Date().getHours() >= 20, slot: e.data.slot || null })); });
+self.addEventListener("push", (e) => { let d = {}; try { d = e.data ? e.data.json() : {}; } catch { /* không có dữ liệu */ } e.waitUntil(readState().then((st) => remind({ evening: d.kind === "streak" || new Date().getHours() >= 20, slot: slotNow(st, 30) })).then((r) => r ?? self.registration.showNotification("na", { body: "Ghé coi bài hôm nay.", tag: "purr-remind", icon: "icons/icon-192.png", silent: true }))); });
+self.addEventListener("periodicsync", (e) => {
+  if (e.tag !== "purr-remind") return;
+  e.waitUntil(readState().then((st) => { const slot = slotNow(st, 180); return slot ? remind({ evening: new Date().getHours() >= 20, slot }) : null; }));
+});
+self.addEventListener("notificationclick", (e) => {
+  e.notification.close();
+  e.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((cs) => { const c = cs.find((x) => "focus" in x); return c ? c.focus() : self.clients.openWindow(e.notification.data?.url || "./"); }));
+});
+
+// trình duyệt đổi địa chỉ push → đăng ký lại với máy chủ nhắc (địa chỉ + mã máy lưu trong purr-state)
+self.addEventListener("pushsubscriptionchange", (e) => {
+  e.waitUntil(readState().then(async (st) => {
+    if (!st?.endpoint || !st?.id || !st?.vapid) return;
+    const b = atob((st.vapid + "=".repeat((4 - (st.vapid.length % 4)) % 4)).replace(/-/g, "+").replace(/_/g, "/")), key = Uint8Array.from(b, (c) => c.charCodeAt(0));
+    const sub = await self.registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key });
+    await fetch(st.endpoint + "/subscribe", { method: "POST", headers: { "content-type": "text/plain" }, body: JSON.stringify({ id: st.id, sub, state: { d: st.d, studied: st.studied, times: st.times, tz: st.tz, streakNag: st.streakNag, streak: st.streak > 1 } }) });
+  }));
 });

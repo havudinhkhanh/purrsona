@@ -3,7 +3,7 @@ export const APP = {
   name: "Purrsona",
   tagline: "Mèo đanh đá dạy chữ · Anh – Trung",
   saveKey: "purrsona.save.v2",      // v2: bản học chữ (không đọc bản lưu nuôi mèo cũ)
-  version: "1.3.0",
+  version: "2.0.0",
 };
 
 // ------------------------------------------------------------------ GÓI (free / plus / pro)
@@ -31,6 +31,7 @@ export const FEATURES = {
   "read.ai": "pro",             // mèo đọc bằng AI: giải nghĩa từ lạ theo ngữ cảnh
   "trend.all": "plus",          // Chữ nóng: Free 2 chữ/ngày mỗi thứ tiếng, Plus đủ cả mẻ
   "trend.archive": "pro",       // xem lại chữ nóng 30 ngày trước
+  "remind.multi": "plus",       // mèo nhắc: Free 1 giờ/ngày, Plus tới 3 giờ + nhắc cứu chuỗi buổi tối
 };
 export const TREND_FREE = 2;
 export const BOOK_LIMIT = { free: 30 };
@@ -54,3 +55,6 @@ export const CHILL = { speed: 0.58, run: 1.1, transition: 1.5, idle: 2.2, camera
 
 // ------------------------------------------------------------------ GIỌNG AI (Pro) – điền địa chỉ Worker sau khi deploy worker/ai-voice
 export const AI = { endpoint: "", minGapMs: 30000, timeoutMs: 3000 };
+// ------------------------------------------------------------------ MÈO NHẮC (thông báo) – điền địa chỉ Worker sau khi deploy worker/remind
+// Chưa có Worker: vẫn nhắc được khi app còn mở/chạy nền (máy tính, Android). Có Worker: nhắc cả khi đã đóng app (Web Push).
+export const REMIND = { endpoint: "", presets: ["07:30", "12:15", "20:30", "22:00"] };
