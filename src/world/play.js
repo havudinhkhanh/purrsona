@@ -107,7 +107,7 @@ export function createPlay(game) {
     const cards = [...ids].sort(() => Math.random() - 0.5).slice(0, 2).map((w) => learn.card(`${learn.lang}:${w}`)).filter(Boolean); if (!cards.length) return;
     lastTag = now; tagCards = cards; mountTag();
     tag.innerHTML = cards.map((c, i) => `<button class="wt${i ? " sm" : ""}" data-tw="${esc(c.id)}"><b class="${c.lang}">${esc(c.w)}</b><small>${esc(c.ph || "")}</small><i>${esc(c.vi)}</i></button>`).join("") + `<button class="wstar${learn.booked(cards[0].id) ? " on" : ""}" data-tstar="${esc(cards[0].id)}" aria-label="Lưu vào sổ">${icon("star")}</button>`;
-    tag.hidden = false; tag.classList.remove("in"); void tag.offsetWidth; tag.classList.add("in"); tagUntil = now + 7000;
+    tag.hidden = false; tag.classList.remove("in"); tagW = tag.offsetWidth; tagH = tag.offsetHeight; tag.classList.add("in"); tagUntil = now + 7000;
     learn.L.sceneSeen ||= {}; for (const c of cards) learn.L.sceneSeen[c.id] = (learn.L.sceneSeen[c.id] || 0) + 1;
   }
   tag.addEventListener("pointerdown", (e) => e.stopPropagation());
@@ -115,14 +115,16 @@ export function createPlay(game) {
     const st = e.target.closest("[data-tstar]"); if (st) { const id = st.dataset.tstar; if (learn.booked(id)) learn.unbook(id); else learn.bookmark(learn.card(id), s.plan); st.classList.toggle("on", learn.booked(id)); game.persist(); tagUntil = Date.now() + 5000; return; }
     const w = e.target.closest("[data-tw]"); if (w) { game.speakCard(learn.card(w.dataset.tw), false, true); tagUntil = Date.now() + 6000; }
   });
+  let tagW = 0, tagH = 0;
   function placeTag() {
     if (tag.hidden) return; if (Date.now() > tagUntil) { tag.hidden = true; return; }
-    // đặt cạnh mèo (trái hoặc phải); hẹp quá thì xuống dưới chân, không bao giờ che mèo
-    const sc = Math.min(1, Math.max(0.72, Y.S.k / 4)), w = tag.offsetWidth * sc, h = tag.offsetHeight * sc, vw = Y.S.vw, vh = Y.S.vh, cH = Y.S.catH, cw = cH * 0.55 + 4, top = B.y - B.h;
+    // đặt cạnh mèo (trái hoặc phải); hẹp quá thì xuống dưới chân, không bao giờ che mèo. Chữ giữ cỡ thật (không thu nhỏ theo cảnh) để đọc được trên điện thoại
+    if (!tagW) { tagW = tag.offsetWidth; tagH = tag.offsetHeight; }      // đo 1 lần mỗi lần đổi chữ (đo mỗi khung hình làm trình duyệt tính lại bố cục liên tục)
+    const cmx = Y.cam?.x || 0, cmy = Y.cam?.y || 0, bx = B.x + cmx, w = tagW, h = tagH, vw = Y.S.vw, vh = Y.S.vh, cH = Y.S.catH, cw = cH * 0.55 + 4, top = B.y - B.h + cmy;
     let x, y = top - cH * 0.75 - h / 2;
-    if (B.x - cw - w >= 8) x = B.x - cw - w; else if (B.x + cw + w <= vw - 8) x = B.x + cw;
-    else { x = clamp(B.x - w / 2, 8, vw - w - 8); y = top + 12; if (y + h > vh - 90) y = top - cH * 1.15 - h; }
-    tag.style.transform = `translate(${x.toFixed(0)}px, ${clamp(y, 60, vh - h - 90).toFixed(0)}px) scale(${sc.toFixed(2)})`; tag.style.transformOrigin = "0 0";
+    if (bx - cw - w >= 8) x = bx - cw - w; else if (bx + cw + w <= vw - 8) x = bx + cw;
+    else { x = clamp(bx - w / 2, 8, vw - w - 8); y = top + 12; if (y + h > vh - 130) y = top - cH * 1.15 - h; }
+    tag.style.transform = `translate(${x.toFixed(0)}px, ${clamp(y, 60, vh - h - 130).toFixed(0)}px)`;
   }
 
   // ------------------------------------------------------------------ mèo chơi đồ vật (brain gọi acts(h))

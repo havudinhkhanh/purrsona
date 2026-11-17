@@ -61,7 +61,8 @@ export async function createGame(root) {
 
   // ------------------------------------------------------------------ khu vườn (một cảnh, nhìn từ trên xuống)
   const yard = createYard(root); game.yard = yard; game.scene = yard;
-  yard.S.forceHour = s.settings.hour; yard.setDensity(s.settings.yard || "full"); yard.setZoom(s.settings.zoom || "mid"); yard.light();
+  yard.S.forceHour = s.settings.hour; yard.setDensity(s.settings.yard || "full"); yard.setZoom(s.settings.zoom || "mid"); if (s.settings.zf && s.settings.zf !== 1) yard.setZf(s.settings.zf, s.settings.zfu, s.settings.zfv); yard.light();
+  yard.onZoom = (z, fu, fv) => { s.settings.zf = z; s.settings.zfu = fu; s.settings.zfv = fv; save(s); ev.emit("zoom", z); if (!document.body.classList.contains("answering")) game.critters?.ambient(); };
   const B = createBody(R, yard); game.body = B;
   const p0 = s.cat.uv || { u: 50, v: 50 }, [x0, y0] = yard.P(p0.u, p0.v);
   B.setRoom("yard", x0, y0, 0); B.mount();
@@ -181,6 +182,7 @@ export async function createGame(root) {
     const dt = last ? Math.min(0.1, (t - last) / 1000) : 0; last = t;
     B.tick(dt);
     catUV = yard.unP(B.x, B.y); s.cat.uv = catUV;
+    yard.camTick(dt, B.x, B.y - B.h * 0.5, !!document.body.classList.contains("answering"));
     critters.tick(dt); weather.tick(dt); play.tick(dt); game.vibe?.tick(dt);
     if (t - tLight > 30000) { tLight = t; yard.light(); if (dayKey() !== game.today.key) { game.today = todayOf(game.cat); ev.emit("mood"); } }
     if (t - tNeeds > 10000) { const h = (t - tNeeds) / 3600e3; tNeeds = t; if (h < 0.01) decay(N, h, brain.sleeping); s.cat.x = B.x; s.cat.y = B.y; save(s); }      // lưu thưa: ghi bộ nhớ mỗi giây làm khựng hình
@@ -313,6 +315,7 @@ function interactions(game, root) {
   const vp = game.yard.vp; let lastGround = 0;
   vp.addEventListener("pointerdown", (e) => {
     game.lastInput = Date.now(); game.musicResume?.(); snd.unlock();
+    if (scene.pinching || (e.pointerType === "touch" && !e.isPrimary)) return;
     if (e.target.closest(".cat-hit")) { vp.setPointerCapture(e.pointerId); petStart(e); return; }
     // chạm hoa → đọc chữ của bông hoa; chạm đồ chơi → mèo ra chơi, chạm đồ đổ → dọn
     const p = scene.toRoom(e.clientX, e.clientY);
@@ -322,7 +325,8 @@ function interactions(game, root) {
     // chạm đúp xuống đất = gọi mèo
     if (Date.now() - lastGround < 380) { lastGround = 0; game.call(); } else lastGround = Date.now();
   });
-  vp.addEventListener("pointermove", (e) => { if (pet) petMove(e); });
+  scene.onPinchStart = () => { pet = null; lastGround = 0; };      // chụm 2 ngón phóng to: bỏ vuốt mèo / chạm đúp
+  vp.addEventListener("pointermove", (e) => { if (pet && !scene.pinching) petMove(e); });
   const up = (e) => { if (pet) petEnd(e); };
   vp.addEventListener("pointerup", up); vp.addEventListener("pointercancel", up);
   vp.addEventListener("keydown", (e) => { if (e.target.closest(".cat-hit") && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); poke(); } });

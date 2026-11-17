@@ -36,7 +36,8 @@ export function createYard(root) {
   const vp = document.createElement("div"); vp.className = "viewport"; root.appendChild(vp);
   vp.innerHTML = `<svg class="ground"></svg><div class="world"><div class="actors"></div></div><div class="shade"></div><div class="topfx"></div>`;
   const G = rough.generator(), ground = vp.querySelector(".ground"), world = vp.querySelector(".world"), actors = vp.querySelector(".actors"), topfx = vp.querySelector(".topfx");
-  const S = { vp, vw: 1, vh: 1, k: 1, ox: 0, oy: 0, night: 0, hour: 12, follow: false, forceHour: null, portrait: false, catH: 70, density: "full", zoom: "mid" };
+  const S = { vp, vw: 1, vh: 1, k: 1, ox: 0, oy: 0, night: 0, hour: 12, follow: false, forceHour: null, portrait: false, catH: 70, density: "full", zoom: "mid", zf: 1, fu: null, fv: null };
+  const ZMIN = 0.7, ZMAX = 3.2, cam = { x: 0, y: 0, tx: 0, ty: 0, hot: 0 };
   // độ dày chi tiết của vườn: full = đầy đủ, calm = gọn, bare = trống (chỉ giữ thứ mèo dùng: nhà, cây, ghế, ao, luống hoa)
   const DENS = { full: { grass: 260, stones: 1, bushes: 4, wild: 10, beds: "dots" }, calm: { grass: 110, stones: 1, bushes: 2, wild: 4, beds: "dots" }, bare: { grass: 28, stones: 0, bushes: 0, wild: 0, beds: "line" } };
   const Dn = () => DENS[S.density] || DENS.full;
@@ -81,6 +82,11 @@ export function createYard(root) {
       S.ox = (R.x0 * S.vw + (R.x1 - R.x0) * S.vw / 2) - ((Math.min(...xs) + bw / 2) * S.k);
       S.oy = (R.y0 * S.vh + (R.y1 - R.y0) * S.vh / 2) - ((Math.min(...ys) + bh / 2) * S.k);
     }
+    // PHÓNG TO / THU NHỎ (chụm 2 ngón): phóng quanh điểm (fu, fv) của sân, điểm đó nằm đúng chỗ tâm sân cũ
+    if (S.zf !== 1) {
+      const [ax, ay] = P(UW / 2, UH / 2), fu = clamp(S.fu ?? UW / 2, 0, UW), fv = clamp(S.fv ?? UH / 2, 0, UH);
+      S.k *= S.zf; S.ox = 0; S.oy = 0; const [px, py] = P(fu, fv); S.ox = ax - px; S.oy = ay - py;
+    }
     const top = Math.min(...[P(0, 0), P(UW, 0), P(UW, UH), P(0, UH)].map((p) => p[1])), bot = Math.max(...[P(0, 0), P(UW, 0), P(UW, UH), P(0, UH)].map((p) => p[1]));
     S.yTop = top; S.yBot = bot;
     // mèo cao theo đơn vị sân (xích đu cao 13): luật xa gần đúng, mèo không to hơn đồ vật; tối thiểu 26px cho dễ thấy
@@ -88,7 +94,7 @@ export function createYard(root) {
     document.documentElement.style.setProperty("--sc", clamp(S.k / 4, 0.72, 1).toFixed(2));      // lời mèo / chữ cạnh mèo co theo cảnh
     document.documentElement.style.setProperty("--gw", `${Math.round((Math.max(...[P(0, 0), P(UW, 0), P(UW, UH), P(0, UH)].map((p) => p[0])) - Math.min(...[P(0, 0), P(UW, 0), P(UW, UH), P(0, UH)].map((p) => p[0]))) * 1.1)}px`);
     vp.style.setProperty("--crit", clamp(S.k / 4.6, 0.5, 1).toFixed(2));      // bướm ong bay chơi thu nhỏ theo cảnh
-    draw(); api.onLayout?.();
+    draw(); api.onLayout?.(); camApply(true);
   }
 
   // ------------------------------------------------------------------ vẽ
@@ -181,6 +187,69 @@ export function createYard(root) {
     api._sw = null; api.sway(api._swA || 0);
   }
 
+  // ------------------------------------------------------------------ máy quay: phóng to thì khung hình đi theo mèo
+  // Chỉ dời 3 lớp (đất, đồ vật, bướm) bằng transform – không vẽ lại, không ngắt việc mèo đang làm.
+  const camEls = () => [ground, world, topfx];
+  let camStill = 0;
+  function camApply(force) {
+    const tr = Math.abs(cam.x) < 0.5 && Math.abs(cam.y) < 0.5 ? "" : `translate(${cam.x.toFixed(1)}px, ${cam.y.toFixed(1)}px)`;
+    if (!force && tr === cam._tr) return; cam._tr = tr;
+    for (const n of camEls()) n.style.transform = tr;
+  }
+  function camClamp(x, y) {
+    if (S.zf <= 1.02) return [0, 0];
+    const b = api.bbox(), m = 40;      // không để mép sân lọt vào giữa màn hình
+    const lo = (a0, a1, v) => [v - m - a1, m - a0];      // vừa màn: cả sân luôn trong khung; to hơn màn: mép sân không lọt vào trong
+    const [x0, x1] = lo(b.x0, b.x1, S.vw), [y0, y1] = lo(b.y0 - 27 * S.k * HS, b.y1, S.vh);
+    return [clamp(x, Math.min(x0, x1), Math.max(x0, x1)), clamp(y, Math.min(y0, y1), Math.max(y0, y1))];
+  }
+  function setLayerHint(on) { for (const n of camEls()) n.style.willChange = on ? "transform" : ""; }
+  let pinch = null, wheel = null;
+  function preview(s, mx, my, m0x, m0y) {
+    const tr = `translate(${(mx - s * m0x + s * cam.x).toFixed(1)}px, ${(my - s * m0y + s * cam.y).toFixed(1)}px) scale(${s.toFixed(3)})`;
+    for (const n of camEls()) { n.style.transformOrigin = "0 0"; n.style.transform = tr; }
+  }
+  function commit(s, mx, my, m0x, m0y) {
+    const z = clamp(S.zf * s, ZMIN, ZMAX);
+    for (const n of camEls()) { n.style.transformOrigin = ""; }
+    if (Math.abs(z - S.zf) < 0.02) { cam._tr = null; camApply(true); return; }
+    const g = unP(m0x - cam.x, m0y - cam.y);      // điểm sân nằm dưới 2 ngón lúc bắt đầu
+    S.zf = Math.abs(z - 1) < 0.06 ? 1 : z; S.fu = S.zf === 1 ? null : clamp(g.u, 0, UW); S.fv = S.zf === 1 ? null : clamp(g.v, 0, UH);
+    layout();
+    const [nx, ny] = S.zf === 1 ? [0, 0] : [mx - P(S.fu, S.fv)[0], my - P(S.fu, S.fv)[1]];
+    [cam.x, cam.y] = camClamp(nx, ny); cam.tx = cam.x; cam.ty = cam.y; cam.hot = performance.now() + 2500; cam._tr = null; camApply(true);
+    api.onZoom?.(S.zf, S.fu, S.fv);
+  }
+  const mid = (a, b) => [(a.clientX + b.clientX) / 2, (a.clientY + b.clientY) / 2];
+  const gap = (a, b) => Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY) || 1;
+  vp.addEventListener("touchstart", (e) => {
+    if (e.touches.length !== 2) return; e.preventDefault();
+    const [a, b] = e.touches, r = vp.getBoundingClientRect(), [x, y] = mid(a, b);
+    pinch = { d0: gap(a, b), m0x: x - r.left, m0y: y - r.top, s: 1, mx: x - r.left, my: y - r.top, r };
+    api.pinching = true; document.body.classList.add("pinching"); setLayerHint(true); api.onPinchStart?.();
+  }, { passive: false });
+  vp.addEventListener("touchmove", (e) => {
+    if (!pinch || e.touches.length < 2) return; e.preventDefault();
+    const [a, b] = e.touches, [x, y] = mid(a, b);
+    pinch.s = clamp(gap(a, b) / pinch.d0, ZMIN / S.zf, ZMAX / S.zf); pinch.mx = x - pinch.r.left; pinch.my = y - pinch.r.top;
+    preview(pinch.s, pinch.mx, pinch.my, pinch.m0x, pinch.m0y);
+  }, { passive: false });
+  const pinchEnd = (e) => {
+    if (!pinch || (e.touches && e.touches.length >= 2)) return;
+    const p = pinch; pinch = null; commit(p.s, p.mx, p.my, p.m0x, p.m0y);
+    setTimeout(() => { api.pinching = false; document.body.classList.remove("pinching"); }, 60);
+  };
+  vp.addEventListener("touchend", pinchEnd); vp.addEventListener("touchcancel", pinchEnd);
+  for (const ev of ["gesturestart", "gesturechange"]) vp.addEventListener(ev, (e) => e.preventDefault(), { passive: false });      // Safari: không phóng cả trang
+  // máy tính: Ctrl + lăn chuột / chụm trên bàn di chuột
+  vp.addEventListener("wheel", (e) => {
+    if (!e.ctrlKey && !e.metaKey) return; e.preventDefault();
+    const r = vp.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+    if (!wheel) { wheel = { s: 1, m0x: x, m0y: y }; setLayerHint(true); document.body.classList.add("pinching"); }
+    wheel.s = clamp(wheel.s * Math.exp(-e.deltaY * 0.01), ZMIN / S.zf, ZMAX / S.zf); preview(wheel.s, wheel.m0x, wheel.m0y, wheel.m0x, wheel.m0y);
+    clearTimeout(wheel.t); wheel.t = setTimeout(() => { const w = wheel; wheel = null; commit(w.s, w.m0x, w.m0y, w.m0x, w.m0y); document.body.classList.remove("pinching"); }, 220);
+  }, { passive: false });
+
   // ------------------------------------------------------------------ chỗ đi lại
   const api = {
     S, P, unP, vp, actors, topfx, flowerSpots: [],
@@ -202,7 +271,26 @@ export function createYard(root) {
     /** cửa nhà (để đi vào/ra) */
     door: { in: { u: 77, v: 27 }, out: { u: 77, v: 33 } },
     spot: (id) => SPOTS[id],
-    toRoom(cx, cy) { const r = vp.getBoundingClientRect(); return { x: cx - r.left, y: cy - r.top }; },
+    toRoom(cx, cy) { const r = vp.getBoundingClientRect(); return { x: cx - r.left - cam.x, y: cy - r.top - cam.y }; },
+    /** độ dời máy quay (toạ độ trong sân + cam = toạ độ trên màn hình) */
+    cam,
+    get zf() { return S.zf; },
+    pinching: false,
+    /** đặt mức phóng (1 = vừa khung); fu, fv = điểm sân làm tâm */
+    setZf(z, fu = S.fu, fv = S.fv) { z = clamp(+z || 1, ZMIN, ZMAX); if (Math.abs(z - 1) < 0.06) { z = 1; fu = fv = null; } S.zf = z; S.fu = fu; S.fv = fv; cam.x = cam.y = cam.tx = cam.ty = 0; layout(); },
+    zoomBy(f, catX, catY) { const g = catX != null ? unP(catX, catY) : { u: S.fu ?? UW / 2, v: S.fv ?? UH / 2 }; api.setZf(S.zf * f, g.u, g.v); api.onZoom?.(S.zf, S.fu, S.fv); },
+    zRange: [ZMIN, ZMAX],
+    /** mỗi khung hình: phóng to thì giữ mèo trong khung (có vùng chết để khỏi lắc), lướt mượt */
+    camTick(dt, x, y, frozen) {
+      if (pinch || wheel) return;
+      if (S.zf <= 1.02) { if (cam.x || cam.y) { cam.x = cam.y = cam.tx = cam.ty = 0; camApply(true); } return; }
+      const sx = x + cam.x, sy = y + cam.y, ax = S.vw * 0.5, ay = S.vh * 0.6, dzx = S.vw * 0.22, dzy = S.vh * 0.17;
+      if (!frozen && performance.now() > cam.hot && (Math.abs(sx - ax) > dzx || Math.abs(sy - ay) > dzy)) [cam.tx, cam.ty] = camClamp(ax - x, ay - y);
+      const k = 1 - Math.exp(-dt * 2.6), dx = cam.tx - cam.x, dy = cam.ty - cam.y;
+      if (Math.abs(dx) < 0.4 && Math.abs(dy) < 0.4) { if (camStill++ === 20) setLayerHint(false); return; }
+      if (camStill > 20) setLayerHint(true); camStill = 0;
+      cam.x += dx * k; cam.y += dy * k; camApply();
+    },
     setWords(list) { words = list; draw(); },
     /** khung bao khu vườn trên màn hình (để đặt chữ, bướm) */
     bbox() { const c = [P(0, 0), P(UW, 0), P(UW, UH), P(0, UH)]; return { x0: Math.min(...c.map((p) => p[0])), x1: Math.max(...c.map((p) => p[0])), y0: Math.min(...c.map((p) => p[1])), y1: Math.max(...c.map((p) => p[1])) }; },

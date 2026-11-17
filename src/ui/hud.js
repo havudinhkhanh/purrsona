@@ -29,6 +29,17 @@ export function createHud(game, root) {
   game.on("streak", (n) => { if (n > 1) toast(`${n} ngày liền rồi đó`); });
   function refresh() {}
 
+  // ------------------------------------------------------------------ nút phóng to / thu nhỏ sân (hiện khi đã chụm 2 ngón, hoặc bật trong Cài đặt)
+  const zc = document.createElement("div"); zc.className = "zoomchip"; zc.hidden = true; zc.setAttribute("role", "group"); zc.setAttribute("aria-label", "Phóng to khu vườn");
+  zc.innerHTML = `<button data-zc="-1" aria-label="Thu nhỏ">−</button><button class="zv" data-zc="0" aria-label="Về khung vừa"></button><button data-zc="1" aria-label="Phóng to">+</button>`;
+  el.appendChild(zc);
+  const zPct = (z) => `${Math.round(z * 100)}%`;
+  const zStep = (d) => { const Y = game.yard; if (d === 0) { Y.setZf(1); Y.onZoom?.(1, null, null); } else Y.zoomBy(d > 0 ? 1.25 : 0.8, game.body.x, game.body.y); game.buzz?.(6); };
+  const zSync = () => { const z = game.yard.zf; zc.hidden = Math.abs(z - 1) < 0.01; zc.querySelector(".zv").textContent = zc.hidden ? "" : `↺ ${zPct(z)}`; };
+  zc.addEventListener("pointerdown", (e) => e.stopPropagation());
+  zc.addEventListener("click", (e) => { const b = e.target.closest("[data-zc]"); if (b) { zStep(+b.dataset.zc); zSync(); } });
+  game.on("zoom", zSync); setTimeout(zSync, 0);
+
   // ------------------------------------------------------------------ bảng trượt
   const wrap = q(".sheet-wrap"), body = q(".sheet-body");
   let closeT = 0;
@@ -259,6 +270,7 @@ export function createHud(game, root) {
         <button class="row link" data-a="vibe"><span>Vibe khu vườn</span><span>${game.vibe ? `${VIBES[game.vibe.chosen].emo} ${VIBES[game.vibe.chosen].vi}` : ""} ›</span></button>
         <div class="row"><span>Màn hình chính</span><span class="seg">${[["poster", "Tranh chữ"], ["card", "Thẻ học"]].map(([k, v]) => `<button data-home="${k}" class="${(s.settings.home || "poster") === k ? "on" : ""}">${v}</button>`).join("")}</span></div>
         <div class="row"><span>Tầm nhìn</span><span class="seg">${[["near", "Gần"], ["mid", "Vừa"], ["far", "Xa"]].map(([k, v]) => `<button data-zoom="${k}" class="${(s.settings.zoom || "mid") === k ? "on" : ""}">${v}</button>`).join("")}</span></div>
+        <div class="row zoomrow"><span>Phóng to mèo & sân <small>hoặc chụm 2 ngón trên sân</small></span><span class="seg"><button data-zstep="-1" aria-label="Thu nhỏ">−</button><button data-zstep="0" class="${Math.abs(game.yard.zf - 1) < 0.01 ? "on" : ""}" aria-label="Về khung vừa">${zPct(game.yard.zf)}</button><button data-zstep="1" aria-label="Phóng to">+</button></span></div>
         <div class="row"><span>Sân vườn</span><span class="seg">${[["full", "Đầy đủ"], ["calm", "Gọn"], ["bare", "Trống"]].map(([k, v]) => `<button data-yard="${k}" class="${(s.settings.yard || "full") === k ? "on" : ""}">${v}</button>`).join("")}</span></div>
         <div class="row"><span>Thời tiết${game.weather ? ` <small>${game.weather.label()} · ${esc(game.weather.st.src === "real" ? game.weather.st.place : game.weather.st.src === "sim" ? "tự đổi" : "cố định")}</small>` : ""}</span><span class="seg">${[["real", "Trời thật"], ["sim", "Tự đổi"], ["off", "Tắt"]].map(([k, v]) => `<button data-wxmode="${k}" class="${(s.settings.wx?.mode || "real") === k ? "on" : ""}">${v}</button>`).join("")}</span></div>
         ${(s.settings.wx?.mode || "real") === "real" ? `<button class="row link" data-a="wxplace"><span>Nơi lấy thời tiết</span><span>${esc(s.settings.wx?.place?.name || "TP. Hồ Chí Minh")} · dùng vị trí của tôi ›</span></button>` : ""}
@@ -291,7 +303,7 @@ export function createHud(game, root) {
   // ------------------------------------------------------------------ bấm nút
   el.addEventListener("click", (e) => {
     unlock(); game.lastInput = Date.now(); game.musicResume?.();
-    const b = e.target.closest("[data-a],[data-plan],[data-skin],[data-ui],[data-setlang],[data-level],[data-daily],[data-wtab],[data-wd],[data-rate],[data-rot],[data-yard],[data-wxmode],[data-wxfix],[data-rtime],[data-bsay],[data-unbook],[data-rsave],[data-rnew],[data-hstar],[data-vibe],[data-zoom],[data-home],[data-jans],[data-lmode]"); if (!b || !el.contains(b)) return;
+    const b = e.target.closest("[data-a],[data-plan],[data-skin],[data-ui],[data-setlang],[data-level],[data-daily],[data-wtab],[data-wd],[data-rate],[data-rot],[data-yard],[data-wxmode],[data-wxfix],[data-rtime],[data-bsay],[data-unbook],[data-rsave],[data-rnew],[data-hstar],[data-vibe],[data-zoom],[data-zstep],[data-home],[data-jans],[data-lmode]"); if (!b || !el.contains(b)) return;
     if (b.dataset.bsay) { game.speakCard(learn.card(b.dataset.bsay)); return; }
     if (b.dataset.hstar) { const id = b.dataset.hstar; if (learn.booked(id)) learn.unbook(id); else { const h = learn.hotOf(id), r = learn.bookmark({ ...learn.card(id), src: "hot", url: h?.src?.[0]?.u || "" }, s.plan); if (r.full) return toast("Sổ đầy rồi. Plus lưu thoải mái."); game.jab?.("book"); } save(s); show("words"); return; }
     if (b.dataset.unbook) { learn.unbook(b.dataset.unbook); save(s); show("words"); return; }
@@ -316,7 +328,8 @@ export function createHud(game, root) {
     if (b.dataset.lmode) { loginMode = b.dataset.lmode; loginStep = "email"; loginMsg = ""; loginEmail = q(".login [name=email]")?.value || loginEmail; show("account"); return; }
     if (b.dataset.jans) { const J = jumpQ, c = J.items[J.i], ok = b.dataset.jans === c.id; if (ok) { J.right++; J.known.push(c.id); } game.buzz?.(ok ? 8 : [10, 40, 10]); J.i++; if (J.i >= J.items.length && J.right >= J.need) { learn.jumpTo(J.key, J.known); save(s, true); refresh(); } show("jump"); return; }
     if (b.dataset.home) { s.settings.home = b.dataset.home; game.persist(); game.wall?.refresh?.(); show("settings"); return; }
-    if (b.dataset.zoom) { s.settings.zoom = b.dataset.zoom; game.yard.setZoom(b.dataset.zoom); game.persist(); show("settings"); return; }
+    if (b.dataset.zoom) { s.settings.zoom = b.dataset.zoom; game.yard.setZf(1); game.yard.onZoom?.(1, null, null); game.yard.setZoom(b.dataset.zoom); game.persist(); show("settings"); return; }
+    if (b.dataset.zstep != null) { zStep(+b.dataset.zstep); zSync(); show("settings"); return; }
     if (b.dataset.vibe) { const r = game.vibe.set(b.dataset.vibe); if (r.used) { toast(`Hôm nay xem thử rồi. Mở hẳn với gói ${PLANS[r.tier].vi}.`); show("plans"); return; } if (r.preview) toast(`Xem thử 30 giây. Mở hẳn với gói ${PLANS[r.tier].vi}.`); show("vibe"); return; }
     if (b.dataset.plan) { s.plan = b.dataset.plan; game.emit("plan", s.plan); if (!DAILY_OPTS[s.plan].includes(s.learn.daily)) learn.setDaily(DAILY_OPTS[s.plan].at(-1)); save(s, true); show("plans"); refresh(); return; }
     if (b.dataset.skin) { if (!game.setSkin(b.dataset.skin)) { const k = SKINS.find((x) => x.id === b.dataset.skin); return toast(k.feat && lock(k.feat) ? "Mũ phớt có trong gói Pro" : `Cần ${k.flowers} bông hoa (từ đã thuộc) để mở`); } show("cat"); return; }

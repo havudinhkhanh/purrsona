@@ -677,3 +677,21 @@ html.lite .viewport::before{mix-blend-mode:normal;opacity:calc(var(--sunA,0) * .
 html.lite .shade{mix-blend-mode:normal;background:#2c2e35;opacity:calc(var(--shadeA,0) * .8)}
 html.lite .wxfog{mix-blend-mode:normal;background:#6a6d75}
 html.lite[data-vibe=shanghai] .viewport,html.lite [data-vibe=shanghai] .viewport{filter:none}
+/* ---- 2.5.2 chữ cạnh mèo (khi mèo vồ bướm, đu xích đu…) đủ to để đọc trên điện thoại ---- */
+.wtag{max-width:min(320px,88vw);padding:4px}
+.wtag .wt{padding:5px 10px;min-height:46px}
+.wtag .wt b{font-size:1.45rem}.wtag .wt b.zh,.wtag .wt b.ja{font-size:1.5rem}.wtag .wt.sm b{font-size:1.22rem}
+.wtag .wt i{font-size:.88rem;line-height:1.25}.wtag .wt small{font-size:.78rem}
+.bfly .tag{font-size:max(1.2rem,17px)}
+/* đang đố bằng bướm: lời mèo lùi mờ để không che đáp án */
+body.answering .talkfx .bubble{opacity:.08;transition:opacity .25s}
+/* đang chụm 2 ngón phóng to: tạm giấu lời mèo / chữ cạnh mèo */
+body.pinching .talkfx{opacity:0}
+/* nút về khung vừa khi đang phóng to/thu nhỏ */
+.zoomchip{position:absolute;right:calc(env(safe-area-inset-right,0px) + 12px);bottom:calc(var(--safe-b) + 84px);z-index:16;display:flex;align-items:center;gap:2px;padding:3px;border-radius:999px;background:color-mix(in srgb,var(--paper) 94%,transparent);box-shadow:0 6px 18px rgba(20,20,20,.12);font:600 .78rem var(--font);color:var(--ink)}
+.zoomchip[hidden]{display:none}
+.zoomchip button{min-width:36px;height:36px;border-radius:999px;display:grid;place-items:center;font:600 1.05rem/1 var(--font);color:var(--ink)}
+.zoomchip button:active{background:color-mix(in srgb,var(--ink) 9%,transparent)}
+.zoomchip .zv{min-width:44px;font-size:.74rem;padding:0 4px}
+body.sheet-on .zoomchip{opacity:0;pointer-events:none}
+.zoomrow .seg button{min-width:44px}

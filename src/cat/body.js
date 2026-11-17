@@ -122,7 +122,7 @@ export function createBody(R, scene, opts = {}) {
     if (!bubble.hidden) {
       if (performance.now() > B.sayUntil) bubble.hidden = true;
       // đáy bóng chữ luôn cao hơn đỉnh tai (mắt − ~60 đơn vị hình) – không bao giờ che đầu mèo
-      const e0 = R.eye(), hx = e0 ? B.x + e0[0] * k * fx : B.x, earTop = e0 ? B.y - B.h + (e0[1] - 62) * k : B.y - B.h - (R.box.ay - 30) * k * 0.82;
+      const e0 = R.eye(), cmx0 = scene.cam?.x || 0, cmy0 = scene.cam?.y || 0, hx = (e0 ? B.x + e0[0] * k * fx : B.x) + cmx0, earTop = (e0 ? B.y - B.h + (e0[1] - 62) * k : B.y - B.h - (R.box.ay - 30) * k * 0.82) + cmy0;
       const vw = scene.S?.vw || innerWidth, bw = bubW || 60, bh = bubH || 40;
       let bx = Math.min(Math.max(hx, bw + 10), vw - bw - 10), by = Math.max(earTop - 16, bh + 12);
       // đụng thẻ chữ phía trên → đặt bóng chữ sang ngang đầu mèo (không che đầu, không đè thẻ)

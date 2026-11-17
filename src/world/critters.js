@@ -7,7 +7,8 @@ const BEE = `<svg viewBox="-20 -16 40 32"><ellipse cx="-4" cy="-10" rx="7" ry="9
 
 export function createCritters(game) {
   const Y = game.yard; let list = [];
-  const area = () => { const b = Y.bbox(), S = Y.S; return { x0: Math.max(b.x0 + 20, 70), x1: Math.min(b.x1 - 20, S.vw - 90), y0: Math.max(b.y0 - 30, S.vh * 0.3), y1: Math.min(b.y1 - 20, S.vh - 90) }; };
+  // vùng bay (toạ độ trong sân) = khu vườn ∩ phần đang thấy trên màn hình (phóng to thì máy quay dời cảnh)
+  const area = () => { const b = Y.bbox(), S = Y.S, cx = Y.cam?.x || 0, cy = Y.cam?.y || 0; return { x0: Math.max(b.x0 + 20, 70 - cx), x1: Math.min(b.x1 - 20, S.vw - 90 - cx), y0: Math.max(b.y0 - 30, S.vh * 0.3 - cy), y1: Math.min(b.y1 - 20, S.vh - 90 - cy) }; };
   function add(kind, o = {}) {
     const el = document.createElement("button"); el.className = kind + (o.answer ? "" : " amb"); el.type = "button";
     el.innerHTML = (kind === "bfly" ? BFLY : BEE) + (o.tag ? `<span class="tag${o.lang && o.lang !== "en" ? " " + o.lang : ""}">${esc(o.tag)}</span>` : "");
@@ -28,18 +29,19 @@ export function createCritters(game) {
   }
   /** bướm đáp án: opts = [{ id, tag, lang }], onPick(id) */
   function answers(opts, onPick) {
-    clearAnswers(); const A = area();
+    clearAnswers(); document.body.classList.add("answering"); const A = area();
     // bướm đáp án bay lơ lửng quanh chỗ của mình (không bay lung tung) để dễ chạm trúng
     // màn hẹp: lưới 2 cột; màn rộng: 1 hàng so le. Nhãn không rộng quá ô của mình → không đè nhau, không tràn mép
     const vw = Y.S.vw, x0 = 14, x1 = vw - 14, narrow = vw < 700, cols = narrow ? 2 : opts.length, rows = Math.ceil(opts.length / cols), cw = (x1 - x0) / cols;
     opts.forEach((o, i) => {
       const col = i % cols, row = Math.floor(i / cols), x = x0 + (col + 0.5) * cw;
       const y = narrow ? A.y0 + (A.y1 - A.y0) * ((row + 0.35) / rows) : A.y0 + (A.y1 - A.y0) * (0.35 + 0.3 * (i % 2));
-      const c = add("bfly", { answer: true, id: o.id, tag: o.tag, lang: o.lang, x, y, hx: x, hy: y, onTap: (c) => onPick(c.id, c) });
+      const cx = Y.cam?.x || 0;      // cột tính theo màn hình; cảnh đang dời theo máy quay thì trừ ra
+      const c = add("bfly", { answer: true, id: o.id, tag: o.tag, lang: o.lang, x: x - cx, y, hx: x - cx, hy: y, onTap: (c) => onPick(c.id, c) });
       c.el.style.setProperty("--tw", `${Math.max(90, Math.min(cw - 18, 260))}px`);
     });
   }
-  function clearAnswers() { list.filter((c) => c.answer).forEach(remove); }
+  function clearAnswers() { list.filter((c) => c.answer).forEach(remove); document.body.classList.remove("answering"); }
   function land(c, ok) { c.el.classList.add(ok ? "right" : "wrong"); if (ok) { const f = game.yard.flowerSpots?.[Math.floor(Math.random() * (game.yard.flowerSpots.length || 1))]; if (f) { c.tx = f.x; c.ty = f.y - 10; } } }
   function tick(dt) {
     const A = area();
