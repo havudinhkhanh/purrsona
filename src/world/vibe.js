@@ -1,4 +1,3 @@
-import { fitSvg } from "../render/fit.js";
 // VIBE KHU VƯỜN: đổi phong cách sân – Nhật Bản, Trung Hoa, Thượng Hải xưa, Ý, Pháp.
 // Mỗi vibe = vài món đồ vẽ chì ở các ô trống của sân (không đè xích đu, cầu tuột, giàn bầu, luống hoa),
 // chữ riêng của vibe (gói en-vibe / zh-vibe), mèo ra ngồi chơi với đồ, chạm đồ là hiện chữ.
@@ -275,19 +274,22 @@ export function createVibe(game) {
   let koiAcc = 0;
   function tickKoi(dt0) {
     if (!koiOn()) { if (koiEl.innerHTML) koiEl.innerHTML = ""; return; }
-    koiAcc += dt0; if (koiAcc < 0.033) return; const dt = Math.min(koiAcc, 0.1); koiAcc = 0;      // ~30 khung/giây là đủ cho cá
-    const k = Y.S.k, now = performance.now() / 1000; let g = "";
-    for (const r of ripples) { r.t += dt / 1.4; const [x, y] = Y.P(r.u, r.v), R = (0.8 + r.t * 3.2) * k; g += `<ellipse cx="${x}" cy="${y}" rx="${R}" ry="${R * 0.5}" fill="none" stroke="${INK}" stroke-width="1" opacity="${(1 - r.t) * 0.7}"/>`; }
+    koiAcc += dt0; if (koiAcc < (document.documentElement.classList.contains("low") ? 0.05 : 0.033)) return; const dt = Math.min(koiAcc, 0.1); koiAcc = 0;      // ~30 khung/giây là đủ cho cá (máy yếu 20)
+    const k = Y.S.k, now = performance.now() / 1000; let g = ""; const bx = [Infinity, Infinity, -Infinity, -Infinity], grow = (x, y, r) => { bx[0] = Math.min(bx[0], x - r); bx[1] = Math.min(bx[1], y - r); bx[2] = Math.max(bx[2], x + r); bx[3] = Math.max(bx[3], y + r); };
+    for (const r of ripples) { r.t += dt / 1.4; const [x, y] = Y.P(r.u, r.v), R = (0.8 + r.t * 3.2) * k; grow(x, y, R + 2); g += `<ellipse cx="${x}" cy="${y}" rx="${R}" ry="${R * 0.5}" fill="none" stroke="${INK}" stroke-width="1" opacity="${(1 - r.t) * 0.7}"/>`; }
     ripples = ripples.filter((r) => r.t < 1);
     for (const f of fish) {
       if (caught?.f === f) continue;
       f.scare = Math.max(0, f.scare - dt); f.a += f.sp * dt * (1 + f.scare * 2.2); f.r = 0.75 + Math.sin(now * 0.3 + f.ph) * 0.2;
       const [u, v] = fishUV(f), [u2, v2] = fishUV(f, Math.sign(f.sp) * 0.05), [x, y] = Y.P(u, v), [x2, y2] = Y.P(u2, v2);
-      g += drawFish(x, y, Math.atan2(y2 - y, x2 - x), k, f.c, Math.sin(now * (6 + f.scare * 8) + f.ph));
+      grow(x, y, 2.4 * k); g += drawFish(x, y, Math.atan2(y2 - y, x2 - x), k, f.c, Math.sin(now * (6 + f.scare * 8) + f.ph));
     }
-    if (caught) { caught.t += dt; const x = B.x + (B.face || 1) * Y.S.catH * 0.45, y = B.y - B.h - Y.S.catH * (0.55 + Math.sin(caught.t * 9) * 0.05); g += drawFish(x, y, -1.2 + Math.sin(caught.t * 14) * 0.6, k * 1.1, caught.f.c, Math.sin(caught.t * 20)); }
+    if (caught) { caught.t += dt; const x = B.x + (B.face || 1) * Y.S.catH * 0.45, y = B.y - B.h - Y.S.catH * (0.55 + Math.sin(caught.t * 9) * 0.05); grow(x, y, 2.8 * k); g += drawFish(x, y, -1.2 + Math.sin(caught.t * 14) * 0.6, k * 1.1, caught.f.c, Math.sin(caught.t * 20)); }
     koiEl.style.zIndex = Math.round(Y.P(POND.u, POND.v - POND.ry - 1.8)[1]) - 1;
-    koiEl.innerHTML = `<svg class="spr" viewBox="0 0 ${Y.S.vw} ${Y.S.vh}">${g}</svg>`; fitSvg(koiEl.firstChild, 10);
+    if (!g) { koiEl.innerHTML = ""; return; }
+    // khung SVG tính từ vị trí cá (không gọi getBBox mỗi khung – bắt trình duyệt tính lại bố cục)
+    const x0 = Math.floor(bx[0]), y0 = Math.floor(bx[1]), w = Math.ceil(bx[2] - x0), h = Math.ceil(bx[3] - y0);
+    koiEl.innerHTML = `<svg class="spr" viewBox="${x0} ${y0} ${w} ${h}" style="left:${x0}px;top:${y0}px;width:${w}px;height:${h}px;right:auto;bottom:auto">${g}</svg>`;
   }
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   function koiAct(h) {

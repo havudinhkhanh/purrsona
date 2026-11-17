@@ -11,7 +11,7 @@ import { createAccount } from "./meta/account.js";
 { const q = new URLSearchParams(location.search).get("lite"), lowMem = (navigator.deviceMemory || 8) <= 3; if (q === "1" || (q !== "0" && (IOS || lowMem))) document.documentElement.classList.add("lite"); if (IOS) document.documentElement.classList.add("ios"); }
 
 const root = document.getElementById("app");
-try {
+(async () => { try {
   const game = await createGame(root);
   createHud(game, root);
   if (game.save.settings.reduced) document.documentElement.classList.add("reduced");
@@ -28,7 +28,7 @@ try {
 } catch (e) {
   console.error(e);
   document.getElementById("boot").innerHTML = `<p>Mèo làm gãy bút chì rồi.<br><small>${e.message}</small></p>`;
-}
+} })();      // không dùng await ở cấp cao nhất: để bản cho máy cũ (legacy) đóng gói được
 
 // PWA: cài như app, chạy không cần mạng sau lần mở đầu
 if ("serviceWorker" in navigator && location.protocol === "https:" && window.top === window) navigator.serviceWorker.register("sw.js").catch(() => {});

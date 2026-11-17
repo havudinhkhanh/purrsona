@@ -737,3 +737,29 @@ body.sheet-on .zoomchip{opacity:0;pointer-events:none}
 @media (prefers-reduced-motion:reduce){.tile.hintme{animation:none}}
 .chip-lang{pointer-events:auto;min-height:32px;display:inline-flex;align-items:center;gap:3px;font-weight:700;cursor:pointer;color:var(--ink)}.chip-lang span{font-size:.62rem;opacity:.6}
 .typo[data-lang=zh] .chip-lang,.typo[data-lang=ja] .chip-lang{font-family:var(--zh)}
+/* ---- 2.7 · chế độ nhẹ (máy/tablet cũ): giữ hoạt hình nhưng cập nhật thưa hơn ---- */
+html.low .bfly .wing{animation-duration:.3s;animation-timing-function:steps(2,jump-none)}
+html.low .bee .bw{animation-duration:.16s;animation-timing-function:steps(2,jump-none)}
+html.low .petals i{animation-duration:18s}
+html.low .bubble,html.low .card,html.low .wtag,html.low .tabbar,html.low .sheet{box-shadow:0 2px 8px rgba(20,20,20,.12)}
+/* đang đố: bướm bay chơi (không mang đáp án) mờ đi để khỏi nhầm, không bắt được */
+body.answering .bfly.amb{opacity:.22;pointer-events:none}
+/* máy yếu: bỏ nhiễu nét chì (bộ lọc SVG rất nặng) ở cảnh cận mặt mèo – hoạt hình giữ nguyên */
+html.low .cu-face,html.low .cu-paw{filter:none}
+/* trình duyệt cũ không hiểu color-mix(): dùng màu đặc tương đương để chữ vẫn có nền đọc được */
+@supports not (background:color-mix(in srgb,red 50%,blue)){
+  .card,.wtag,.tabbar,.zoomchip,.sheet,.chip-s{background:var(--paper)}
+  .card .acts,.card .res{background:var(--paper)}
+  .tile,.typein input{background:#fff}
+  .others{border-top-color:#bbb}
+}
+/* điện thoại hẹp đời cũ (≤ 380px): hàng giờ & chip không xuống dòng */
+.chip-s{white-space:nowrap}
+.when{min-width:0}.date{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:380px){.chips{gap:4px}.chip-s{padding:3px 7px;font-size:.72rem}.hdr .date{display:none}}
+/* tablet (màn ≥ 700px cả hai chiều): chữ & nút to hơn cho dễ đọc, dễ bấm từ xa */
+@media (min-width:700px) and (min-height:700px){
+  .typo{zoom:1.2}html[data-uisize=s] .typo{zoom:1.04}html[data-uisize=l] .typo{zoom:1.38}
+  .bubble{font-size:clamp(1.4rem,2.6vmin,1.9rem)}
+  .wtag{max-width:min(380px,60vw)}.wtag .wt b{font-size:1.65rem}.wtag .wt.sm b{font-size:1.4rem}.wtag .wt i{font-size:1rem}.wtag .wt small{font-size:.86rem}.bfly .tag{font-size:1.35rem}
+}

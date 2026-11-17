@@ -38,6 +38,17 @@
     <ellipse cx="51" cy="72" rx="4.5" ry="5.5"/><ellipse cx="69" cy="72" rx="4.5" ry="5.5"/>
     <path d="M16 110 C40 104 80 104 104 110"/></svg>
   <h1>Purrsona</h1><p>Mèo đang mài bút chì…</p><div class="boot-bar"><i></i></div></div></div>
-<script type="module" src="src/main.js"></script>
+<!-- máy mới chạy thẳng src/ (module); máy cũ (iOS 12–14, Android Chrome cũ) chạy bản đóng gói legacy/app.js -->
+<script>
+(function () {
+  var modern = false;
+  try { new Function("var a = {}; a?.b; a.c ??= 1; a.d ||= 2;"); modern = "noModule" in HTMLScriptElement.prototype; } catch (e) {}
+  if (/[?&]legacy=1/.test(location.search)) modern = false;
+  var s = document.createElement("script");
+  if (modern) { s.type = "module"; s.src = "src/main.js"; } else { s.src = "legacy/app.js"; document.documentElement.className += " legacy"; }
+  s.onerror = function () { var b = document.getElementById("boot"); if (b) b.innerHTML = "<p>Không tải được app. Thử tải lại trang.</p>"; };
+  document.body.appendChild(s);
+})();
+</script>
 </body>
 </html>

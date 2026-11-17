@@ -39,7 +39,7 @@ export function createWeather(game) {
   const st = { kind: "clear", temp: null, place: (W.place || HCM).name, src: "sim", rain: 0, wind: 0, sun: 0, cloud: 0, flash: 0 };
   let drops = [], leaves = [], clouds = [], splashes = [], dpr = 1, nextBolt = 0, bolt = null;
 
-  function size() { dpr = Math.min(document.documentElement.classList.contains("lite") ? 1.25 : 2, devicePixelRatio || 1); cv.width = S.vw * dpr; cv.height = S.vh * dpr; cv.style.width = S.vw + "px"; cv.style.height = S.vh + "px"; }
+  function size() { dpr = Math.min(document.documentElement.classList.contains("lite") ? 1.25 : 2, devicePixelRatio || 1); cv.width = Math.round(S.vw * dpr); cv.height = Math.round(S.vh * dpr); cv.style.width = S.vw + "px"; cv.style.height = S.vh + "px"; }
   const inHouse = (u, v) => u > HOUSE.u0 - 1 && v < HOUSE.v1 + 1;
   const newDrop = (fresh) => { let u, v; do { u = Math.random() * UW; v = Math.random() * UH; } while (inHouse(u, v)); return { u, v, h: fresh ? Math.random() * 60 : 50 + Math.random() * 20, sp: 70 + Math.random() * 40 }; };
   const newLeaf = () => ({ x: st.windDir > 0 ? -20 : S.vw + 20, y: S.vh * (0.25 + Math.random() * 0.6), ph: Math.random() * 6, sp: 120 + Math.random() * 140, r: Math.random() * 6 });
@@ -72,13 +72,24 @@ export function createWeather(game) {
   }
 
   // ------------------------------------------------------------------ vẽ mỗi khung hình
-  let t0 = 0;
-  function tick(dt) {
-    if (S.vw * dpr !== cv.width || S.vh * dpr !== cv.height) size();
+  game.on?.("perf", () => { size(); blank = false; });
+  let t0 = 0, acc = 0, lastFog = "", lastSun = "", blank = false;
+  // NHẸ MÁY: chỉ vẽ lại canvas khi có thứ đang chuyển động nhanh. Mưa/gió/sét: mỗi khung (máy yếu: 30 hình/giây);
+  // mây trôi: ~12 hình/giây; chỉ có nắng (tia xoay rất chậm): ~5 hình/giây; không có gì: xoá 1 lần rồi nghỉ.
+  function tick(dt0) {
+    if (Math.round(S.vw * dpr) !== cv.width || Math.round(S.vh * dpr) !== cv.height) size();
+    acc += dt0;
+    const fast = st.rain > 0.03 || st.wind > 0.05 || bolt || st.flash > 0.01 || splashes.length, slow = st.cloud > 0.03;
+    const need = fast ? (document.documentElement.classList.contains("low") ? 1 / 32 : 0) : slow ? 1 / 12 : 1 / 5;
+    if (acc < need) return; const dt = Math.min(acc, 0.25); acc = 0;
     const T = target(), k = 1 - Math.exp(-dt * 0.6);
     for (const key of ["rain", "wind", "sun", "cloud"]) st[key] = lerp(st[key], s.settings.reduced ? T[key] * 0.4 : T[key], k);
-    fog.style.opacity = (st.rain * 0.22 + st.cloud * 0.1).toFixed(3);
-    Y.vp.style.setProperty("--sunA", (st.sun * (S.night > 0.5 ? 0 : 1)).toFixed(3));
+    const fo = (st.rain * 0.22 + st.cloud * 0.1).toFixed(2), su = (st.sun * (S.night > 0.5 ? 0 : 1)).toFixed(2);
+    if (fo !== lastFog) { lastFog = fo; fog.style.opacity = fo; }      // đổi biến CSS trên cả cảnh = tính lại kiểu cho mọi phần tử con → chỉ ghi khi đổi
+    if (su !== lastSun) { lastSun = su; Y.vp.style.setProperty("--sunA", su); }
+    const idle = !fast && !slow && !(st.sun > 0.02 && S.night < 0.6);
+    if (idle) { if (!blank) { ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height); blank = true; } return; }
+    blank = false;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, S.vw, S.vh);
     t0 += dt; const kk = S.k, ink = "rgba(31,31,31,";
     // nắng: vầng mặt trời + tia gạch nét ở góc phải trên; chói chang thì tia dài, xoay chậm, có hơi nóng bốc lên

@@ -182,9 +182,33 @@ export async function createGame(root) {
   // ------------------------------------------------------------------ vòng lặp khung hình
   let last = 0, tHud = 0, tLight = 0, tNeeds = 0, tMem = 0, tBlink = 4000;
   let skip = 0;
+  // ------------------------------------------------------------------ CHẾ ĐỘ MÁY: tự động / nhẹ (máy cũ, tablet đời cũ) / đẹp
+  // Nhẹ = cảnh chạy 30 hình/giây, bỏ kính mờ & hoà trộn lớp, mưa/cá thưa khung hơn. Mọi tính năng & hoạt hình vẫn giữ.
+  const html = document.documentElement, IOSDEV = html.classList.contains("ios");
+  const guessLow = () => html.classList.contains("legacy") || (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 3;      // trình duyệt cũ ≈ máy cũ
+  game.perf = { mode: s.settings.perf || "auto", low: false, auto: false };
+  game.setPerf = (mode = game.perf.mode, why = "") => {
+    game.perf.mode = s.settings.perf = mode;
+    const low = mode === "low" || (mode === "auto" && (game.perf.auto || guessLow()));
+    game.perf.low = low; game.low = low;
+    html.classList.toggle("low", low);
+    html.classList.toggle("lite", low || IOSDEV || new URLSearchParams(location.search).get("lite") === "1");      // iPhone luôn nhẹ phần đồ hoạ (tránh Safari hết bộ nhớ)
+    ev.emit("perf", { low, mode, why });
+  };
+  game.setPerf();
+  // tự đo: ở chế độ tự động, khung hình chậm (> 26ms trung vị) 2 lần đo liền → tự chuyển sang nhẹ
+  let pf = [], pfBad = 0;
+  const perfSample = (ms) => {
+    if (game.perf.mode !== "auto" || game.perf.low || document.hidden || game.sheetOpen?.()) { pf = []; return; }
+    pf.push(ms); if (pf.length < 180) return;
+    const m = pf.sort((a, b) => a - b)[90]; pf = [];
+    if (m > 26) { if (++pfBad >= 2) { game.perf.auto = true; game.setPerf("auto", "slow"); } } else pfBad = 0;
+  };
   function frame(t) {
     // menu đang mở che cảnh: chỉ vẽ ~12 khung/giây cho máy rảnh tay, menu trượt mượt
     if (game.sheetOpen?.() && (skip = (skip + 1) % 5)) { requestAnimationFrame(frame); return; }
+    if (game.low && last && t - last < 30) { requestAnimationFrame(frame); return; }      // máy yếu: 30 hình/giây
+    if (last) perfSample(t - last);
     const dt = last ? Math.min(0.1, (t - last) / 1000) : 0; last = t;
     B.tick(dt);
     catUV = yard.unP(B.x, B.y); s.cat.uv = catUV;

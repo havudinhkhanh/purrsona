@@ -67,10 +67,12 @@ export function createYard(root) {
     // khung đặt khu vườn: chừa góc trên trái cho chữ, chừa đáy cho thanh chữ nhỏ
     // TẦM NHÌN: gần = vườn tràn màn hình; vừa / xa = vườn lùi ra xa, chừa trời trống cho chữ, mèo nhỏ theo đúng tỉ lệ
     const Z = ZOOM[S.zoom] || ZOOM.mid, R = { ...(S.portrait ? Z.p : Z.l) };
+    // tablet dọc (màn bầu hơn điện thoại): cho vườn tràn rộng hơn chút, đỡ trống trời
+    const over = (S.portrait ? Z.over : 1) * (S.portrait && S.vw / S.vh > 0.56 ? 1.16 : 1);
     S.k = 1; S.ox = 0; S.oy = 0;
     const c = [P(0, 0), P(UW, 0), P(UW, UH), P(0, UH)], xs = c.map((p) => p[0]), ys = c.map((p) => p[1]);
     const bw = Math.max(...xs) - Math.min(...xs), bh = Math.max(...ys) - Math.min(...ys);
-    S.k = Math.min(((R.x1 - R.x0) * S.vw * (S.portrait ? Z.over : 1)) / bw, ((R.y1 - R.y0) * S.vh) / bh);      // màn dọc "gần": cho tràn 2 mép như ảnh nền
+    S.k = Math.min(((R.x1 - R.x0) * S.vw * over) / bw, ((R.y1 - R.y0) * S.vh) / bh);      // màn dọc "gần": cho tràn 2 mép như ảnh nền
     S.ox = (R.x0 * S.vw + (R.x1 - R.x0) * S.vw / 2) - ((Math.min(...xs) + bw / 2) * S.k);
     S.oy = (R.y0 * S.vh + (R.y1 - R.y0) * S.vh / 2) - ((Math.min(...ys) + bh / 2) * S.k);
     // tranh chữ đang chiếm phần trời: lùi mặt sân xuống sao cho cả ngọn cây / mái nhà (~27 đơn vị cao) vẫn nằm dưới chữ
@@ -78,7 +80,7 @@ export function createYard(root) {
       const gTop = Math.min(...[P(0, 0), P(UW, 0), P(UW, UH), P(0, UH)].map((p) => p[1])), need = S.reserve + 27 * S.k * HS;
       if (gTop >= need - 1) break;
       R.y0 = Math.min(R.y1 - 0.25, R.y0 + (need - gTop) / S.vh + 0.005);
-      S.k = Math.min(((R.x1 - R.x0) * S.vw * (S.portrait ? Z.over : 1)) / bw, ((R.y1 - R.y0) * S.vh) / bh);
+      S.k = Math.min(((R.x1 - R.x0) * S.vw * over) / bw, ((R.y1 - R.y0) * S.vh) / bh);
       S.ox = (R.x0 * S.vw + (R.x1 - R.x0) * S.vw / 2) - ((Math.min(...xs) + bw / 2) * S.k);
       S.oy = (R.y0 * S.vh + (R.y1 - R.y0) * S.vh / 2) - ((Math.min(...ys) + bh / 2) * S.k);
     }

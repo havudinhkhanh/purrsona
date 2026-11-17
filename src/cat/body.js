@@ -131,7 +131,7 @@ export function createBody(R, scene, opts = {}) {
       if (hit) { const right = hx + 26 + 2 * bw < vw - 8; bx = right ? hx + 26 + bw : hx - 26 - bw; by = Math.max(cr.bottom + bh + 8, earTop + bh * 0.9); bx = Math.min(Math.max(bx, bw + 8), vw - bw - 8); }
       bubble.classList.toggle("side", !!hit); bubble.classList.toggle("left", !!hit && bx < hx);
       B.bubbleBox = { x0: bx - bw, x1: bx + bw, y0: by - bh, y1: by };      // để chữ cạnh mèo né lời mèo
-      bubble.style.transform = `translate(${bx.toFixed(1)}px, ${by.toFixed(1)}px) translate(-50%, -100%)`; bubble.style.setProperty("--tail", `${clamp(hx - bx, -bw + 18, bw - 18).toFixed(0)}px`);
+      bubble.style.transform = `translate(${bx.toFixed(1)}px, ${by.toFixed(1)}px) translate(-50%, -100%)`; const tl = `${clamp(hx - bx, -bw + 18, bw - 18).toFixed(0)}px`; if (tl !== B._tail) { B._tail = tl; bubble.style.setProperty("--tail", tl); }
     }
     const e = R.eye(), n = scene.S.night || 0;
     if (e) { B.hx = B.x + e[0] * k * fx; B.hy = B.y - B.h + e[1] * k; B.k = k; }      // vị trí đầu – để ngậm quà

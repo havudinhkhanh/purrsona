@@ -1,4 +1,3 @@
-import { fitSvg } from "../render/fit.js";
 // SÂN CHƠI & ĐỒ VẬT trong vườn: xích đu, cầu tuột, giàn bầu (lớn dần theo ngày bạn học), luống hồng để mèo đào,
 // chậu cây để mèo xô đổ. Bày bừa thì để nguyên cả ngày; qua đêm "Sen" dọn lại, sáng ra mèo làm bộ ngẫm nghĩ.
 // Mèo làm gì → hiện chữ của việc đó cạnh mèo (gói "Chữ trong vườn"), chạm vào là nghe, ☆ là lưu sổ.
@@ -82,7 +81,10 @@ export function createPlay(game) {
 
   // ------------------------------------------------------------------ ghế xích đu (đu được)
   const seat = document.createElement("div"); seat.className = "seat"; Y.actors.appendChild(seat);
-  const sw = { a: 0, va: 0, ride: false };
+  // ghế xích đu: tạo 1 lần, mỗi khung chỉ đổi toạ độ 2 nét (không dựng lại SVG); đứng yên thì khỏi vẽ
+  seat.innerHTML = `<svg class="spr"><g stroke="#262626" stroke-linecap="round" fill="none"><path stroke-width="1.4"/><path fill="#FBFAF6" stroke-width="1.8"/></g></svg>`;
+  const seatSvg = seat.firstChild, [ropeP, boardP] = seat.querySelectorAll("path");
+  const sw = { a: 0, va: 0, ride: false, drawn: null };
   function drawSeat(dt) {
     const { u, v, top, len } = PROPS.swing, wind = (game.weather?.st.wind || 0) * 0.15;
     sw.va += (-sw.a * 2.6 - sw.va * (sw.ride ? 0.05 : 0.5) + Math.sin(performance.now() / 900) * wind) * dt; sw.a += sw.va * dt;
@@ -90,9 +92,14 @@ export function createPlay(game) {
     if (sw.ride && energy < 0.2 && Math.abs(sw.a) < 0.1) sw.va += Math.sign(sw.va || 1) * 1.6 * dt;
     sw.a = clamp(sw.a, -0.55, 0.55);
     const sv = v + Math.sin(sw.a) * len, sh = top - Math.cos(sw.a) * len;
+    const key = `${sw.a.toFixed(3)}|${Y.S.k}|${Y.S.ox}|${Y.S.oy}`; if (key === sw.drawn) return { sv, sh }; sw.drawn = key;
     const [a1, a2] = [Y.P(u - 2.2, v, top), Y.P(u + 2.2, v, top)], [b1, b2] = [Y.P(u - 2.2, sv, sh), Y.P(u + 2.2, sv, sh)], [c1, c2] = [Y.P(u - 2.2, sv + 1.2, sh), Y.P(u + 2.2, sv + 1.2, sh)];
     seat.style.zIndex = Math.round(Y.P(u, sv)[1]) - 2;      // ghế nằm sau thân mèo đang ngồi
-    seat.innerHTML = `<svg class="spr" viewBox="0 0 ${Y.S.vw} ${Y.S.vh}"><g stroke="#262626" stroke-linecap="round" fill="none"><path d="M${a1}L${b1}M${a2}L${b2}" stroke-width="1.4"/><path d="M${b1}L${b2}L${c2}L${c1}Z" fill="#FBFAF6" stroke-width="1.8"/></g></svg>`; fitSvg(seat.firstChild);
+    const f = (p) => `${p[0].toFixed(1)} ${p[1].toFixed(1)}`;
+    ropeP.setAttribute("d", `M${f(a1)}L${f(b1)}M${f(a2)}L${f(b2)}`); boardP.setAttribute("d", `M${f(b1)}L${f(b2)}L${f(c2)}L${f(c1)}Z`);
+    // khung SVG tính thẳng từ toạ độ (không hỏi trình duyệt getBBox – hỏi là bắt tính lại bố cục)
+    const xs = [a1, a2, b1, b2, c1, c2].map((p) => p[0]), ys = [a1, a2, b1, b2, c1, c2].map((p) => p[1]), x0 = Math.floor(Math.min(...xs) - 4), y0 = Math.floor(Math.min(...ys) - 4), w = Math.ceil(Math.max(...xs) + 4 - x0), h = Math.ceil(Math.max(...ys) + 4 - y0);
+    seatSvg.setAttribute("viewBox", `${x0} ${y0} ${w} ${h}`); Object.assign(seatSvg.style, { left: x0 + "px", top: y0 + "px", width: w + "px", height: h + "px", right: "auto", bottom: "auto" });
     return { sv, sh };
   }
 
