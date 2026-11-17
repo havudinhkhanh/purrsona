@@ -1,7 +1,7 @@
 // BỘ NÃO: chọn việc tiếp theo theo nhu cầu + tính cách hôm nay + giờ + TÌNH HÌNH HỌC CỦA BẠN.
 // Mọi vị trí tính trên mặt đất (u, v) của khu vườn rồi chiếu ra màn hình (world/yard.js).
 // Mỗi hoạt động = { id, score() → số, run() async }. Thêm hoạt động mới = thêm 1 mục vào ACTS.
-import { HOUSE, SPOTS, UW, UH } from "../world/yard.js";
+import { HOUSE, SPOTS, BEDS, UW, UH } from "../world/yard.js";
 import { CANCEL } from "./body.js";
 import { clamp, rand, pick, weighted } from "../core/util.js";
 
@@ -72,11 +72,11 @@ export function createBrain(game) {
     { id: "watch", score: () => 0.35 + T().curious * 0.5 + (mood() === "poet" ? 1.2 : 0),
       async run() { const c = weighted(spotsWith("watch"), near); if (!c) return; await goSpot(c.id); await B.act("idle_tail", rand(5, 9) * 1000); if (Math.random() < 0.5) say("watch"); await B.act("look_up", rand(4, 8) * 1000); await B.act("idle_tail", rand(6, 14) * 1000); } },
     { id: "explore", score: () => 0.4 + T().curious * 0.8 + (mood() === "explorer" ? 1.1 : 0),
-      async run() { const z = zone() === "house" ? "garden" : Math.random() < 0.5 ? "house" : "garden"; for (let i = 0; i < 3; i++) { const p = Y.rand(z); await goUV(p.u, p.v, Math.random() < 0.25 ? "stalk" : "walk"); await B.act(Math.random() < 0.5 ? "idle_tail" : "look_up", rand(2, 5) * 1000); } } },
+      async run() { const z = zone() === "house" ? "garden" : Math.random() < 0.5 ? "house" : "garden"; for (let i = 0; i < 2; i++) { const p = Y.rand(z); await goUV(p.u, p.v, "walk"); await B.act(Math.random() < 0.5 ? "idle_tail" : "look_up", rand(4, 9) * 1000); } } },
     { id: "groom", score: () => 0.45,
       async run() { await B.act("groom_full", 9000); if (Math.random() < 0.3) say("groom"); await B.act("lick_body", rand(3, 6) * 1000); } },
-    { id: "zoomies", score: () => { const h = game.yard.S.hour; const crazy = Math.abs(h - game.today.crazyHour) < 0.75 ? 1.6 : 0; return N().energy > 55 ? crazy + (mood() === "zoomie" ? 1 : 0) + T().playful * 0.3 : 0; },
-      async run() { say("zoom"); for (let i = 0; i < 4; i++) { const p = Y.rand("garden"); await goUV(p.u, p.v, "run"); } await B.act("roll_play", 3000); N().energy -= 8; N().fun = clamp(N().fun + 15, 0, 100); } },
+    { id: "zoomies", score: () => { const h = game.yard.S.hour; const crazy = Math.abs(h - game.today.crazyHour) < 0.75 ? 1.6 : 0; return N().energy > 55 && cool("zoom", 30) ? (crazy + (mood() === "zoomie" ? 1 : 0) + T().playful * 0.3) * 0.35 : 0; },
+      async run() { used("zoom"); say("zoom"); for (let i = 0; i < 3; i++) { const p = Y.rand("garden"); await goUV(p.u, p.v, "run"); } await B.act("roll_play", 3000); N().energy -= 8; N().fun = clamp(N().fun + 15, 0, 100); } },
     { id: "selfplay", score: () => T().playful * 0.6 + (100 - N().fun) / 160,
       async run() { const c = weighted(spotsWith("play"), near); if (c) await goSpot(c.id); await B.act(Math.random() < 0.5 ? "roll_play" : "roll", 3500); N().fun = clamp(N().fun + 12, 0, 100); } },
     { id: "perch", score: () => 0.3 + T().brave * 0.4 + T().curious * 0.2,
@@ -85,7 +85,8 @@ export function createBrain(game) {
       async run() {
         await down();
         for (let i = 0; i < 3; i++) {
-          const b = game.critters.nearest(B.x, B.y); if (!b) break; const p = Y.unP(b.x, b.y + 60);
+          const b = game.critters.nearest(B.x, B.y); if (!b) break; const p = Y.unP(b.x, b.y + 60), me = uv();
+          if (Math.hypot(p.u - me.u, p.v - me.v) > 18) await goUV(clamp((p.u + me.u * 0.3) / 1.3, 3, UW - 3), clamp((p.v + me.v * 0.3) / 1.3, 3, UH - 3), "run");      // đuổi bướm: được chạy
           await goUV(clamp(p.u, 3, UW - 3), clamp(p.v, 3, UH - 3), "stalk"); B.faceTo(b.x - B.x);
           await B.act("crouch", 700 + Math.random() * 500); await B.jumpTo(B.x + B.face * 30, B.y, 0, null, { apex: Y.S.catH * 0.9 });
           game.critters.scare(b); game.memory.xp("hunter", 1); N().fun = clamp(N().fun + 8, 0, 100);
@@ -125,7 +126,22 @@ export function createBrain(game) {
         if (todo().due + todo().neu > 0) { await B.act("look_up", 600); game.nag(); }
       } },
     { id: "wander", score: () => 0.5,
-      async run() { const p = Y.rand(); await goUV(p.u, p.v); await B.act(pick(["idle", "idle_tail", "loaf", "look_up"]), rand(4, 12) * 1000); } },
+      async run() { const me = uv(); let p = Y.rand(); for (let i = 0; i < 8 && Math.hypot(p.u - me.u, p.v - me.v) > 26; i++) p = Y.rand(); await goUV(p.u, p.v); await B.act(pick(["idle", "idle_tail", "loaf", "look_up"]), rand(6, 14) * 1000); } },
+    // ---- thêm việc chậm rãi
+    { id: "sniff", score: () => 0.35 + T().curious * 0.4,
+      async run() { const b = pick(BEDS); await goUV(clamp(rand(b.u0, b.u1), 3, UW - 3), clamp(b.v1 + 2, 3, UH - 3)); B.faceTo(Math.random() < 0.5 ? 1 : -1); await B.act("crouch", rand(1.8, 3) * 1000); await B.act("look_up", 1600); await B.act("lick_lip", 1200); await B.act("idle_tail", rand(4, 8) * 1000); } },
+    { id: "sunbathe", score: () => { const h = game.yard.S.hour; return h >= 8 && h <= 16 && game.yard.S.night < 0.3 ? 0.25 + T().lazy * 0.5 : 0; },
+      async run() { const me = uv(); let p = Y.rand("garden"); for (let i = 0; i < 6 && Math.hypot(p.u - me.u, p.v - me.v) > 30; i++) p = Y.rand("garden"); await goUV(p.u, p.v); await B.act("lie", rand(15, 32) * 1000); if (Math.random() < 0.4) await B.act("belly_up", 4000); await B.act("stretch", 2600); } },
+    { id: "sitpretty", score: () => 0.3 + T().affectionate * 0.25,
+      async run() { await goUV(rand(40, 80), rand(46, 58)); B.faceTo(Math.random() < 0.5 ? 1 : -1); await B.act("idle_tail", rand(8, 16) * 1000); if (Math.random() < 0.3) { await B.act("chirp", 900); game.meow(1); } await B.act("loaf", rand(6, 12) * 1000); } },
+    { id: "pondgaze", score: () => 0.22 + T().curious * 0.3,
+      async run() { await goSpot("pond"); B.faceTo(-1); await B.act("crouch", rand(3, 5) * 1000); await B.act("idle_tail", rand(5, 9) * 1000); if (Math.random() < 0.3) say("watch"); await B.act("look_up", 2000); } },
+    { id: "scratchtree", score: () => (cool("scratch", 8) ? 0.25 + T().playful * 0.2 : 0),
+      async run() { used("scratch"); await goUV(48, 11.5); B.faceTo(-1); await B.act("stretch", 1800); await B.act("scratch", rand(2.5, 4) * 1000); await B.act("idle_tail", 3000); } },
+    { id: "yarn", score: () => (cool("yarn", 10) ? T().playful * 0.35 + (100 - N().fun) / 260 : 0),
+      async run() { used("yarn"); await goSpot("rug"); await B.act("play_yarn", rand(4, 7) * 1000); N().fun = clamp(N().fun + 10, 0, 100); await B.act("loaf", 4000); } },
+    { id: "flowerpounce", score: () => (cool("pounce", 6) && game.yard.flowerSpots?.length ? 0.2 + T().playful * 0.5 : 0),
+      async run() { used("pounce"); const f = pick(game.yard.flowerSpots), p = Y.unP(f.x, f.y + 40); await goUV(clamp(p.u - 6, 3, UW - 3), clamp(p.v + 2, 3, UH - 3), "run"); B.faceTo(1); await B.act("crouch", 900); await B.jumpTo(B.x + 30, B.y, 0, null, { apex: Y.S.catH * 0.7 }); await B.act("roll_play", 2600); if (Math.random() < 0.3) say("chase"); N().fun = clamp(N().fun + 10, 0, 100); } },
   ];
 
   function choose() {
@@ -142,7 +158,7 @@ export function createBrain(game) {
         await a.run();
       } catch (e) { if (e !== CANCEL) { console.error(e); await B.wait(1000); } }
       st.sleeping = false; B.lift = 0;
-      if (!st.interrupt) { try { await B.act(pick(["idle", "idle_tail", "idle_tail", "loaf"]), rand(1.6, 3.4) * 1000 * (game.chill?.idle || 1.4)); } catch (e) { if (e !== CANCEL) console.error(e); } }
+      if (!st.interrupt) { try { await B.act(pick(["idle", "idle_tail", "idle_tail", "loaf", "loaf"]), rand(2.5, 5) * 1000 * (game.chill?.idle || 1.4)); } catch (e) { if (e !== CANCEL) console.error(e); } }
     }
   }
   return {

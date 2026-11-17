@@ -22,12 +22,21 @@ export function createCritters(game) {
     list.filter((c) => !c.answer).forEach(remove);
     add("bfly", { onTap: (c) => { c.tx += rand(-200, 200); c.ty -= 120; game.say?.("chase"); } });
     add("bfly", { onTap: (c) => { c.tx += rand(-200, 200); c.ty -= 120; } });
-    for (let i = 0; i < 2; i++) add("bee", { onTap: () => { game.buzz?.([6, 30, 6]); game.say?.("bee"); } });
+    const bees = { full: 2, calm: 1, bare: 0 }[game.yard.S.density] ?? 2;
+    for (let i = 0; i < bees; i++) add("bee", { onTap: () => { game.buzz?.([6, 30, 6]); game.say?.("bee"); } });
   }
   /** bướm đáp án: opts = [{ id, tag, lang }], onPick(id) */
   function answers(opts, onPick) {
     clearAnswers(); const A = area();
-    opts.forEach((o, i) => add("bfly", { answer: true, id: o.id, tag: o.tag, lang: o.lang, x: A.x0 + ((i + 0.5) / opts.length) * (A.x1 - A.x0), y: A.y0 + (A.y1 - A.y0) * (0.35 + 0.3 * (i % 2)), onTap: (c) => onPick(c.id, c) }));
+    // bướm đáp án bay lơ lửng quanh chỗ của mình (không bay lung tung) để dễ chạm trúng
+    // màn hẹp: lưới 2 cột; màn rộng: 1 hàng so le. Nhãn không rộng quá ô của mình → không đè nhau, không tràn mép
+    const vw = Y.S.vw, x0 = 14, x1 = vw - 14, narrow = vw < 700, cols = narrow ? 2 : opts.length, rows = Math.ceil(opts.length / cols), cw = (x1 - x0) / cols;
+    opts.forEach((o, i) => {
+      const col = i % cols, row = Math.floor(i / cols), x = x0 + (col + 0.5) * cw;
+      const y = narrow ? A.y0 + (A.y1 - A.y0) * ((row + 0.35) / rows) : A.y0 + (A.y1 - A.y0) * (0.35 + 0.3 * (i % 2));
+      const c = add("bfly", { answer: true, id: o.id, tag: o.tag, lang: o.lang, x, y, hx: x, hy: y, onTap: (c) => onPick(c.id, c) });
+      c.el.style.setProperty("--tw", `${Math.max(90, Math.min(cw - 18, 260))}px`);
+    });
   }
   function clearAnswers() { list.filter((c) => c.answer).forEach(remove); }
   function land(c, ok) { c.el.classList.add(ok ? "right" : "wrong"); if (ok) { const f = game.yard.flowerSpots?.[Math.floor(Math.random() * (game.yard.flowerSpots.length || 1))]; if (f) { c.tx = f.x; c.ty = f.y - 10; } } }
@@ -37,10 +46,11 @@ export function createCritters(game) {
       c.t += dt;
       if (c.kind === "bfly") {
         const slow = c.answer ? 0.12 : 0.25;
-        if (Math.hypot(c.tx - c.x, c.ty - c.y) < 20 || Math.random() < dt * slow) { c.tx = clamp(c.x + rand(-180, 180), A.x0, A.x1); c.ty = clamp(c.y + rand(-120, 120), A.y0, A.y1); }
+        if (c.answer && c.hx != null && !c.el.classList.contains("right")) { if (Math.hypot(c.tx - c.x, c.ty - c.y) < 6 || Math.random() < dt * 0.4) { c.tx = c.hx + rand(-14, 14); c.ty = c.hy + rand(-10, 10); } }
+        else if (Math.hypot(c.tx - c.x, c.ty - c.y) < 20 || Math.random() < dt * slow) { c.tx = clamp(c.x + rand(-180, 180), A.x0, A.x1); c.ty = clamp(c.y + rand(-120, 120), A.y0, A.y1); }
         const sp = c.answer ? 0.35 : 0.6;
         c.vx += ((c.tx - c.x) * sp - c.vx) * dt * 1.5; c.vy += ((c.ty - c.y) * sp - c.vy) * dt * 1.5;
-        c.x += c.vx * dt; c.y += c.vy * dt + Math.sin(c.t * 6 + c.ph) * 0.6;
+        c.x += c.vx * dt; c.y += c.vy * dt + Math.sin(c.t * 6 + c.ph) * (c.answer ? 0.25 : 0.6);
         c.el.style.transform = `translate(${c.x.toFixed(1)}px, ${c.y.toFixed(1)}px)`; c.el.firstChild.style.transform = `scaleX(${c.vx < 0 ? -1 : 1})`;
       } else {
         if (!c.cx || Math.random() < dt * 0.08) { const f = game.yard.flowerSpots?.length ? game.yard.flowerSpots[Math.floor(Math.random() * game.yard.flowerSpots.length)] : { x: rand(A.x0, A.x1), y: rand(A.y0 + 60, A.y1) }; c.cx = f.x; c.cy = f.y - 20; c.r = rand(30, 70); }

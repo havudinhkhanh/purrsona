@@ -88,7 +88,7 @@ export function createLearn(game) {
     /** 4 lựa chọn: đáp án đúng + 3 từ cùng ngôn ngữ, ưu tiên cùng cấp */
     options(c, n = 4) {
       const same = [...cards().values()].filter((x) => x.lang === c.lang && x.id !== c.id && x.vi && x.vi !== c.vi);
-      const lvl = same.filter((x) => x.level === c.level), pool = lvl.length >= n + 2 ? lvl : same;
+      const hot = c.pack === "trend", lvl = same.filter((x) => x.level === c.level || (hot && x.pack === "trend")), pool = lvl.length >= (hot ? n - 1 : n + 2) ? lvl : same;      // chữ nóng: nhiễu cũng là chữ nóng, khỏi đoán bừa
       const out = [c]; const r = Math.random; while (out.length < n && pool.length) { const x = pool.splice(Math.floor(r() * pool.length), 1)[0]; if (!out.some((o) => o.w === x.w || o.vi === x.vi)) out.push(x); }
       return out.sort(() => r() - 0.5);
     },

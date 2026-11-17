@@ -30,7 +30,10 @@ export function createYard(root) {
   const vp = document.createElement("div"); vp.className = "viewport"; root.appendChild(vp);
   vp.innerHTML = `<svg class="ground"></svg><div class="world"><div class="actors"></div></div><div class="shade"></div><div class="topfx"></div>`;
   const G = rough.generator(), ground = vp.querySelector(".ground"), world = vp.querySelector(".world"), actors = vp.querySelector(".actors"), topfx = vp.querySelector(".topfx");
-  const S = { vp, vw: 1, vh: 1, k: 1, ox: 0, oy: 0, night: 0, hour: 12, follow: false, forceHour: null, portrait: false, catH: 70 };
+  const S = { vp, vw: 1, vh: 1, k: 1, ox: 0, oy: 0, night: 0, hour: 12, follow: false, forceHour: null, portrait: false, catH: 70, density: "full" };
+  // độ dày chi tiết của vườn: full = đầy đủ, calm = gọn, bare = trống (chỉ giữ thứ mèo dùng: nhà, cây, ghế, ao, luống hoa)
+  const DENS = { full: { grass: 260, stones: 1, bushes: 4, wild: 10, beds: "dots" }, calm: { grass: 110, stones: 1, bushes: 2, wild: 4, beds: "dots" }, bare: { grass: 28, stones: 0, bushes: 0, wild: 0, beds: "line" } };
+  const Dn = () => DENS[S.density] || DENS.full;
   let SEED = 1;
   const o = (x = {}) => ({ seed: SEED++, roughness: 1.1, bowing: 0.9, stroke: INK, strokeWidth: 1.6, fillStyle: "hachure", hachureGap: 6, fillWeight: 0.9, hachureAngle: -41, ...x });
   const out = (d) => G.toPaths(d).map((p) => `<path d="${p.d}" stroke="${p.stroke}" stroke-width="${p.strokeWidth}" fill="${p.fill || "none"}" stroke-linecap="round" stroke-linejoin="round"/>`).join("");
@@ -77,18 +80,18 @@ export function createYard(root) {
     // bóng đổ của cả mảnh đất + mặt cỏ
     g += `<g opacity=".35">${D.poly(rect(1.2, 1.6, UW + 1.2, UH + 1.6), { stroke: "none", fill: INK3, hachureGap: 5 })}</g>`;
     g += D.poly(rect(0, 0, UW, UH), { fill: PAPER, fillStyle: "solid", strokeWidth: 2.2 });
-    for (let i = 0; i < 260; i++) { const u = r() * UW, v = r() * UH; if (u > HOUSE.u0 && v < HOUSE.v1) continue; const [x, y] = P(u, v), h = (3 + r() * 5) * k * 0.08; g += `<path d="M${x - 3} ${y} q2 ${-h} 0 ${-h * 1.6} M${x} ${y} q1 ${-h * 1.4} 3 ${-h * 1.9} M${x + 3} ${y} q-1 ${-h} 3 ${-h * 1.3}" stroke="${INK2}" stroke-width="1.1" fill="none" opacity="${(0.25 + r() * 0.35).toFixed(2)}" stroke-linecap="round"/>`; }
+    for (let i = 0; i < Dn().grass; i++) { const u = r() * UW, v = r() * UH; if (u > HOUSE.u0 && v < HOUSE.v1) continue; const [x, y] = P(u, v), h = (3 + r() * 5) * k * 0.08; g += `<path d="M${x - 3} ${y} q2 ${-h} 0 ${-h * 1.6} M${x} ${y} q1 ${-h * 1.4} 3 ${-h * 1.9} M${x + 3} ${y} q-1 ${-h} 3 ${-h * 1.3}" stroke="${INK2}" stroke-width="1.1" fill="none" opacity="${(0.25 + r() * 0.35).toFixed(2)}" stroke-linecap="round"/>`; }
     // nhà: sàn gỗ
     const H0 = HOUSE;
     g += D.poly(rect(H0.u0, H0.v0, H0.u1, H0.v1), { fill: WHITE, fillStyle: "solid", strokeWidth: 2 });
     for (let v = 3; v < H0.v1; v += 3) g += `<g opacity=".45">${D.line(P(H0.u0, v), P(H0.u1, v), { strokeWidth: 1, stroke: INK2 })}</g>`;
     g += D.poly(ring(80, 15, 9, 6), { fill: INK3, fillStyle: "cross-hatch", hachureGap: 7, strokeWidth: 1.3 });
     // lối đá từ cửa nhà ra vườn
-    for (const [u, v] of [[77, 33.5], [72, 38], [66, 42], [62, 47.5], [57, 52], [52, 56.5]]) g += D.poly(ring(u, v, 2.6, 1.9, 10), { fill: WHITE, fillStyle: "solid", strokeWidth: 1.3 });
+    if (Dn().stones) for (const [u, v] of [[77, 33.5], [72, 38], [66, 42], [62, 47.5], [57, 52], [52, 56.5]]) g += D.poly(ring(u, v, 2.6, 1.9, 10), { fill: WHITE, fillStyle: "solid", strokeWidth: 1.3 });
     // ao
     g += D.poly(ring(24, 56, 9, 5.2, 22), { fill: INK3, hachureGap: 4.5, hachureAngle: 10, strokeWidth: 1.8 }) + `<g opacity=".6">${D.curve([P(19, 55), P(22, 54.4), P(25, 55)], { strokeWidth: 1, stroke: WHITE })}</g>`;
     // luống hoa (đất xới)
-    for (const b of BEDS) g += D.poly(rect(b.u0, b.v0, b.u1, b.v1), { fill: INK3, fillStyle: "dots", hachureGap: 7, strokeWidth: 1.5 });
+    for (const b of BEDS) g += Dn().beds === "dots" ? D.poly(rect(b.u0, b.v0, b.u1, b.v1), { fill: INK3, fillStyle: "dots", hachureGap: 7, strokeWidth: 1.5 }) : `<g opacity=".55">${D.poly(rect(b.u0, b.v0, b.u1, b.v1), { strokeWidth: 1.2 })}</g>`;
     ground.setAttribute("viewBox", `0 0 ${S.vw} ${S.vh}`); ground.innerHTML = g;
 
     // tường nhà (thấp, kiểu cắt ngang) + tường sau có cửa sổ
@@ -112,7 +115,7 @@ export function createYard(root) {
     // ghế đá
     sprite("bench", P(20, 10)[1], box(15, 8, 25, 10, 4, { fill: WHITE, fillStyle: "solid" }));
     // bụi cây
-    for (const [u, v, s2] of [[4, 4, 5], [56, 3, 4], [6, 60, 4.5], [96, 61, 4]]) { const [x, y] = P(u, v), w = s2 * k; sprite("bush" + u, y, D.path(`M${x - w} ${y} C${x - w * 1.2} ${y - w * 0.9} ${x - w * 0.3} ${y - w * 1.5} ${x} ${y - w * 1.1} C${x + w * 0.4} ${y - w * 1.6} ${x + w * 1.3} ${y - w * 0.8} ${x + w} ${y} Z`, { fill: INK3, hachureGap: 5, hachureAngle: 30, strokeWidth: 1.5 })); }
+    for (const [u, v, s2] of [[4, 4, 5], [56, 3, 4], [6, 60, 4.5], [96, 61, 4]].slice(0, Dn().bushes)) { const [x, y] = P(u, v), w = s2 * k; sprite("bush" + u, y, D.path(`M${x - w} ${y} C${x - w * 1.2} ${y - w * 0.9} ${x - w * 0.3} ${y - w * 1.5} ${x} ${y - w * 1.1} C${x + w * 0.4} ${y - w * 1.6} ${x + w * 1.3} ${y - w * 0.8} ${x + w} ${y} Z`, { fill: INK3, hachureGap: 5, hachureAngle: 30, strokeWidth: 1.5 })); }
     // hàng rào thấp quanh vườn (bỏ đoạn của nhà)
     const post = (u, v) => { const [x, y] = P(u, v), [, yt] = P(u, v, 3.2); return D.line([x, y], [x, yt], { strokeWidth: 1.7 }); };
     let fb = "", fl = "", ff = "", fr = "";
@@ -138,7 +141,7 @@ export function createYard(root) {
       api.flowerSpots.push({ x, y: y - 40 * sz, card: c });
     });
     // vài bông hoa dại mờ cho vườn khỏi trống
-    for (let i = 0; i < 10; i++) { const b = BEDS[i % 3], u = lerp(b.u0 + 1, b.u1 - 1, wild()), v = lerp(b.v0 + 0.5, b.v1 - 0.5, wild()), [x, y] = P(u, v); sprite("wild" + i, y, `<g opacity=".35">${flowerSvg(x, y, i % 4, S.k * 0.06, 900 + i)}</g>`); }
+    for (let i = 0; i < Dn().wild; i++) { const b = BEDS[i % 3], u = lerp(b.u0 + 1, b.u1 - 1, wild()), v = lerp(b.v0 + 0.5, b.v1 - 0.5, wild()), [x, y] = P(u, v); sprite("wild" + i, y, `<g opacity=".35">${flowerSvg(x, y, i % 4, S.k * 0.06, 900 + i)}</g>`); }
   }
   function flowerSvg(x, y, kind, k, seed) {
     SEED = seed; const stem = 46 * k, top = y - stem; let s = D.curve([[x, y], [x + 4 * k, y - stem * 0.5], [x, top]], { strokeWidth: 1.4 });
@@ -186,6 +189,7 @@ export function createYard(root) {
       vp.style.setProperty("--shadeA", a.toFixed(3)); S.night = clamp(a / 0.42, 0, 1); S.day = a < 0.05; vp.dataset.night = S.night > 0.5 ? "1" : "0";
     },
     resize: layout,
+    setDensity(d) { if (!DENS[d] || d === S.density) return; S.density = d; draw(); },
   };
   let rt = 0; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(layout, 120); });
   requestAnimationFrame(layout); layout();

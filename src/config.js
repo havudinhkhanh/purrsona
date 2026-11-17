@@ -3,7 +3,7 @@ export const APP = {
   name: "Purrsona",
   tagline: "Mèo đanh đá dạy chữ · Anh – Trung",
   saveKey: "purrsona.save.v2",      // v2: bản học chữ (không đọc bản lưu nuôi mèo cũ)
-  version: "1.2.0",
+  version: "1.3.0",
 };
 
 // ------------------------------------------------------------------ GÓI (free / plus / pro)
@@ -49,7 +49,8 @@ export const SKINS = [
 ];
 
 // ------------------------------------------------------------------ NHỊP chuyển động chung (đủng đỉnh, đanh đá)
-export const CHILL = { speed: 0.85, run: 0.75, transition: 1.3, idle: 1.4, camera: 1.6, accel: 0.48 };
+// đi bộ từ tốn (speed thấp); chạy giữ nguyên tốc độ cũ (run bù lại) – chỉ dùng lúc đuổi bướm, vồ hoa, chạy rần rần
+export const CHILL = { speed: 0.58, run: 1.1, transition: 1.5, idle: 2.2, camera: 1.6, accel: 0.7 };
 
 // ------------------------------------------------------------------ GIỌNG AI (Pro) – điền địa chỉ Worker sau khi deploy worker/ai-voice
 export const AI = { endpoint: "", minGapMs: 30000, timeoutMs: 3000 };

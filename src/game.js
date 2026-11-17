@@ -56,7 +56,7 @@ export async function createGame(root) {
 
   // ------------------------------------------------------------------ khu vườn (một cảnh, nhìn từ trên xuống)
   const yard = createYard(root); game.yard = yard; game.scene = yard;
-  yard.S.forceHour = s.settings.hour; yard.light();
+  yard.S.forceHour = s.settings.hour; yard.setDensity(s.settings.yard || "full"); yard.light();
   const B = createBody(R, yard); game.body = B;
   const p0 = s.cat.uv || { u: 50, v: 50 }, [x0, y0] = yard.P(p0.u, p0.v);
   B.setRoom("yard", x0, y0, 0); B.mount();
