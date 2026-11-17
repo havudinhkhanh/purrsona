@@ -16,6 +16,9 @@ import { VIBES, vibeFeat } from "../world/vibe.js";
 const ACT_VI = { nap: "Đang ngủ", watch: "Ngắm trời", explore: "Đi dạo", groom: "Liếm lông", zoomies: "Chạy rần rần", selfplay: "Tự chơi", perch: "Leo trèo", chase: "Đuổi bướm", seek: "Tìm bạn", sulk: "Đang dỗi", write: "Viết bậy lên tường", nag: "Kháy bạn", quizme: "Đố bạn", headbutt: "Dụi đầu", blinkat: "Chớp mắt", knead: "Nhào bột", bellyup: "Khoe bụng", pawtap: "Gõ màn hình", sleepnear: "Ngủ cạnh bạn", sniff: "Ngửi hoa", sunbathe: "Phơi nắng", sitpretty: "Ngồi ngắm bạn", pondgaze: "Ngắm ao", scratchtree: "Mài móng vô cây", yarn: "Chơi cuộn len", flowerpounce: "Vồ hoa", rainwatch: "Ngồi coi mưa", swing: "Đu xích đu", slide: "Chơi cầu tuột", trellis: "Trèo giàn bầu", dig: "Đào đất", knockpot: "Xô đổ chậu cây", tidy: "Ngẫm nghĩ", shadenap: "Nằm bóng cây", chaseleaf: "Vồ lá bay", greet: "Đón bạn", follow: "Đi theo bạn", wander: "Thong thả", pet: "Được vuốt ve", sleep: "Ngủ" };
 const planChip = (p) => (p === "free" ? "" : `<span class="chip chip-${p}">${PLANS[p].vi}</span>`);
 
+// logo GitHub / Cloudflare (nét đơn giản, 1 màu) cho nút đăng nhập
+const GH_ICON = `<svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 2.2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.8c-2.8.6-3.4-1.2-3.4-1.2-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.6 2.4 1.1 3 .9.1-.7.4-1.1.6-1.4-2.2-.3-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.8 1a9.6 9.6 0 0 1 5 0c1.9-1.3 2.8-1 2.8-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.9-2.4 4.7-4.6 5 .4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5A10 10 0 0 0 12 2.2Z"/></svg>`;
+const CF_ICON = `<svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path fill="currentColor" stroke="none" d="M16.6 15.8l.3-1a1.6 1.6 0 0 0-.1-1.4 1.6 1.6 0 0 0-1.2-.6L7 12.7a.2.2 0 0 1-.1-.3.2.2 0 0 1 .2-.1l8.6-.1c1-.1 2.1-.9 2.5-1.9l.5-1.3a.4.4 0 0 0 0-.2 5.6 5.6 0 0 0-10.8-.6 2.5 2.5 0 0 0-4 2.6A3.6 3.6 0 0 0 .6 14.6a3 3 0 0 0 .1.8c0 .1.1.2.2.2h15.4a.3.3 0 0 0 .3-.2Zm2.7-5.4h-.2l-.1.2-.3 1.1a1.6 1.6 0 0 0 .1 1.4 1.6 1.6 0 0 0 1.2.6l1.8.1a.2.2 0 0 1 .1.1.2.2 0 0 1 0 .2.2.2 0 0 1-.2.1l-1.9.1c-1 .1-2.1.9-2.5 1.9l-.1.4a.1.1 0 0 0 .1.2h6.5a.2.2 0 0 0 .2-.1 4.7 4.7 0 0 0-4.7-6Z"/></svg>`;
 export function createHud(game, root) {
   const s = game.save, R = game.R, learn = game.learn;
   const el = document.createElement("div"); el.className = "hud"; root.appendChild(el);
@@ -154,11 +157,13 @@ export function createHud(game, root) {
         ${U.role === "admin" ? `<a class="ghost" href="admin.html" target="_blank" rel="noopener">${icon("settings")} Trang quản trị</a>` : ""}
         <button class="ghost" data-a="acct-out">Đăng xuất</button>
         <button class="ghost danger" data-a="acct-del">Xoá tài khoản</button>`;
+      if (A.lastError) { loginMsg = ERR[A.lastError] || "Đăng nhập không thành công. Thử lại."; A.lastError = ""; }
       const C = A.cfg || {}, msg = loginMsg ? `<p class="muted msg">${esc(loginMsg)}</p>` : "";
       if (A.resetToken) return head("Đặt mật khẩu mới") + `<form class="login" data-login="reset"><label class="fld"><span>Mật khẩu mới</span><input type="password" name="password" autocomplete="new-password" minlength="6" required></label><button class="primary" type="submit">Lưu & đăng nhập</button>${msg}</form>`;
       const tabs = [["login", "Đăng nhập"], ["register", "Tạo tài khoản"], ...(C.mail ? [["code", "Mã qua email"]] : [])];
       return head(loginMode === "register" ? "Tạo tài khoản" : "Đăng nhập", "Giữ tiến độ khi đổi máy, mở khoá gói đã mua.") + `
-        ${C.google ? `<div class="gbtn" data-gbtn></div><p class="or"><span>hoặc</span></p>` : ""}
+        ${C.github || C.access ? `<div class="oauth">${C.github ? `<button class="obtn gh" data-a="acct-github">${GH_ICON}<span>Đăng nhập bằng GitHub</span></button>` : ""}${C.access ? `<button class="obtn cf" data-a="acct-access">${CF_ICON}<span>Đăng nhập bằng Cloudflare</span></button>` : ""}</div>` : ""}
+        ${C.google ? `<div class="gbtn" data-gbtn></div>` : ""}${C.github || C.access || C.google ? `<p class="or"><span>hoặc dùng email</span></p>` : ""}
         <div class="seg segfull">${tabs.map(([k, v]) => `<button data-lmode="${k}" class="${loginMode === k ? "on" : ""}">${v}</button>`).join("")}</div>
         <form class="login" data-login="${loginMode}">
         <label class="fld"><span>Email</span><input type="email" name="email" autocomplete="email" inputmode="email" required placeholder="ban@email.com" value="${esc(loginEmail)}"></label>
@@ -269,6 +274,7 @@ export function createHud(game, root) {
         <div class="row"><span>Đổi chữ trên tường</span><span class="seg">${[5, 15, 60].map((n) => `<button data-rot="${n}" class="${(s.settings.rotate || 15) === n ? "on" : ""}">${n === 60 ? "1 giờ" : n + "′"}</button>`).join("")}</span></div>
         <button class="row link" data-a="vibe"><span>Vibe khu vườn</span><span>${game.vibe ? `${VIBES[game.vibe.chosen].emo} ${VIBES[game.vibe.chosen].vi}` : ""} ›</span></button>
         <div class="row"><span>Màn hình chính</span><span class="seg">${[["poster", "Tranh chữ"], ["card", "Thẻ học"]].map(([k, v]) => `<button data-home="${k}" class="${(s.settings.home || "poster") === k ? "on" : ""}">${v}</button>`).join("")}</span></div>
+        <div class="row"><span>Kiểu vẽ <small>${(s.settings.theme || "sketch") === "paint" ? "tranh màu theo từng khu" : "bút chì trắng đen"}</small></span><span class="seg">${[["sketch", "Bút chì"], ["paint", "Tranh màu"]].map(([k, v]) => `<button data-theme="${k}" class="${(s.settings.theme || "sketch") === k ? "on" : ""}">${v}</button>`).join("")}</span></div>
         <div class="row"><span>Tầm nhìn</span><span class="seg">${[["near", "Gần"], ["mid", "Vừa"], ["far", "Xa"]].map(([k, v]) => `<button data-zoom="${k}" class="${(s.settings.zoom || "mid") === k ? "on" : ""}">${v}</button>`).join("")}</span></div>
         <div class="row zoomrow"><span>Phóng to mèo & sân <small>hoặc chụm 2 ngón trên sân</small></span><span class="seg"><button data-zstep="-1" aria-label="Thu nhỏ">−</button><button data-zstep="0" class="${Math.abs(game.yard.zf - 1) < 0.01 ? "on" : ""}" aria-label="Về khung vừa">${zPct(game.yard.zf)}</button><button data-zstep="1" aria-label="Phóng to">+</button></span></div>
         <div class="row"><span>Chế độ máy <small>${game.perf?.mode === "auto" ? (game.perf.low ? "đang chạy nhẹ cho máy này" : "đang chạy đẹp") : game.perf?.low ? "nhẹ: 30 hình/giây, bỏ kính mờ" : "đẹp: mượt tối đa"}</small></span><span class="seg">${[["auto", "Tự động"], ["low", "Nhẹ"], ["high", "Đẹp"]].map(([k, v]) => `<button data-perf="${k}" class="${(game.perf?.mode || "auto") === k ? "on" : ""}">${v}</button>`).join("")}</span></div>
@@ -305,7 +311,7 @@ export function createHud(game, root) {
   // ------------------------------------------------------------------ bấm nút
   el.addEventListener("click", (e) => {
     unlock(); game.lastInput = Date.now(); game.musicResume?.();
-    const b = e.target.closest("[data-a],[data-plan],[data-skin],[data-ui],[data-setlang],[data-level],[data-daily],[data-wtab],[data-wd],[data-rate],[data-rot],[data-yard],[data-wxmode],[data-wxfix],[data-rtime],[data-bsay],[data-unbook],[data-rsave],[data-rnew],[data-hstar],[data-vibe],[data-zoom],[data-zstep],[data-perf],[data-home],[data-jans],[data-lmode]"); if (!b || !el.contains(b)) return;
+    const b = e.target.closest("[data-a],[data-plan],[data-skin],[data-ui],[data-setlang],[data-level],[data-daily],[data-wtab],[data-wd],[data-rate],[data-rot],[data-yard],[data-wxmode],[data-wxfix],[data-rtime],[data-bsay],[data-unbook],[data-rsave],[data-rnew],[data-hstar],[data-vibe],[data-zoom],[data-zstep],[data-perf],[data-theme],[data-home],[data-jans],[data-lmode]"); if (!b || !el.contains(b)) return;
     if (b.dataset.bsay) { game.speakCard(learn.card(b.dataset.bsay)); return; }
     if (b.dataset.hstar) { const id = b.dataset.hstar; if (learn.booked(id)) learn.unbook(id); else { const h = learn.hotOf(id), r = learn.bookmark({ ...learn.card(id), src: "hot", url: h?.src?.[0]?.u || "" }, s.plan); if (r.full) return toast("Sổ đầy rồi. Plus lưu thoải mái."); game.jab?.("book"); } save(s); show("words"); return; }
     if (b.dataset.unbook) { learn.unbook(b.dataset.unbook); save(s); show("words"); return; }
@@ -331,6 +337,7 @@ export function createHud(game, root) {
     if (b.dataset.jans) { const J = jumpQ, c = J.items[J.i], ok = b.dataset.jans === c.id; if (ok) { J.right++; J.known.push(c.id); } game.buzz?.(ok ? 8 : [10, 40, 10]); J.i++; if (J.i >= J.items.length && J.right >= J.need) { learn.jumpTo(J.key, J.known); save(s, true); refresh(); } show("jump"); return; }
     if (b.dataset.home) { s.settings.home = b.dataset.home; game.persist(); game.wall?.refresh?.(); show("settings"); return; }
     if (b.dataset.zoom) { s.settings.zoom = b.dataset.zoom; game.yard.setZf(1); game.yard.onZoom?.(1, null, null); game.yard.setZoom(b.dataset.zoom); game.persist(); show("settings"); return; }
+    if (b.dataset.theme) { s.settings.theme = b.dataset.theme; game.yard.setTheme(b.dataset.theme); game.persist(); game.critters?.ambient(); show("settings"); return; }
     if (b.dataset.perf) { if (b.dataset.perf !== "auto") game.perf.auto = false; game.setPerf(b.dataset.perf); game.persist(); show("settings"); return; }
     if (b.dataset.zstep != null) { zStep(+b.dataset.zstep); zSync(); show("settings"); return; }
     if (b.dataset.vibe) { const r = game.vibe.set(b.dataset.vibe); if (r.used) { toast(`Hôm nay xem thử rồi. Mở hẳn với gói ${PLANS[r.tier].vi}.`); show("plans"); return; } if (r.preview) toast(`Xem thử 30 giây. Mở hẳn với gói ${PLANS[r.tier].vi}.`); show("vibe"); return; }
@@ -358,6 +365,8 @@ export function createHud(game, root) {
       case "call": return game.call();
       case "music": return game.music();
       case "soundtest": return game.soundTest?.();
+      case "acct-github": loginMsg = "Đang chuyển sang GitHub…"; show("account"); return game.account?.github();
+      case "acct-access": loginMsg = "Đang đăng nhập bằng Cloudflare…"; show("account"); return game.account?.access().then(() => { loginMsg = ""; show("account"); }).catch((e) => { loginMsg = ERR[e.message] || "Không đăng nhập được bằng Cloudflare."; show("account"); });
       case "immersive": return immersive(true);
       case "shoo": return;
       case "export": { const blob = new Blob([JSON.stringify(s, null, 1)], { type: "application/json" }); const u = URL.createObjectURL(blob); const l = document.createElement("a"); l.href = u; l.download = `purrsona-${dayKey()}.json`; l.click(); return; }
@@ -374,7 +383,7 @@ export function createHud(game, root) {
   }
   game.readText = (text) => { readText = String(text || "").slice(0, READ_LIMIT[s.plan] || READ_LIMIT.free); readRes = runScan(readText); show("read"); game.sayLine?.(readRes.say, 4200); };
   // đăng nhập: gửi mã → nhập mã
-  const ERR = { exists: "Email này có tài khoản rồi. Chuyển qua Đăng nhập.", weak: "Mật khẩu ít nhất 6 ký tự.", use_google: "Tài khoản này đăng nhập bằng Google.", no_pw: "Tài khoản chưa có mật khẩu. Bấm Quên mật khẩu hoặc dùng mã qua email.", google_bad: "Google chưa xác thực được. Thử lại.", mail_off: "Chưa bật gửi email. Nhờ quản trị tạo link đặt lại.", email: "Email chưa đúng.", slow_down: "Gửi nhiều quá. Đợi chút rồi thử lại.", wrong: "Sai email/mật khẩu hoặc sai mã.", expired: "Mã hết hạn. Gửi mã mới.", too_many: "Sai quá 5 lần. Đợi 15 phút rồi gửi mã mới.", banned: "Tài khoản này bị khoá.", mail_not_ready: "Máy chủ chưa gửi được email.", no_endpoint: "Máy chủ tài khoản chưa bật." };
+  const ERR = { github_off: "Chưa bật đăng nhập GitHub.", github_bad: "GitHub từ chối. Thử lại.", github_email: "GitHub chưa có email đã xác minh.", state: "Phiên đăng nhập hết hạn. Thử lại.", access_off: "Chưa bật Cloudflare Access.", access_bad: "Không xác minh được Cloudflare Access.", exists: "Email này có tài khoản rồi. Chuyển qua Đăng nhập.", weak: "Mật khẩu ít nhất 6 ký tự.", use_google: "Tài khoản này đăng nhập bằng Google.", no_pw: "Tài khoản chưa có mật khẩu. Bấm Quên mật khẩu hoặc dùng mã qua email.", google_bad: "Google chưa xác thực được. Thử lại.", mail_off: "Chưa bật gửi email. Nhờ quản trị tạo link đặt lại.", email: "Email chưa đúng.", slow_down: "Gửi nhiều quá. Đợi chút rồi thử lại.", wrong: "Sai email/mật khẩu hoặc sai mã.", expired: "Mã hết hạn. Gửi mã mới.", too_many: "Sai quá 5 lần. Đợi 15 phút rồi gửi mã mới.", banned: "Tài khoản này bị khoá.", mail_not_ready: "Máy chủ chưa gửi được email.", no_endpoint: "Máy chủ tài khoản chưa bật." };
   el.addEventListener("submit", async (e) => {
     if (!e.target.matches("[data-login]")) return; e.preventDefault();
     const f = new FormData(e.target), btn = e.target.querySelector("[type=submit]"); btn.disabled = true; loginEmail = String(f.get("email") || "").trim();

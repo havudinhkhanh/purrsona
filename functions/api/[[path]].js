@@ -79,6 +79,25 @@ async function verifyGoogle(token, cid) {
   if (!["accounts.google.com", "https://accounts.google.com"].includes(body.iss) || body.aud !== cid || body.exp * 1000 < now() || !body.email_verified) throw new Error("claims");
   return { sub: body.sub, email: normEmail(body.email), name: body.given_name || body.name };
 }
+// ---------------------------------------------------------------- Cloudflare Access (tuỳ chọn): trang đặt sau Zero Trust → tự đăng nhập bằng email Access
+// Cần CF_ACCESS_TEAM (vd "tenban" của tenban.cloudflareaccess.com) + CF_ACCESS_AUD (Application Audience tag). Không có thì tắt hẳn.
+let cfJwks = { at: 0, keys: [] };
+async function verifyAccess(token, env) {
+  const [h, p, s] = String(token || "").split("."); if (!h || !p || !s) throw new Error("token");
+  const head = JSON.parse(new TextDecoder().decode(unb64u(h))), body = JSON.parse(new TextDecoder().decode(unb64u(p)));
+  const iss = `https://${env.CF_ACCESS_TEAM}.cloudflareaccess.com`;
+  if (now() - cfJwks.at > 3600e3 || !cfJwks.keys.find((k) => k.kid === head.kid)) cfJwks = { at: now(), keys: (await (await fetch(`${iss}/cdn-cgi/access/certs`)).json()).keys || [] };
+  const jwk = cfJwks.keys.find((k) => k.kid === head.kid); if (!jwk) throw new Error("kid");
+  const key = await crypto.subtle.importKey("jwk", jwk, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["verify"]);
+  if (!(await crypto.subtle.verify("RSASSA-PKCS1-v1_5", key, unb64u(s), enc.encode(`${h}.${p}`)))) throw new Error("sig");
+  const aud = Array.isArray(body.aud) ? body.aud : [body.aud];
+  if (body.iss !== iss || !aud.includes(env.CF_ACCESS_AUD) || body.exp * 1000 < now() || !body.email) throw new Error("claims");
+  return { email: normEmail(body.email) };
+}
+const accessOn = (env) => !!(env.CF_ACCESS_TEAM && env.CF_ACCESS_AUD);
+const githubOn = (env) => !!(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET);
+const cookie = (req, name) => (req.headers.get("cookie") || "").split(/;\s*/).map((x) => x.split("=")).find(([k]) => k === name)?.[1] || "";
+
 // ---------------------------------------------------------------- email (tuỳ chọn): Resend hoặc Cloudflare Email Service
 const mailOn = (env) => !!((env.RESEND_API_KEY && env.MAIL_FROM) || (env.EMAIL && env.MAIL_FROM));
 async function sendMail(env, to, subject, text, html) {
@@ -121,7 +140,42 @@ async function handle(req, env, p) {
   if (p === "/health") return json({ ok: 1 });
 
   // ---------------------------------------------------------------- ĐĂNG NHẬP
-  if (p === "/auth/config") return json({ password: true, google: env.GOOGLE_CLIENT_ID || null, mail: mailOn(env) });
+  if (p === "/auth/config") return json({ password: true, google: env.GOOGLE_CLIENT_ID || null, github: githubOn(env), access: accessOn(env) && !!req.headers.get("cf-access-jwt-assertion"), mail: mailOn(env) });
+  // GitHub: chuyển sang trang đồng ý của GitHub → quay về /callback → tạo phiên → về app kèm #login=… (mã nằm sau dấu #, không lọt vào nhật ký máy chủ)
+  if (p === "/auth/github/start") {
+    if (!githubOn(env)) return json({ error: "github_off" }, 400);
+    const st = b64u(crypto.getRandomValues(new Uint8Array(18)));
+    const to = new URL("https://github.com/login/oauth/authorize"); to.search = new URLSearchParams({ client_id: env.GITHUB_CLIENT_ID, redirect_uri: `${url.origin}/api/auth/github/callback`, scope: "read:user user:email", state: st, allow_signup: "true" });
+    const nx = url.searchParams.get("next") === "admin" ? "admin" : "app", h = new Headers({ location: to.toString(), "cache-control": "no-store" });
+    h.append("set-cookie", `gh_st=${st}; Path=/api/auth/github; Max-Age=600; HttpOnly; Secure; SameSite=Lax`); h.append("set-cookie", `gh_nx=${nx}; Path=/api/auth/github; Max-Age=600; HttpOnly; Secure; SameSite=Lax`);
+    return new Response(null, { status: 302, headers: h });
+  }
+  if (p === "/auth/github/callback") {
+    const back = (frag) => { const h = new Headers({ location: `${url.origin}/${cookie(req, "gh_nx") === "admin" ? "admin.html" : ""}#${frag}`, "cache-control": "no-store" }); h.append("set-cookie", "gh_st=; Path=/api/auth/github; Max-Age=0; HttpOnly; Secure; SameSite=Lax"); h.append("set-cookie", "gh_nx=; Path=/api/auth/github; Max-Age=0; HttpOnly; Secure; SameSite=Lax"); return new Response(null, { status: 302, headers: h }); };
+    if (!githubOn(env)) return back("login_error=github_off");
+    const code = url.searchParams.get("code"), st = url.searchParams.get("state");
+    if (!code || !st || st !== cookie(req, "gh_st")) return back("login_error=state");
+    if (!(await limit(env, `gh:${ip}`, 30, 3600e3))) return back("login_error=slow_down");
+    const tk = await (await fetch("https://github.com/login/oauth/access_token", { method: "POST", headers: { accept: "application/json", "content-type": "application/json" }, body: JSON.stringify({ client_id: env.GITHUB_CLIENT_ID, client_secret: env.GITHUB_CLIENT_SECRET, code, redirect_uri: `${url.origin}/api/auth/github/callback` }) })).json().catch(() => ({}));
+    if (!tk.access_token) return back("login_error=github_bad");
+    const gh = { authorization: `Bearer ${tk.access_token}`, accept: "application/vnd.github+json", "user-agent": "purrsona" };
+    const me = await (await fetch("https://api.github.com/user", { headers: gh })).json().catch(() => ({}));
+    const ems = await (await fetch("https://api.github.com/user/emails", { headers: gh })).json().catch(() => []);
+    const em = Array.isArray(ems) ? (ems.find((e) => e.primary && e.verified) || ems.find((e) => e.verified)) : null;
+    if (!em?.email) return back("login_error=github_email");
+    const u = await upsertUser(env, normEmail(em.email), { nick: me.name || me.login });
+    if (u.banned) return back("login_error=banned");
+    const tok = b64u(crypto.getRandomValues(new Uint8Array(32)));
+    await env.DB.prepare("INSERT INTO sessions (hash,user_id,created_at,expires,ua) VALUES (?,?,?,?,?)").bind(await sha(tok + PEP), u.id, now(), now() + SESSION_TTL, clean(req.headers.get("user-agent"), 160)).run();
+    await audit(env, u.id, "login_github", u.id);
+    return back(`login=${tok}`);
+  }
+  // Cloudflare Access: đã qua cổng Zero Trust thì đổi giấy thông hành của Access lấy phiên Purrsona
+  if (p === "/auth/access" && m === "POST") {
+    if (!accessOn(env)) return json({ error: "access_off" }, 400);
+    let a; try { a = await verifyAccess(req.headers.get("cf-access-jwt-assertion"), env); } catch { return json({ error: "access_bad" }, 401); }
+    return session(env, req, await upsertUser(env, a.email, {}));
+  }
   if (p === "/auth/register" && m === "POST") {
     const b = await body(), email = normEmail(b.email), pw = String(b.password || "");
     if (!okEmail(email)) return json({ error: "email" }, 400); if (pw.length < 6) return json({ error: "weak" }, 400);

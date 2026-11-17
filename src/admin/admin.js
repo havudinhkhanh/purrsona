@@ -6,6 +6,9 @@ import { esc } from "../core/util.js";
 const EP = (() => { try { return (localStorage.getItem("purrsona.api") || ACCOUNT.endpoint || "/api").replace(/\/$/, ""); } catch { return ACCOUNT.endpoint || "/api"; } })();
 const TK = "purrsona.admin.token";
 let token = localStorage.getItem(TK) || "", me = null, tab = "overview";
+// quay về từ GitHub (#login=…): lưu phiên rồi xoá khỏi thanh địa chỉ
+{ const m = location.hash.match(/login=([\w-]+)/); if (m) { token = m[1]; try { localStorage.setItem(TK, token); } catch { /* chế độ riêng tư */ } history.replaceState(null, "", location.pathname); } }
+let ghOn = false; fetch(EP + "/auth/config").then((r) => (r.ok ? r.json() : null)).then((c) => { ghOn = !!c?.github; if (!token) login(); }).catch(() => {});
 const $ = (s) => document.querySelector(s), main = $("#main");
 const toast = (t) => { const e = $(".a-toast"); e.textContent = t; e.classList.add("in"); clearTimeout(toast.t); toast.t = setTimeout(() => e.classList.remove("in"), 2600); };
 const ago = (t) => { if (!t) return "—"; const m = Math.round((Date.now() - t) / 60000); return m < 60 ? `${m} phút trước` : m < 1440 ? `${Math.round(m / 60)} giờ trước` : `${Math.round(m / 1440)} ngày trước`; };
@@ -27,7 +30,7 @@ function login() {
   main.innerHTML = `<form class="a-login panel" id="lf"><h2>Đăng nhập quản trị</h2>
     <label class="fld"><span>Email</span><input type="email" name="email" required autocomplete="email" value="${esc(email)}"></label>
     <label class="fld"><span>Mật khẩu</span><input type="password" name="password" required autocomplete="current-password"></label>
-    <button class="btn2 pri" type="submit">Vào trang quản trị</button>${msg ? `<p class="muted2">${esc(msg)}</p>` : ""}
+    <button class="btn2 pri" type="submit">Vào trang quản trị</button>${ghOn ? `<a class="btn2" href="${EP}/auth/github/start?next=admin">Đăng nhập bằng GitHub</a>` : ""}${msg ? `<p class="muted2">${esc(msg)}</p>` : ""}
     <p class="muted2">Dùng tài khoản đã tạo trong app. Quản trị = email trong biến OWNER_EMAIL của dự án Pages (chưa đặt thì người đăng ký đầu tiên).</p></form>`;
   $("#lf").onsubmit = async (e) => {
     e.preventDefault(); const f = new FormData(e.target); email = String(f.get("email")).trim();

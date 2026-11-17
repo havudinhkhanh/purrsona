@@ -1,4 +1,5 @@
 import { fitSvg } from "../render/fit.js";
+import { paintSvg, materialOf, groundExtras, TEX, HL } from "./paint.js";
 // KHU VƯỜN NHÌN TỪ TRÊN XUỐNG (hơi xiên) – một cảnh duy nhất, vừa khít màn hình như hình nền.
 // Mặt đất là hình chữ nhật (u: 0..UW, v: 0..UH) chiếu lên màn hình bằng phép xoay + nén dọc.
 // Góc sau bên phải là căn nhà (tường thấp kiểu cắt ngang), còn lại là vườn: luống hoa, cây, ghế, ao, lối đá.
@@ -13,6 +14,10 @@ let PHI = (-13 * Math.PI) / 180, TILT = 0.56;
 
 /** các vùng & chỗ ngồi (toạ độ mặt đất) */
 export const HOUSE = { u0: 64, u1: 100, v0: 0, v1: 30, door: [73, 81], side: [17, 25] };
+// giá phơi đồ cố định ở góc vườn (mèo hay kéo khăn rớt ở đây)
+export const RACK = { u0: 3, u1: 12, v: 17, h: 7 };
+// cổng ở hàng rào trước
+export const GATE = { u0: 70, u1: 76 };
 export const BEDS = [{ u0: 6, u1: 54, v0: 25, v1: 31 }, { u0: 10, u1: 58, v0: 43, v1: 49 }, { u0: 67, u1: 96, v0: 40, v1: 58 }];
 export const SPOTS = {
   desk: { u: 76, v: 3.2, h: 7, zone: "house", use: ["loaf", "nap", "perch", "write"] },
@@ -36,22 +41,34 @@ export function createYard(root) {
   const vp = document.createElement("div"); vp.className = "viewport"; root.appendChild(vp);
   vp.innerHTML = `<svg class="ground"></svg><div class="world"><div class="actors"></div></div><div class="shade"></div><div class="topfx"></div>`;
   const G = rough.generator(), ground = vp.querySelector(".ground"), world = vp.querySelector(".world"), actors = vp.querySelector(".actors"), topfx = vp.querySelector(".topfx");
-  const S = { vp, vw: 1, vh: 1, k: 1, ox: 0, oy: 0, night: 0, hour: 12, follow: false, forceHour: null, portrait: false, catH: 70, density: "full", zoom: "mid", zf: 1, fu: null, fv: null };
+  const S = { vp, vw: 1, vh: 1, k: 1, ox: 0, oy: 0, night: 0, hour: 12, follow: false, forceHour: null, portrait: false, catH: 70, density: "full", zoom: "mid", theme: "sketch", zf: 1, fu: null, fv: null };
   const ZMIN = 0.7, ZMAX = 3.2, cam = { x: 0, y: 0, tx: 0, ty: 0, hot: 0 };
   // độ dày chi tiết của vườn: full = đầy đủ, calm = gọn, bare = trống (chỉ giữ thứ mèo dùng: nhà, cây, ghế, ao, luống hoa)
   const DENS = { full: { grass: 260, stones: 1, bushes: 4, wild: 10, beds: "dots" }, calm: { grass: 110, stones: 1, bushes: 2, wild: 4, beds: "dots" }, bare: { grass: 28, stones: 0, bushes: 0, wild: 0, beds: "line" } };
   const Dn = () => DENS[S.density] || DENS.full;
   let SEED = 1;
-  const o = (x = {}) => ({ seed: SEED++, roughness: 1.1, bowing: 0.9, stroke: INK, strokeWidth: 1.6, fillStyle: "hachure", hachureGap: 6, fillWeight: 0.9, hachureAngle: -41, ...x });
+  const PAINT = () => S.theme === "paint";
+  const o = (x = {}) => { const r = { seed: SEED++, roughness: 1.1, bowing: 0.9, stroke: INK, strokeWidth: 1.6, fillStyle: "hachure", hachureGap: 6, fillWeight: 0.9, hachureAngle: -41, ...x }; if (PAINT()) { r.roughness = 0.85; r.strokeWidth *= 0.78; } return r; };
+  // TRANH MÀU: mảng có tô = nền màu đặc (không viền) + vân cọ đậm hơn + viền mảnh; bút chì thì giữ nguyên
+  const shaped = (gen, x) => {
+    if (!PAINT() || !x || !x.fill) return out(gen(o(x)));
+    if (x.fillStyle === "solid") return out(gen(o(x))) + (x.fill === PAPER ? "" : `<g opacity=".22">${out(gen(o({ ...x, fill: TEX, fillStyle: "hachure", stroke: "none", hachureGap: 9, fillWeight: 1.2 })))}</g>`);
+    const base = out(gen(o({ ...x, fillStyle: "solid", stroke: "none" })));
+    const tex = `<g opacity=".34">${out(gen(o({ ...x, fill: TEX, stroke: "none", hachureGap: (x.hachureGap || 6) * 1.3, fillWeight: 1.5 })))}</g>`;
+    // ánh sáng: một lớp nét cọ sáng xiên ngược chiều, mờ – mảng màu có chiều sâu, đỡ phẳng
+    const hl = `<g opacity=".18">${out(gen(o({ ...x, fill: HL, stroke: "none", hachureGap: (x.hachureGap || 6) * 2.2, hachureAngle: 38, fillWeight: 2.2 })))}</g>`;
+    return base + tex + hl + (x.stroke === "none" ? "" : out(gen(o({ ...x, fill: undefined }))));
+  };
+  const mat = (m, s) => (PAINT() ? paintSvg(s, m) : s);
   const out = (d) => G.toPaths(d).map((p) => `<path d="${p.d}" stroke="${p.stroke}" stroke-width="${p.strokeWidth}" fill="${p.fill || "none"}" stroke-linecap="round" stroke-linejoin="round"/>`).join("");
   const D = {
     line: (a, b, x) => out(G.line(a[0], a[1], b[0], b[1], o(x))),
-    poly: (pts, x) => out(G.polygon(pts, o(x))),
+    poly: (pts, x) => shaped((q) => G.polygon(pts, q), x),
     lines: (pts, x) => out(G.linearPath(pts, o(x))),
     curve: (pts, x) => out(G.curve(pts, o(x))),
-    ell: (cx, cy, w, h, x) => out(G.ellipse(cx, cy, w, h, o(x))),
-    circle: (cx, cy, d, x) => out(G.circle(cx, cy, d, o(x))),
-    path: (d, x) => out(G.path(d, o(x))),
+    ell: (cx, cy, w, h, x) => shaped((q) => G.ellipse(cx, cy, w, h, q), x),
+    circle: (cx, cy, d, x) => shaped((q) => G.circle(cx, cy, d, q), x),
+    path: (d, x) => shaped((q) => G.path(d, q), x),
   };
 
   // ------------------------------------------------------------------ phép chiếu
@@ -101,25 +118,28 @@ export function createYard(root) {
 
   // ------------------------------------------------------------------ vẽ
   const sprites = [];
-  function sprite(id, baseY, svg) { sprites.push({ id, z: Math.round(baseY), svg }); }
+  function sprite(id, baseY, svg) { sprites.push({ id, z: Math.round(baseY), svg: PAINT() ? paintSvg(svg, materialOf(id), [...id].reduce((a, c) => a + c.charCodeAt(0), 0)) : svg }); }
   function draw() {
     SEED = 11; sprites.length = 0; const r = rng("yard"), k = S.k;
     let g = "";
     // bóng đổ của cả mảnh đất + mặt cỏ
-    g += `<g opacity=".35">${D.poly(rect(1.2, 1.6, UW + 1.2, UH + 1.6), { stroke: "none", fill: INK3, hachureGap: 5 })}</g>`;
-    g += D.poly(rect(0, 0, UW, UH), { fill: PAPER, fillStyle: "solid", strokeWidth: 2.2 });
-    for (let i = 0; i < Dn().grass; i++) { const u = r() * UW, v = r() * UH; if (u > HOUSE.u0 && v < HOUSE.v1) continue; const [x, y] = P(u, v), h = (3 + r() * 5) * k * 0.08; g += `<path d="M${x - 3} ${y} q2 ${-h} 0 ${-h * 1.6} M${x} ${y} q1 ${-h * 1.4} 3 ${-h * 1.9} M${x + 3} ${y} q-1 ${-h} 3 ${-h * 1.3}" stroke="${INK2}" stroke-width="1.1" fill="none" opacity="${(0.25 + r() * 0.35).toFixed(2)}" stroke-linecap="round"/>`; }
+    g += mat("shadow", `<g opacity=".35">${D.poly(rect(1.2, 1.6, UW + 1.2, UH + 1.6), { stroke: "none", fill: INK3, hachureGap: 5 })}</g>`);
+    g += mat("lawn", D.poly(rect(0, 0, UW, UH), { fill: PAPER, fillStyle: "solid", strokeWidth: 2.2 }));
+    if (PAINT()) g += groundExtras(P, UW, UH, k, rng("sun"), HOUSE, document.documentElement.classList.contains("low"));
+    { let gg = "";
+    for (let i = 0; i < Dn().grass; i++) { const u = r() * UW, v = r() * UH; if (u > HOUSE.u0 && v < HOUSE.v1) continue; const [x, y] = P(u, v), h = (3 + r() * 5) * k * 0.08; gg += `<path d="M${x - 3} ${y} q2 ${-h} 0 ${-h * 1.6} M${x} ${y} q1 ${-h * 1.4} 3 ${-h * 1.9} M${x + 3} ${y} q-1 ${-h} 3 ${-h * 1.3}" stroke="${INK2}" stroke-width="1.1" fill="none" opacity="${(0.25 + r() * 0.35).toFixed(2)}" stroke-linecap="round"/>`; }
+    g += mat("blade", gg); }
     // nhà: sàn gỗ
     const H0 = HOUSE;
-    g += D.poly(rect(H0.u0, H0.v0, H0.u1, H0.v1), { fill: WHITE, fillStyle: "solid", strokeWidth: 2 });
-    for (let v = 3; v < H0.v1; v += 3) g += `<g opacity=".45">${D.line(P(H0.u0, v), P(H0.u1, v), { strokeWidth: 1, stroke: INK2 })}</g>`;
-    g += D.poly(ring(80, 15, 9, 6), { fill: INK3, fillStyle: "cross-hatch", hachureGap: 7, strokeWidth: 1.3 });
+    g += mat("wood", D.poly(rect(H0.u0, H0.v0, H0.u1, H0.v1), { fill: WHITE, fillStyle: "solid", strokeWidth: 2 }));
+    for (let v = 3; v < H0.v1; v += 3) g += mat("wood", `<g opacity=".45">${D.line(P(H0.u0, v), P(H0.u1, v), { strokeWidth: 1, stroke: INK2 })}</g>`);
+    g += mat("rug", D.poly(ring(80, 15, 9, 6), { fill: INK3, fillStyle: "cross-hatch", hachureGap: 7, strokeWidth: 1.3 }));
     // lối đá từ cửa nhà ra vườn
-    if (Dn().stones) for (const [u, v] of [[77, 33.5], [72, 38], [66, 42], [62, 47.5], [57, 52], [52, 56.5]]) g += D.poly(ring(u, v, 2.6, 1.9, 10), { fill: WHITE, fillStyle: "solid", strokeWidth: 1.3 });
+    if (Dn().stones) for (const [u, v] of [[77, 33.5], [72, 38], [66, 42], [62, 47.5], [57, 52], [52, 56.5]]) g += mat("stone", D.poly(ring(u, v, 2.6, 1.9, 10), { fill: WHITE, fillStyle: "solid", strokeWidth: 1.3 }));
     // ao
-    g += D.poly(ring(24, 56, 9, 5.2, 22), { fill: INK3, hachureGap: 4.5, hachureAngle: 10, strokeWidth: 1.8 }) + `<g opacity=".6">${D.curve([P(19, 55), P(22, 54.4), P(25, 55)], { strokeWidth: 1, stroke: WHITE })}</g>`;
+    g += mat("water", D.poly(ring(24, 56, 9, 5.2, 22), { fill: INK3, hachureGap: 4.5, hachureAngle: 10, strokeWidth: 1.8 }) + `<g opacity=".6">${D.curve([P(19, 55), P(22, 54.4), P(25, 55)], { strokeWidth: 1, stroke: WHITE })}</g>`);
     // luống hoa (đất xới)
-    for (const b of BEDS) g += Dn().beds === "dots" ? D.poly(rect(b.u0, b.v0, b.u1, b.v1), { fill: INK3, fillStyle: "dots", hachureGap: 7, strokeWidth: 1.5 }) : `<g opacity=".55">${D.poly(rect(b.u0, b.v0, b.u1, b.v1), { strokeWidth: 1.2 })}</g>`;
+    for (const b of BEDS) g += mat("soil", Dn().beds === "dots" ? D.poly(rect(b.u0, b.v0, b.u1, b.v1), { fill: INK3, fillStyle: "dots", hachureGap: 7, strokeWidth: 1.5 }) : `<g opacity=".55">${D.poly(rect(b.u0, b.v0, b.u1, b.v1), { strokeWidth: 1.2 })}</g>`);
     ground.setAttribute("viewBox", `0 0 ${S.vw} ${S.vh}`); ground.innerHTML = g;
 
     // tường nhà (thấp, kiểu cắt ngang) + tường sau có cửa sổ
@@ -142,6 +162,16 @@ export function createYard(root) {
     { const [x, y] = P(48, 9), w = 20 * k, hh = 15 * k * HS; sprite("tree", y, `<g opacity=".4">${D.ell(x, y, w * 0.8, w * 0.3, { stroke: "none", fill: INK3, hachureGap: 4 })}</g>` + D.line([x - 0.6 * k, y], [x - 0.6 * k, y - hh], { strokeWidth: 2.2 }) + D.line([x + 0.6 * k, y], [x + 0.6 * k, y - hh * 0.9], { strokeWidth: 1.6 }) + D.path(`M${x - w * 0.55} ${y - hh * 0.9} C${x - w * 0.62} ${y - hh * 1.6} ${x - w * 0.1} ${y - hh * 1.95} ${x + w * 0.12} ${y - hh * 1.7} C${x + w * 0.5} ${y - hh * 1.85} ${x + w * 0.66} ${y - hh * 1.2} ${x + w * 0.48} ${y - hh * 0.95} C${x + w * 0.4} ${y - hh * 0.6} ${x - w * 0.35} ${y - hh * 0.55} ${x - w * 0.55} ${y - hh * 0.9} Z`, { fill: INK2, hachureGap: 5, hachureAngle: 60, strokeWidth: 1.8 })); }
     // ghế đá
     sprite("bench", P(20, 10)[1], box(15, 8, 25, 10, 4, { fill: WHITE, fillStyle: "solid" }));
+    // giá phơi đồ: 2 cọc, xà ngang, dây võng, áo + tất đang phơi
+    { const R = RACK, top = R.h, rope = R.h - 0.6, mid = (R.u0 + R.u1) / 2;
+      const sag = (u) => rope - 0.9 * (1 - ((u - mid) / ((R.u1 - R.u0) / 2)) ** 2);
+      let g = D.line(P(R.u0, R.v), P(R.u0, R.v, top), { strokeWidth: 1.8 }) + D.line(P(R.u1, R.v), P(R.u1, R.v, top), { strokeWidth: 1.8 })
+        + D.line(P(R.u0 - 0.6, R.v, top), P(R.u0 + 0.6, R.v, top), { strokeWidth: 1.6 }) + D.line(P(R.u1 - 0.6, R.v, top), P(R.u1 + 0.6, R.v, top), { strokeWidth: 1.6 })
+        + D.curve(Array.from({ length: 7 }, (_, i) => P(R.u0 + (i / 6) * (R.u1 - R.u0), R.v, sag(R.u0 + (i / 6) * (R.u1 - R.u0)))), { strokeWidth: 1.1 });
+      // áo phơi (hình thang có tay áo) + chiếc tất
+      { const u = R.u0 + 2.2, h = sag(u), w = 1.5; g += D.poly([P(u - w, R.v, h), P(u + w, R.v, h), P(u + w * 1.5, R.v, h - 0.8), P(u + w * 0.9, R.v, h - 0.9), P(u + w * 0.8, R.v, h - 3.2), P(u - w * 0.8, R.v, h - 3.2), P(u - w * 0.9, R.v, h - 0.9), P(u - w * 1.5, R.v, h - 0.8)], { fill: WHITE, fillStyle: "solid", strokeWidth: 1.3 }) + D.line(P(u - w * 0.5, R.v, h - 1.6), P(u + w * 0.5, R.v, h - 1.6), { strokeWidth: 0.9, stroke: INK3 }); }
+      { const u = R.u1 - 1.6, h = sag(u); g += D.path(`M${P(u - 0.4, R.v, h)[0]} ${P(u - 0.4, R.v, h)[1]} L${P(u - 0.4, R.v, h - 2)[0]} ${P(u - 0.4, R.v, h - 2)[1]} Q${P(u - 0.4, R.v, h - 2.8)[0]} ${P(u - 0.4, R.v, h - 2.8)[1]} ${P(u + 0.9, R.v, h - 2.6)[0]} ${P(u + 0.9, R.v, h - 2.6)[1]} L${P(u + 0.4, R.v, h - 1.8)[0]} ${P(u + 0.4, R.v, h - 1.8)[1]} L${P(u + 0.4, R.v, h)[0]} ${P(u + 0.4, R.v, h)[1]} Z`, { fill: INK3, fillStyle: "hachure", hachureGap: 2.5, strokeWidth: 1.2 }); }
+      sprite("rack", P(mid, R.v)[1], g); }
     // bụi cây
     for (const [u, v, s2] of [[4, 4, 5], [56, 3, 4], [6, 60, 4.5], [96, 61, 4]].slice(0, Dn().bushes)) { const [x, y] = P(u, v), w = s2 * k; sprite("bush" + u, y, D.path(`M${x - w} ${y} C${x - w * 1.2} ${y - w * 0.9} ${x - w * 0.3} ${y - w * 1.5} ${x} ${y - w * 1.1} C${x + w * 0.4} ${y - w * 1.6} ${x + w * 1.3} ${y - w * 0.8} ${x + w} ${y} Z`, { fill: INK3, hachureGap: 5, hachureAngle: 30, strokeWidth: 1.5 })); }
     // hàng rào thấp quanh vườn (bỏ đoạn của nhà)
@@ -151,7 +181,12 @@ export function createYard(root) {
     fb += D.line(P(0, 0, 2.4), P(HOUSE.u0, 0, 2.4), { strokeWidth: 1.3 });
     for (let v = 4; v <= UH; v += 4) fl += post(0, v); fl += D.line(P(0, 0, 2.4), P(0, UH, 2.4), { strokeWidth: 1.3 });
     for (let v = HOUSE.v1 + 2; v <= UH; v += 4) fr += post(UW, v); fr += D.line(P(UW, HOUSE.v1, 2.4), P(UW, UH, 2.4), { strokeWidth: 1.3 });
-    for (let u = 4; u < UW; u += 4) ff += post(u, UH); ff += D.line(P(0, UH, 2.4), P(UW, UH, 2.4), { strokeWidth: 1.3 });
+    for (let u = 4; u < UW; u += 4) if (u <= GATE.u0 - 1 || u >= GATE.u1 + 1) ff += post(u, UH);
+    ff += D.line(P(0, UH, 2.4), P(GATE.u0, UH, 2.4), { strokeWidth: 1.3 }) + D.line(P(GATE.u1, UH, 2.4), P(UW, UH, 2.4), { strokeWidth: 1.3 });
+    // cổng: 2 trụ cao + 2 cánh song gỗ + vòm
+    { const G = GATE, gp = (u) => D.line(P(u, UH), P(u, UH, 4.6), { strokeWidth: 2.2 }) + D.poly([P(u - 0.5, UH, 4.6), P(u + 0.5, UH, 4.6), P(u + 0.5, UH, 5.1), P(u - 0.5, UH, 5.1)], { fill: INK2, fillStyle: "solid", strokeWidth: 1.2 });
+      const m = (G.u0 + G.u1) / 2; ff += gp(G.u0) + gp(G.u1) + D.curve([P(G.u0, UH, 4.6), P(m, UH, 5.8), P(G.u1, UH, 4.6)], { strokeWidth: 1.5 });
+      for (const [a, b] of [[G.u0 + 0.3, m - 0.15], [m + 0.15, G.u1 - 0.3]]) { ff += D.poly([P(a, UH, 0.4), P(b, UH, 0.4), P(b, UH, 3), P(a, UH, 3)], { strokeWidth: 1.3 }); for (let u = a + 0.7; u < b - 0.3; u += 0.7) ff += D.line(P(u, UH, 0.5), P(u, UH, 2.9), { strokeWidth: 0.9, stroke: INK2 }); } }
     sprite("fence-back", P(0, 0)[1] - 50, fb); sprite("fence-left", P(0, 0)[1], fl); sprite("fence-right", P(UW, HOUSE.v1)[1], fr); sprite("fence-front", 99999, ff);
     api.extraDraw?.({ D, P, sprite, k, ring, rect });      // đồ vật sân chơi (world/play.js)
     flowers();
@@ -311,6 +346,7 @@ export function createYard(root) {
     },
     setReserve(px) { px = Math.max(0, Math.round(px)); if (Math.abs(px - (S.reserve || 0)) < 24) return; S.reserve = px; layout(); },
     setZoom(z) { if (!ZOOM[z] || z === S.zoom) return; S.zoom = z; layout(); },
+    setTheme(th) { th = th === "paint" ? "paint" : "sketch"; if (th === S.theme) return; S.theme = th; vp.dataset.theme = th; document.documentElement.dataset.theme = th; draw(); api.onLayout?.(); },
     setDensity(d) { if (!DENS[d] || d === S.density) return; S.density = d; draw(); },
   };
   let rt = 0; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(layout, 120); });

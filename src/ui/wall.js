@@ -32,7 +32,7 @@ export function createWall(game, root) {
     q(".clock").textContent = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
     q(".date").textContent = `${WD[d.getDay()]}, ${d.getDate()}/${d.getMonth() + 1}`;
     const st = learn.streakAlive(), fl = learn.mastered().filter((c) => c.lang === learn.lang).length;
-    const W = game.weather; const chipsHtml = `<button class="chip-s chip-lang chip-mus${s.settings.music ? " on" : ""}" data-w="musictoggle" aria-pressed="${!!s.settings.music}" aria-label="${s.settings.music ? "Tắt nhạc" : "Bật nhạc lo-fi"}">${s.settings.music ? "♫" : "♪"}</button><button class="chip-s chip-lang" data-w="lang" aria-label="Đổi ngôn ngữ học: đang học ${esc(LANGS[learn.lang].vi)}">${esc(LANGS[learn.lang].short)}<span aria-hidden="true">▾</span></button>${W && W.kind ? `<span class="chip-s" title="Thời tiết · ${W.st.place}">${W.label()}</span>` : ""}<span class="chip-s" title="Chuỗi ngày học">🔥 ${st || 0}</span><span class="chip-s" title="Hoa (từ đã thuộc)">🌼 ${fl}</span>`; if (chipsHtml !== lastChips) { lastChips = chipsHtml; q(".chips").innerHTML = chipsHtml; }      // chỉ vẽ lại khi đổi (vẽ lại liên tục làm nút mất lượt chạm);
+    const W = game.weather; const chipsHtml = `<button class="chip-s chip-lang chip-ico${s.settings.names ? " on" : ""}" data-w="namestoggle" aria-pressed="${!!s.settings.names}" aria-label="${s.settings.names ? "Ẩn tên đồ vật" : "Hiện tên đồ vật trong vườn"}">${icon("tag")}</button><button class="chip-s chip-lang chip-mus${s.settings.music ? " on" : ""}" data-w="musictoggle" aria-pressed="${!!s.settings.music}" aria-label="${s.settings.music ? "Tắt nhạc" : "Bật nhạc lo-fi"}">${s.settings.music ? "♫" : "♪"}</button><button class="chip-s chip-lang" data-w="lang" aria-label="Đổi ngôn ngữ học: đang học ${esc(LANGS[learn.lang].vi)}">${esc(LANGS[learn.lang].short)}<span aria-hidden="true">▾</span></button>${W && W.kind ? `<span class="chip-s" title="Thời tiết · ${W.st.place}">${W.label()}</span>` : ""}<span class="chip-s" title="Chuỗi ngày học">🔥 ${st || 0}</span><span class="chip-s" title="Hoa (từ đã thuộc)">🌼 ${fl}</span>`; if (chipsHtml !== lastChips) { lastChips = chipsHtml; q(".chips").innerHTML = chipsHtml; }      // chỉ vẽ lại khi đổi (vẽ lại liên tục làm nút mất lượt chạm);
     const badge = (sel, n) => { const b = q(`[data-w=${sel}] .badge`); b.hidden = !n; b.textContent = n > 99 ? "99+" : n; };
     badge("learn", t.neu); badge("review", t.due);
     q("[data-w=review] span").textContent = t.due ? "Ôn" : "Đố vui";
@@ -332,6 +332,7 @@ export function createWall(game, root) {
     if (a === "next") { shift++; if (Math.random() < 0.35) game.jab("ui_next"); return ambient(true); }
     if (a === "quizme" && cur) return quiz(cur);
     if (a === "giveup") return answer("x", null, { giveup: true });
+    if (a === "namestoggle") { const on = game.names?.toggle(); whisper(on ? "Hiện tên đồ vật. Chạm chữ nào để xem to." : "Ẩn tên đồ vật. Chạm thẳng vào đồ vật vẫn xem được."); clock(); return; }
     if (a === "musictoggle") { const on = !s.settings.music; game.music(on); whisper(on ? "Bật nhạc lo-fi. Chill đi." : "Tắt nhạc."); clock(); return; }
     if (a === "pause") return pauseAsk();
     if (a === "resume") return resume();

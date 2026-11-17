@@ -3,7 +3,7 @@ export const APP = {
   name: "Purrsona",
   tagline: "Mèo đanh đá dạy chữ · Anh – Trung – Nhật",
   saveKey: "purrsona.save.v2",      // v2: bản học chữ (không đọc bản lưu nuôi mèo cũ)
-  version: "2.7.1",
+  version: "2.8.0",
 };
 
 // ------------------------------------------------------------------ GÓI (free / plus / pro)

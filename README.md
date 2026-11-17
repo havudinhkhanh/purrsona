@@ -121,8 +121,10 @@ Máy chủ tài khoản nằm sẵn trong repo (`functions/api`) – Cloudflare 
 1. Cloudflare › Workers & Pages › D1 › **Create database** (đặt tên gì cũng được, vd `purrsona`).
 2. Dự án Pages của Purrsona › Settings › **Bindings** › Add › D1 database: tên biến **`DB`**, chọn database vừa tạo. Bảng tự tạo ở lần chạy đầu.
 3. (Nên làm) Settings › Variables: `OWNER_EMAIL` = email quản trị (chưa đặt thì người đăng ký đầu tiên là quản trị).
-4. (Tuỳ chọn) `GOOGLE_CLIENT_ID` để có nút "Tiếp tục với Google" – dùng lại Client ID của trang khác cũng được, nhớ thêm tên miền Purrsona vào *Authorized JavaScript origins*. `RESEND_API_KEY` + `MAIL_FROM` để có "Quên mật khẩu" và mã đăng nhập qua email; chưa có thì quản trị bấm "Link đặt lại" trong trang quản trị rồi gửi cho người dùng.
-5. Retry deployment. Xong: app có Đăng nhập / Tạo tài khoản (email + mật khẩu), trang quản trị ở `/admin.html`.
+4. (Tuỳ chọn) **Đăng nhập bằng GitHub** – không cần dịch vụ ngoài nào khác: GitHub › Settings › Developer settings › OAuth Apps › New OAuth App. *Homepage URL* = địa chỉ app, *Authorization callback URL* = `https://<địa-chỉ-app>/api/auth/github/callback`. Chép **Client ID** vào biến `GITHUB_CLIENT_ID`, tạo **Client secret** rồi lưu vào `GITHUB_CLIENT_SECRET` (chọn *Encrypt*). App và trang quản trị hiện nút "Đăng nhập bằng GitHub".
+5. (Tuỳ chọn) **Đăng nhập bằng Cloudflare** (Zero Trust Access): nếu đặt app sau Cloudflare Access, thêm `CF_ACCESS_TEAM` (phần `tenban` của `tenban.cloudflareaccess.com`) và `CF_ACCESS_AUD` (Application Audience tag) – qua cổng Access là app tự đăng nhập bằng email đó.
+6. (Tuỳ chọn) `GOOGLE_CLIENT_ID` để có nút Google. `RESEND_API_KEY` + `MAIL_FROM` để có "Quên mật khẩu" và mã qua email; chưa có thì quản trị bấm "Link đặt lại" trong trang quản trị.
+7. Retry deployment. Xong: app có Đăng nhập (GitHub, Cloudflare, hoặc email + mật khẩu), trang quản trị ở `/admin.html`. Không cần Supabase hay máy chủ riêng.
 
 Máy chủ chỉ lưu: email, tên gọi, mật khẩu đã băm (PBKDF2), gói, bản sao tiến độ học, vài số tóm tắt (chuỗi ngày, số chữ thuộc, ngôn ngữ, cấp, vibe) và số đúng/sai **ẩn danh theo chữ** (không gắn người) để việc nuôi kho chữ biết chữ nào khó. Xoá tài khoản trong app là xoá hết dữ liệu của người đó.
 

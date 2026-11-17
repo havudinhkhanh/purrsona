@@ -1,5 +1,9 @@
+import { RACK } from "./yard.js";
 import { fitSvg } from "../render/fit.js";
 import { play, pivot, fallFrames, puff, splash, wait } from "./motion.js";
+import { paintSvg } from "./paint.js";
+// tranh màu: đồ vật nào tô bảng màu nào
+const LMAT = { towel: "cloth", towelHang: "cloth", sock: "cloth", pillow: "cloth", slippers: "rug", boxBack: "desk", boxFront: "desk", bowl: "stone", cup: "stone", alarm: "metal", keys: "metal", umbrella: "rug", hairball: "soil", toothbrush: "water", line: "fence" };
 // ĐỜI THƯỜNG CỦA MÈO: lâu lâu mèo bày một trò trong nhà / ngoài vườn – kéo khăn rớt, chôm vớ, xô ly nước,
 // ngồi lên điện thoại, nằm lên tờ báo… Mỗi trò hiện chữ của đồ vật + hành động theo tiếng đang học (Anh / Trung / Nhật)
 // và một câu lẫy. Đồ bày ra nằm đó, chạm vào là "nhặt lên" (cũng ra chữ).
@@ -34,7 +38,7 @@ const PROPS = {
   // dây phơi: 2 cọc + dây võng (chân cọc ở (x ± 3u, y)), cao ~6u
   line: (x, y, u) => `<path d="M${x - 3.4 * u} ${y} v${-6.4 * u} M${x + 3.4 * u} ${y} v${-6.4 * u}" ${S(u).s}/><path d="M${x - 3.4 * u} ${y - 6 * u} q${3.4 * u} ${1.1 * u} ${6.8 * u} 0" fill="none" stroke="${INK}" stroke-width="1.1"/><ellipse cx="${x - 3.4 * u}" cy="${y}" rx="${0.7 * u}" ry="${0.25 * u}" fill="${INK3}" opacity=".5"/><ellipse cx="${x + 3.4 * u}" cy="${y}" rx="${0.7 * u}" ry="${0.25 * u}" fill="${INK3}" opacity=".5"/>`,
   // khăn đang phơi: treo trên dây ở độ cao 5.5u (x, y = chân dây phơi), 2 kẹp
-  towelHang: (x, y, u) => { const t = y - 5.5 * u; return `<path d="M${x - 1.8 * u} ${t} q${1.8 * u} ${0.35 * u} ${3.6 * u} 0 l${0.2 * u} ${3 * u} q${-0.5 * u} ${0.4 * u} ${-1 * u} 0 q${-0.6 * u} ${0.45 * u} ${-1.2 * u} 0 q${-0.6 * u} ${0.45 * u} ${-1.2 * u} 0 q${-0.4 * u} ${0.35 * u} ${-0.6 * u} 0z" fill="${WHITE}" ${S(u).s}/><path d="M${x - 1.4 * u} ${t + 1 * u} h${2.8 * u} M${x - 1.4 * u} ${t + 1.6 * u} h${2.8 * u}" stroke="${INK3}" stroke-width="1"/><rect x="${x - 1.4 * u}" y="${t - 0.45 * u}" width="${0.3 * u}" height="${0.8 * u}" fill="${INK}"/><rect x="${x + 1.1 * u}" y="${t - 0.45 * u}" width="${0.3 * u}" height="${0.8 * u}" fill="${INK}"/>`; },
+  towelHang: (x, y, u) => { const t = y - 5.2 * u; return `<path d="M${x - 1.8 * u} ${t} q${1.8 * u} ${0.35 * u} ${3.6 * u} 0 l${0.2 * u} ${3 * u} q${-0.5 * u} ${0.4 * u} ${-1 * u} 0 q${-0.6 * u} ${0.45 * u} ${-1.2 * u} 0 q${-0.6 * u} ${0.45 * u} ${-1.2 * u} 0 q${-0.4 * u} ${0.35 * u} ${-0.6 * u} 0z" fill="${WHITE}" ${S(u).s}/><path d="M${x - 1.4 * u} ${t + 1 * u} h${2.8 * u} M${x - 1.4 * u} ${t + 1.6 * u} h${2.8 * u}" stroke="${INK3}" stroke-width="1"/><rect x="${x - 1.4 * u}" y="${t - 0.45 * u}" width="${0.3 * u}" height="${0.8 * u}" fill="${INK}"/><rect x="${x + 1.1 * u}" y="${t - 0.45 * u}" width="${0.3 * u}" height="${0.8 * u}" fill="${INK}"/>`; },
   towel: (x, y, u, st) => `<path d="M${x - 2.6 * u} ${y} q${1.2 * u} ${-1.6 * u} ${2.4 * u} ${-0.4 * u} q${1.4 * u} ${-1.2 * u} ${2.8 * u} ${0.2 * u} l${-0.6 * u} ${0.9 * u} q${-2.4 * u} ${0.6 * u} ${-4.6 * u} ${-0.7 * u}z" fill="${WHITE}" ${S(u).s}/><path d="M${x - 1.4 * u} ${y - 0.6 * u} l${2.6 * u} ${0.1 * u} M${x - 1 * u} ${y - 0.2 * u} l${2 * u} 0" stroke="${INK3}" stroke-width="1"/>`,
   toothbrush: (x, y, u) => `<g transform="rotate(-14 ${x} ${y})"><rect x="${x - 2.4 * u}" y="${y - 0.5 * u}" width="${4 * u}" height="${0.5 * u}" rx="${0.25 * u}" fill="${WHITE}" ${S(u).s}/><rect x="${x + 1.2 * u}" y="${y - 1.2 * u}" width="${1.2 * u}" height="${0.7 * u}" fill="${INK3}" ${S(u).s}/></g>`,
   cup: (x, y, u, st) => st === "spilled" ? `<ellipse cx="${x + 1.6 * u}" cy="${y + 0.2 * u}" rx="${2.6 * u}" ry="${0.8 * u}" fill="${INK3}" opacity=".5"/><g transform="rotate(84 ${x} ${y})"><path d="M${x - 0.9 * u} ${y - 2 * u} h${1.8 * u} l${-0.3 * u} ${2 * u} h${-1.2 * u}z" fill="${WHITE}" ${S(u).s}/></g>` : `<path d="M${x - 0.9 * u} ${y - 2 * u} h${1.8 * u} l${-0.3 * u} ${2 * u} h${-1.2 * u}z" fill="${WHITE}" ${S(u).s}/><path d="M${x - 0.7 * u} ${y - 1.4 * u} h${1.4 * u}" stroke="${INK3}" stroke-width="1"/>`,
@@ -70,7 +74,7 @@ export function createLife(game) {
     else if (how === "pop") { await play(g, [{ transform: "scale(.2)", opacity: 0 }, { transform: "scale(1.12)", opacity: 1, offset: 0.65 }, { transform: "scale(1)", opacity: 1 }], { duration: 420, easing: "cubic-bezier(.3,1.4,.5,1)" }); }
     else if (how === "slide") { const dx = (o.dx || -2.2) * u; await play(g, [{ transform: `translate(${dx}px, ${-0.6 * u}px) rotate(-12deg)`, opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 480, easing: "cubic-bezier(.2,.9,.3,1.2)" }); }
   }
-  function draw(it) { const [x, y] = Y.P(it.u, it.v), u = Y.S.k * 1.1; it.el.style.zIndex = Math.round(y) + it.dz; it.el.innerHTML = `<svg class="spr" viewBox="0 0 ${Y.S.vw} ${Y.S.vh}">${PROPS[it.kind](x, y, u, it.st)}</svg>`; fitSvg(it.el.firstChild); }
+  function draw(it) { const [x, y] = Y.P(it.u, it.v), u = Y.S.k * 1.1; it.el.style.zIndex = Math.round(y) + it.dz; const art = PROPS[it.kind](x, y, u, it.st); it.el.innerHTML = `<svg class="spr" viewBox="0 0 ${Y.S.vw} ${Y.S.vh}">${Y.S.theme === "paint" ? paintSvg(art, LMAT[it.kind] || "misc") : art}</svg>`; fitSvg(it.el.firstChild); }
   function remove(it, picked) {
     items = items.filter((x) => x !== it); const g = svgOf(it);
     if (picked && g) { const [x, y] = base(it); pivot(g, x, y); play(g, [{ transform: "none", opacity: 1 }, { transform: `translateY(${-3 * U()}px) scale(.7) rotate(-10deg)`, opacity: 0 }], { duration: 380, easing: "ease-in" }).then(() => it.el.remove()); return; }
@@ -88,19 +92,21 @@ export function createLife(game) {
   // ------------------------------------------------------------------ các trò
   const PLAYS = [
     // dây phơi hiện cạnh mèo → mèo ngó, khều → khăn đung đưa, tuột kẹp, bay phấp phới rớt xuống đất
-    { k: "towel", where: "garden", dry: 1, async run(h) {
-      const [u, v] = nearCat(2.8, -0.4), uu = U(), [x, y] = Y.P(u, v);
-      const ln = put("line", u, v, { dz: -6, ms: 16e3, enter: "pop" }), tw = put("towelHang", u, v, { dz: -5, ms: 16e3, enter: "pop" });
-      await B.act("look_up", 1100); const g = svgOf(tw); pivot(g, x, y - 5.5 * uu);
+    // ra giá phơi đồ → ngó khăn → khều → khăn đung đưa, tuột kẹp, bay phấp phới rớt xuống đất
+    { k: "towel", where: "garden", dry: 1, spot: () => [RACK.u0 + 4.4, RACK.v + 2.6], async run(h) {
+      const u = RACK.u0 + 5.6, v = RACK.v, uu = U(), [x, y] = Y.P(u, v);
+      B.faceTo?.(x > B.x ? 1 : -1);
+      const tw = put("towelHang", u, v, { dz: 1, ms: 16e3, enter: "pop" });
+      await B.act("look_up", 1100); const g = svgOf(tw); pivot(g, x, y - 5.2 * uu);
       play(g, [{ transform: "rotate(0)" }, { transform: "rotate(7deg)" }, { transform: "rotate(-6deg)" }, { transform: "rotate(4deg)" }, { transform: "rotate(-2deg)" }, { transform: "rotate(0)" }], { duration: 1100, easing: "ease-in-out" });
       await B.act("play_yarn", 1100); game.sfx?.("swish");
       // tuột 1 kẹp: khăn lệch xuống một bên, rồi rơi hẳn, bay phấp phới
       await play(g, [{ transform: "rotate(0)" }, { transform: `rotate(-24deg) translate(${-0.4 * uu}px, ${0.5 * uu}px)` }], { duration: 260, easing: "ease-out" });
-      const d = 3.2 * uu, F = []; for (let i = 0; i <= 12; i++) { const t2 = i / 12, e = t2 * t2; F.push({ offset: t2, transform: `translate(${(Math.sin(t2 * 6.5) * 0.9 * uu * (1 - t2) - 0.4 * uu).toFixed(1)}px, ${(0.5 * uu + d * e).toFixed(1)}px) rotate(${(-24 + 30 * t2 + Math.sin(t2 * 9) * 18 * (1 - t2)).toFixed(1)}deg) scale(1, ${(1 - 0.35 * e).toFixed(2)})`, opacity: t2 > 0.92 ? 0 : 1 }); }
+      const d = 2.4 * uu, F = []; for (let i = 0; i <= 12; i++) { const t2 = i / 12, e = t2 * t2; F.push({ offset: t2, transform: `translate(${(Math.sin(t2 * 6.5) * 0.9 * uu * (1 - t2) - 0.4 * uu).toFixed(1)}px, ${(0.5 * uu + d * e).toFixed(1)}px) rotate(${(-24 + 30 * t2 + Math.sin(t2 * 9) * 18 * (1 - t2)).toFixed(1)}deg) scale(1, ${(1 - 0.35 * e).toFixed(2)})`, opacity: t2 > 0.92 ? 0 : 1 }); }
       await play(g, F, { duration: 900, easing: "linear" });
-      remove(tw); const towel = put("towel", u + 0.2, v + 0.3, { ms: 180e3, tap: pickUp("towel") }); game.sfx?.("plop"); puff(Y.topfx, x, y + 0.3 * uu, 6, 30, 6); game.buzz?.(8);
+      remove(tw); const towel = put("towel", u + 0.2, v + 0.6, { ms: 180e3, tap: pickUp("towel") }); game.sfx?.("plop"); puff(Y.topfx, x, y + 0.6 * uu, 6, 30, 6); game.buzz?.(8);
       pivot(svgOf(towel), x, y); play(svgOf(towel), [{ transform: "scale(1.15, .6)", opacity: 0.6 }, { transform: "scale(.95, 1.08)", offset: 0.6 }, { transform: "none", opacity: 1 }], { duration: 380, easing: "ease-out" });
-      word("life_towel"); h.say("life_towel"); await B.act("idle_tail", 3000); void ln;
+      word("life_towel"); h.say("life_towel"); await B.act("idle_tail", 3000);
     } },
     // bàn chải rớt từ bồn rửa xuống sàn, xoay vòng, lách cách
     { k: "teeth", where: "house", async run(h) { const [u, v] = nearCat(); await B.act("look_up", 900); await B.act("play_yarn", 700); put("toothbrush", u, v, { ms: 90e3, tap: pickUp("teeth"), enter: "fall", h: 4.5, spin: 200, sfx: "clink" }); await wait(650); word("life_teeth"); h.say("life_teeth"); await B.act("lick_lip", 1500); await B.act("groom", 3000); } },
@@ -171,7 +177,7 @@ export function createLife(game) {
     const spotFor = (w) => pick(w === "house" ? HOUSE_SPOTS : w === "garden" ? GARDEN_SPOTS : [...HOUSE_SPOTS, ...GARDEN_SPOTS]);
     const life = PLAYS.map((P) => ({ id: "life_" + P.k,
       score: () => (s.onboarded && cool("life", 3) && cool("life_" + P.k, 25) && (P.rain ? raining() : !(P.dry && raining())) ? 0.16 + T().playful * 0.18 + T().curious * 0.12 + (P.rain ? 0.3 : 0) : 0),
-      async run() { used("life"); used("life_" + P.k); const [u, v] = raining() && P.where !== "house" && !P.rain ? pick(HOUSE_SPOTS) : spotFor(P.where); await goUV(u + rand(-1.5, 1.5), v + rand(-1, 1)); await P.run(h); } }));
+      async run() { used("life"); used("life_" + P.k); const [u, v] = raining() && P.where !== "house" && !P.rain ? pick(HOUSE_SPOTS) : P.spot ? P.spot() : spotFor(P.where); await goUV(u + rand(-1.5, 1.5), v + rand(-1, 1)); await P.run(h); } }));
     const ambush = { id: "ambush",
       score: () => (s.onboarded && game.attention?.() && game.wall?.mode === "ambient" && cool("ambush", 120) && yesterdayWords().length ? 1.1 : 0),
       async run() {

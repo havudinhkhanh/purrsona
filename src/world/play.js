@@ -14,7 +14,7 @@ export const PROPS = {
 };
 // việc của mèo → chữ hiện ra (id thẻ trong gói en-scene / zh-scene, hoặc gói khác)
 export const SCENE = {
-  dig: { en: ["dig", "soil"], zh: ["挖", "泥土"], ja: ["掘る", "土"] }, snap: { en: ["rose", "snap"], zh: ["玫瑰", "弄断"], ja: ["バラ", "折る"] },
+  dig: { en: ["dig", "soil"], zh: ["挖", "泥土"], ja: ["掘る", "土"] }, snap: { en: ["rose", "snap"], zh: ["玫瑰", "弄断"], ja: ["バラ", "折る"] }, uproot: { en: ["uproot", "root"], zh: ["连根拔起", "根"], ja: ["抜く", "根"] },
   swing: { en: ["swing"], zh: ["秋千", "荡秋千"], ja: ["ブランコ"] }, slide: { en: ["slide", "ladder"], zh: ["滑梯", "梯子"], ja: ["滑り台", "はしご"] },
   trellis: { en: ["climb", "trellis", "gourd", "vine"], zh: ["爬", "瓜架", "葫芦", "藤"], ja: ["登る", "ひょうたん", "つる"] }, pot: { en: ["knock over", "flower pot"], zh: ["打翻", "花盆"], ja: ["倒す", "植木鉢"] },
   innocent: { en: ["innocent", "mess"], zh: ["无辜", "乱七八糟"], ja: ["無実", "散らかす"] }, tidy: { en: ["tidy up"], zh: ["收拾"], ja: ["片付ける"] },
@@ -70,7 +70,9 @@ export function createPlay(game) {
     { const R = PROPS.roses; sprite("rosebed", P(R.u, R.v - 3)[1], D.poly(ring(R.u, R.v + 0.4, 6.4, 2.9, 16), { fill: INK3, fillStyle: "dots", hachureGap: 5, strokeWidth: 1.4 }));
       R.spots.forEach(([uu, vv], i) => { const [x, y] = P(uu, vv), hh = 4.4 * k * 0.9, r = k * 0.5; let g;
         if (P0.roses[i]) g = D.curve([[x, y], [x + r * 0.4, y - hh * 0.5], [x, y - hh]], { strokeWidth: 1.4 }) + D.circle(x, y - hh, r * 2.2, { fill: WHITE, fillStyle: "solid", strokeWidth: 1.4 }) + D.curve([[x - r * 0.5, y - hh], [x, y - hh - r * 0.6], [x + r * 0.5, y - hh], [x, y - hh + r * 0.4]], { strokeWidth: 1 }) + D.ell(x + r * 1.2, y - hh * 0.5, r * 1.6, r * 0.8, { fill: INK2, hachureGap: 3, strokeWidth: 1 });
-        else g = D.curve([[x, y], [x + r * 0.3, y - hh * 0.45], [x + r * 2.4, y - hh * 0.35]], { strokeWidth: 1.4 }) + D.circle(x + r * 3.4, y - r * 0.3, r * 2, { fill: WHITE, fillStyle: "solid", strokeWidth: 1.3 }) + D.line([x + r * 2.8, y - r * 1.4], [x + r * 4, y + r * 0.6], { strokeWidth: 1 });
+        else g = D.curve([[x, y], [x + r * 0.3, y - hh * 0.45], [x + r * 2.4, y - hh * 0.35]], { strokeWidth: 1.4 }) + D.circle(x + r * 3.4, y - r * 0.3, r * 2, { fill: WHITE, fillStyle: "solid", strokeWidth: 1.3 }) + D.line([x + r * 2.8, y - r * 1.4], [x + r * 4, y + r * 0.6], { strokeWidth: 1 })
+          // bị nhổ bật gốc: cục đất + rễ tua ra
+          + D.ell(x - r * 0.3, y + r * 0.1, r * 1.8, r * 1.1, { fill: INK2, fillStyle: "dots", hachureGap: 2, strokeWidth: 1 }) + [[-1.6, 0.5], [-2.2, -0.2], [-1.9, 1.1], [-1.1, 1.4]].map(([a, b2]) => D.curve([[x - r * 0.4, y], [x + r * a * 0.6, y + r * b2 * 0.5], [x + r * a, y + r * b2]], { strokeWidth: 0.9 })).join("");
         sprite("rose" + i, y, g); });
       P0.holes.forEach(([uu, vv], i) => { const [x, y] = P(uu, vv); sprite("hole" + i, y - 1, D.ell(x, y, k * 2.2, k * 0.9, { fill: INK, fillStyle: "solid", strokeWidth: 1.2 }) + D.ell(x + k * 1.8, y - k * 0.2, k * 1.6, k * 0.7, { fill: INK3, fillStyle: "dots", hachureGap: 3, strokeWidth: 1 })); }); }
     // chậu cây (đứng / bị xô đổ)
@@ -114,14 +116,18 @@ export function createPlay(game) {
     const ids = SCENE[key]?.[learn.lang] || []; if (!ids.length) return;
     const cards = [...ids].sort(() => Math.random() - 0.5).slice(0, 2).map((w) => learn.card(`${learn.lang}:${w}`)).filter(Boolean); if (!cards.length) return;
     lastTag = now; tagCards = cards; mountTag();
-    tag.innerHTML = cards.map((c, i) => `<button class="wt${i ? " sm" : ""}" data-tw="${esc(c.id)}"><b class="${c.lang}">${esc(c.w)}</b><small>${esc(c.ph || "")}</small><i>${esc(c.vi)}</i></button>`).join("") + `<button class="wstar${learn.booked(cards[0].id) ? " on" : ""}" data-tstar="${esc(cards[0].id)}" aria-label="Lưu vào sổ">${icon("star")}</button>`;
-    tag.hidden = false; tag.classList.remove("in"); tagW = tag.offsetWidth; tagH = tag.offsetHeight; tag.classList.add("in"); tagUntil = now + 7000;
+    // hiện NHỎ GỌN trước (1 viên chữ nhỏ thân thiện), muốn tìm hiểu thì chạm mới mở thẻ đầy đủ
+    const full = cards.map((c, i) => `<button class="wt${i ? " sm" : ""}" data-tw="${esc(c.id)}"><b class="${c.lang}">${esc(c.w)}</b><small>${esc(c.ph || "")}</small><i>${esc(c.vi)}</i></button>`).join("") + `<button class="wstar${learn.booked(cards[0].id) ? " on" : ""}" data-tstar="${esc(cards[0].id)}" aria-label="Lưu vào sổ">${icon("star")}</button>`;
+    tag.innerHTML = `<button class="wmini" data-wopen aria-label="Xem chữ: ${esc(cards[0].w)}"><span class="wdot" aria-hidden="true">✦</span><b class="${cards[0].lang}">${esc(cards[0].w)}</b>${cards.length > 1 ? `<small>+${cards.length - 1}</small>` : ""}</button><div class="wfull">${full}</div>`;
+    tag.classList.add("mini");
+    tag.hidden = false; tag.classList.remove("in"); tagW = tag.offsetWidth; tagH = tag.offsetHeight; tag.classList.add("in"); tagUntil = now + 8000;
     learn.L.sceneSeen ||= {}; for (const c of cards) learn.L.sceneSeen[c.id] = (learn.L.sceneSeen[c.id] || 0) + 1;
   }
   tag.addEventListener("pointerdown", (e) => e.stopPropagation());
   tag.addEventListener("click", (e) => {
     const st = e.target.closest("[data-tstar]"); if (st) { const id = st.dataset.tstar; if (learn.booked(id)) learn.unbook(id); else learn.bookmark(learn.card(id), s.plan); st.classList.toggle("on", learn.booked(id)); game.persist(); tagUntil = Date.now() + 5000; return; }
-    const w = e.target.closest("[data-tw]"); if (w) { game.speakCard(learn.card(w.dataset.tw), false, true); tagUntil = Date.now() + 6000; }
+    const op = e.target.closest("[data-wopen]"); if (op) { tag.classList.remove("mini"); tagW = tag.offsetWidth; tagH = tag.offsetHeight; tagUntil = Date.now() + 14000; game.speakCard(tagCards[0], false, true); return; }
+    const w = e.target.closest("[data-tw]"); if (w) { game.speakCard(learn.card(w.dataset.tw), false, true); tagUntil = Date.now() + 10000; }
   });
   let tagW = 0, tagH = 0;
   function placeTag() {
@@ -166,14 +172,20 @@ export function createPlay(game) {
           await goUV(hu - 2.5, hv + 1.6); B.faceTo(1); await B.act("crouch", 700); sceneWord("dig", true); if (Math.random() < 0.5) say("play_dig");
           dirt(hu, hv); await B.act("scratch", 1600); dirt(hu, hv); await B.act("scratch", 1200);
           P0.holes.push([+hu.toFixed(1), +hv.toFixed(1)]);
-          if (P0.roses[i] && Math.random() < 0.45) { P0.roses[i] = 0; game.buzz?.(10); Y.redraw(); await B.act("look_up", 900); say("play_snap"); sceneWord("snap", true); await B.act("idle_tail", 2200); sceneWord("innocent", true); }
+          if (P0.roses[i] && Math.random() < 0.6) {
+            // đào trúng gốc: cây hoa bị kéo bật lên (rễ lòi ra), chao rồi ngã vật xuống
+            const rs = Y.stage.querySelector(`.spr[data-id="rose${i}"]`), [rx, ry] = Y.P(ru, rv), kk = Y.S.k; game.sfx?.("swish");
+            if (rs) { pivot(rs, rx, ry); await play(rs, [{ transform: "none" }, { transform: `translateY(${-0.7 * kk}px) rotate(-4deg)`, offset: 0.3 }, { transform: `translateY(${-1.1 * kk}px) rotate(6deg)`, offset: 0.48 }, { transform: `translate(${0.6 * kk}px, ${-0.4 * kk}px) rotate(78deg)`, offset: 0.86, easing: "cubic-bezier(.5,0,.9,.6)" }, { transform: `translate(${0.6 * kk}px, 0) rotate(86deg)` }], { duration: 1000 }); }
+            dirt(ru, rv); game.sfx?.("plop"); game.sfx?.("patter"); puff(Y.topfx, rx, ry, 6, 26, 6);
+            P0.roses[i] = 0; game.buzz?.(10); Y.redraw(); sceneWord("uproot", true); await B.act("look_up", 900); say("play_snap"); sceneWord("snap", true); await B.act("idle_tail", 2200); sceneWord("innocent", true);
+          }
           else Y.redraw();
           game.persist(); await B.act("groom", 2000); } },
       { id: "knockpot", score: () => (cool("pot", 6) && P0.pots.some((p) => !p) && !wx().raining ? 0.22 + T().sassy * 0.5 + (game.today.mood.id === "grumpy" ? 0.4 : 0) : 0),
         async run() { used("pot"); const L = P0.pots.map((p, i) => (p ? -1 : i)).filter((i) => i >= 0), i = pick(L), [pu, pv] = PROPS.pots[i];
           await goUV(pu - 2.4, pv + 1.2); B.faceTo(1); await B.act("look_up", 1200);       // nhìn bạn trước khi xô – kiểu mèo
           // khều → chậu chao qua chao lại → nghiêng dần → đổ cái rầm, đất văng (chậu thật trong cảnh chuyển động, không phải ảnh thay)
-          const spr = Y.stage.querySelector(`.spr[data-id="pot${i}"]`), [x, y] = Y.P(pu, pv), w = Y.S.k * 1.1, swat = B.act("scratch", 900);
+          const spr = Y.stage.querySelector(`.spr[data-id="pot${i}"]`), [x, y] = Y.P(pu, pv), w = Y.S.k * 1.1, swat = B.act("scratch", 900); swat.catch(() => {});      // bị ngắt giữa chừng thì thôi (vẫn await bên dưới)
           if (spr) {
             pivot(spr, x + w * 0.7, y); game.sfx?.("clink", 0.55);
             await play(spr, [{ transform: "rotate(0)" }, { transform: "rotate(-7deg)", offset: 0.16 }, { transform: "rotate(10deg)", offset: 0.34 }, { transform: "rotate(-4deg)", offset: 0.48 }, { transform: "rotate(3deg)", offset: 0.56, easing: "cubic-bezier(.55,0,.95,.5)" }, { transform: "rotate(94deg)", offset: 0.86 }, { transform: "rotate(84deg)", offset: 0.93 }, { transform: "rotate(90deg)" }], { duration: 1250 });

@@ -3,6 +3,7 @@ import { APP, CHILL, can, SKINS } from "./config.js";
 import { load, save, log } from "./core/store.js";
 import { bus, clamp, dayKey, rand, pick, lerp } from "./core/util.js";
 import * as snd from "./core/sound.js";
+import { createNames } from "./world/names.js";
 import { music } from "./core/music.js";
 import { createYard } from "./world/yard.js";
 import { createCritters } from "./world/critters.js";
@@ -61,7 +62,7 @@ export async function createGame(root) {
 
   // ------------------------------------------------------------------ khu vườn (một cảnh, nhìn từ trên xuống)
   const yard = createYard(root); game.yard = yard; game.scene = yard;
-  yard.S.forceHour = s.settings.hour; yard.setDensity(s.settings.yard || "full"); yard.setZoom(s.settings.zoom || "mid"); if (s.settings.zf && s.settings.zf !== 1) yard.setZf(s.settings.zf, s.settings.zfu, s.settings.zfv); yard.light();
+  yard.S.forceHour = s.settings.hour; yard.setDensity(s.settings.yard || "full"); yard.setZoom(s.settings.zoom || "mid"); yard.setTheme(s.settings.theme || "sketch"); if (s.settings.zf && s.settings.zf !== 1) yard.setZf(s.settings.zf, s.settings.zfu, s.settings.zfv); yard.light();
   yard.onZoom = (z, fu, fv) => { s.settings.zf = z; s.settings.zfu = fu; s.settings.zfv = fv; save(s); ev.emit("zoom", z); if (!document.body.classList.contains("answering")) game.critters?.ambient(); };
   const B = createBody(R, yard); game.body = B;
   const p0 = s.cat.uv || { u: 50, v: 50 }, [x0, y0] = yard.P(p0.u, p0.v);
@@ -72,6 +73,7 @@ export async function createGame(root) {
   B.speedMul = (0.92 + ((game.today.mood.speed || 1) - 1) * 0.4) * game.age.speed * CHILL.speed; B.ageScale = game.age.scale; R.durMul = CHILL.transition; B.runMul = CHILL.run; B.accelT = CHILL.accel; game.chill = CHILL;
   game.fx = createFx(document.body);
   const critters = createCritters(game); game.critters = critters;
+  setTimeout(() => { game.names = createNames(game); }, 0);      // sau khi vườn & thẻ chữ sẵn sàng
   const weather = createWeather(game); game.weather = weather;
   const play = createPlay(game); game.play = play;
   game.vibe = createVibe(game); game.life = createLife(game); yard.redraw();
@@ -369,6 +371,7 @@ function interactions(game, root) {
     if (game.life?.tap(p) || game.play?.tap(p)) return;      // đồ bày rớt đè lên chỗ đồ chơi: ưu tiên nhặt đồ
     if (scene.flowerSpots?.length) { let best = null, bd = 34; for (const f of scene.flowerSpots) { const d = Math.hypot(f.x - p.x, f.y - p.y); if (d < bd) { bd = d; best = f; } } if (best) { game.emit("flower", best.card); game.speakCard(best.card, false, true); return; } }
     if (game.vibe?.tap(p)) return;      // đồ trang trí vibe: sau hoa để không che chữ trong luống
+    if (game.names?.tapAt(p)) return;      // chạm đồ vật (hàng rào, cổng, nhà…) → viên chữ nhỏ tên đồ vật
     // chạm đúp xuống đất = gọi mèo
     if (Date.now() - lastGround < 380) { lastGround = 0; game.call(); } else lastGround = Date.now();
   });

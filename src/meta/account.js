@@ -90,6 +90,8 @@ export function createAccount(game) {
     async logout() { await push(); try { await api("/auth/logout", { method: "POST" }); } catch { /* đã hết phiên */ } A.token = ""; A.user = null; A.rev = 0; dropPlan(); save(s, true); ev("out"); },
     async remove() { await api("/me", { method: "DELETE" }); A.token = ""; A.user = null; A.rev = 0; dropPlan(); save(s, true); ev("out"); },
     sync: push, soon,
+    github() { location.href = endpoint().replace(/\/$/, "") + "/auth/github/start"; },
+    async access() { const r = await api("/auth/access", { method: "POST", auth: false }); return after(r); },
   });
   async function pushNow(data) { try { const r = await api("/sync", { method: "PUT", body: { rev: A.rev, data, summary: summary() } }); A.rev = r.rev; A.last = Date.now(); s.account = A; localStorage.setItem(APP_KEY, JSON.stringify({ ...data, account: A, device: s.device, plan: s.plan })); } catch { /* lần sau */ } }
 
@@ -101,6 +103,13 @@ export function createAccount(game) {
     api("/announce", { auth: false }).then((r) => { const seen = (s.annSeen ||= []); const it = (r.items || []).find((x) => !seen.includes(x.id) && (x.audience === "all" || x.audience === s.plan)); if (it) { seen.push(it.id); s.annSeen = seen.slice(-30); save(s); setTimeout(() => { game.sayLine?.(it.text, 6000); game.wall?.whisper(`📢 ${it.text}`, 8000); }, 5000); } }).catch(() => {});
     for (const k of ["learn", "book", "streak"]) game.on(k, () => soon());
     addEventListener("visibilitychange", () => { if (document.hidden) push({ keepalive: true }); });
+    // quay về từ GitHub: #login=<mã phiên> (hoặc #login_error=…)
+    const lg = location.hash.match(/login=([\w-]+)/), le = location.hash.match(/login_error=([\w-]+)/);
+    if (lg || le) history.replaceState(null, "", location.pathname + location.search);
+    if (lg) { A.token = lg[1]; api("/me").then((r) => after({ token: lg[1], user: r.user })).catch(() => { A.token = ""; save(s, true); }); }
+    else if (le) { acc.lastError = le[1]; setTimeout(() => game.showSheet?.("account"), 800); }
+    // đã qua cổng Cloudflare Access (Zero Trust) mà chưa đăng nhập → tự đăng nhập bằng email Access
+    else if (cfg.access && !A.token) acc.access().catch(() => {});
     // link đặt lại mật khẩu (#reset=…) → mở bảng tài khoản
     const m = location.hash.match(/reset=([\w-]+)/); if (m) { acc.resetToken = m[1]; history.replaceState(null, "", location.pathname); setTimeout(() => game.showSheet?.("account"), 800); }
   }
