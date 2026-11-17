@@ -1,0 +1,25 @@
+name = "purrsona-api"
+main = "worker.js"
+compatibility_date = "2026-11-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "purrsona"
+database_id = "DÁN_ID_D1_VÀO_ĐÂY"
+migrations_dir = "migrations"
+
+# Gửi mã đăng nhập bằng Cloudflare Email Service (tên miền gửi phải bật trước: npx wrangler email sending enable tenmien.com)
+[[send_email]]
+name = "EMAIL"
+
+[vars]
+ALLOWED_ORIGINS = "https://purrsona.pages.dev"      # chạy thử trên máy: thêm http://localhost:8765 trong .dev.vars
+MAIL_FROM = "meo@tenmien.com"
+MAIL_NAME = "na · Purrsona"
+# email được làm quản trị (cách nhau dấu phẩy) – đăng nhập lần đầu là có quyền admin
+ADMIN_EMAILS = ""
+# chỉ để chạy thử trên máy: "1" = trả mã đăng nhập thẳng trong phản hồi, không gửi email. KHÔNG bật khi deploy.
+DEV_ECHO_CODE = "0"
+
+[triggers]
+crons = ["17 20 * * *"]

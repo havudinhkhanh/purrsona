@@ -5,8 +5,12 @@ import zhCore from "./packs/zh-core.js";
 import enBiz from "./packs/en-business.js";
 import enScene from "./packs/en-scene.js";
 import zhScene from "./packs/zh-scene.js";
+import enVibe from "./packs/en-vibe.js";
+import zhVibe from "./packs/zh-vibe.js";
+import enDeep from "./packs/en-deep.js";
+import zhDeep from "./packs/zh-deep.js";
 
-export const PACKS = [enCore, zhCore, enBiz, enScene, zhScene];
+export const PACKS = [enCore, zhCore, enBiz, enScene, zhScene, enVibe, zhVibe, enDeep, zhDeep];
 export const LANGS = {
   en: { vi: "Tiếng Anh", short: "EN", flag: "Aa", tts: "en-GB", hint: "phiên âm" },
   zh: { vi: "Tiếng Trung", short: "中", flag: "中", tts: "zh-CN", hint: "pinyin" },

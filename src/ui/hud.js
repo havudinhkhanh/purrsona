@@ -11,6 +11,7 @@ import { buildIndex, scanText } from "../learn/scan.js";
 import { line } from "../cat/lines.js";
 import { BOX_IV, MASTER } from "../learn/srs.js";
 import { icon } from "./icons.js";
+import { VIBES, vibeFeat } from "../world/vibe.js";
 
 const ACT_VI = { nap: "Đang ngủ", watch: "Ngắm trời", explore: "Đi dạo", groom: "Liếm lông", zoomies: "Chạy rần rần", selfplay: "Tự chơi", perch: "Leo trèo", chase: "Đuổi bướm", seek: "Tìm bạn", sulk: "Đang dỗi", write: "Viết bậy lên tường", nag: "Kháy bạn", quizme: "Đố bạn", headbutt: "Dụi đầu", blinkat: "Chớp mắt", knead: "Nhào bột", bellyup: "Khoe bụng", pawtap: "Gõ màn hình", sleepnear: "Ngủ cạnh bạn", sniff: "Ngửi hoa", sunbathe: "Phơi nắng", sitpretty: "Ngồi ngắm bạn", pondgaze: "Ngắm ao", scratchtree: "Mài móng vô cây", yarn: "Chơi cuộn len", flowerpounce: "Vồ hoa", rainwatch: "Ngồi coi mưa", swing: "Đu xích đu", slide: "Chơi cầu tuột", trellis: "Trèo giàn bầu", dig: "Đào đất", knockpot: "Xô đổ chậu cây", tidy: "Ngẫm nghĩ", shadenap: "Nằm bóng cây", chaseleaf: "Vồ lá bay", greet: "Đón bạn", follow: "Đi theo bạn", wander: "Thong thả", pet: "Được vuốt ve", sleep: "Ngủ" };
 const planChip = (p) => (p === "free" ? "" : `<span class="chip chip-${p}">${PLANS[p].vi}</span>`);
@@ -38,6 +39,7 @@ export function createHud(game, root) {
   const lock = (feat) => !can(s.plan, feat);
   const boxDots = (b = 0) => `<i class="dots" title="Hộp ${b}/6">${Array.from({ length: 6 }, (_, i) => `<b class="${i < b ? "on" : ""}"></b>`).join("")}</i>`;
   const noteCard = (x, today) => `<article class="letter${today ? " today" : ""}"><header>${icon("letter")}<time>${x.d === dayKey() ? "Sáng nay" : new Date(x.d).toLocaleDateString("vi-VN", { weekday: "long", day: "numeric", month: "numeric" })}</time></header>${x.text.split("\n").map((l) => `<p>${esc(l)}</p>`).join("")}</article>`;
+  let loginStep = "email", loginEmail = "", loginMsg = "";
   let wordsTab = "book", readRes = null, readText = "";
   const host = (u) => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return ""; } };
 
@@ -92,6 +94,23 @@ export function createHud(game, root) {
         ${wordsTab === "weak" && lock("stats.full") ? `<button class="locked" data-a="plans">${icon("lock")} Danh sách từ hay sai có trong Plus</button>` : `<ol class="wlist">${L.map(row).join("") || `<p class="muted">Trống. ${wordsTab === "mastered" ? "Học đều tay thì sẽ có." : "Bấm Học để bắt đầu."}</p>`}</ol>`}`;
     },
     book() { wordsTab = "book"; return SHEETS.words(); },
+    account() {
+      const A = game.account, U = A?.user;
+      if (!A?.on) return head("Tài khoản") + `<p class="muted">Máy chủ tài khoản chưa bật. Tiến độ đang lưu trong máy này. (Người quản trị: deploy <code>worker/api</code> rồi điền <code>ACCOUNT.endpoint</code>.)</p>`;
+      if (U) return head("Tài khoản") + `<div class="acct"><span class="av big">${esc((U.nick || U.email)[0].toUpperCase())}</span><div><b>${esc(U.nick || "Sen")}</b><small>${esc(U.email)}</small></div><span class="chip chip-${U.plan}">${PLANS[U.plan]?.vi || U.plan}</span></div>
+        <p class="muted">${A.last ? `Đồng bộ lúc ${hhmm(A.last)}.` : "Chưa đồng bộ."} Học trên máy nào cũng cộng dồn.</p>
+        <button class="primary" data-a="acct-sync">${icon("repeat")} Đồng bộ ngay</button>
+        ${U.role === "admin" ? `<a class="ghost" href="admin.html" target="_blank" rel="noopener">${icon("settings")} Trang quản trị</a>` : ""}
+        <button class="ghost" data-a="acct-out">Đăng xuất</button>
+        <button class="ghost danger" data-a="acct-del">Xoá tài khoản</button>`;
+      return head("Đăng nhập", "Không cần mật khẩu. Mèo gửi mã 6 số qua email.") + `<form class="login" data-login>
+        <label class="fld"><span>Email</span><input type="email" name="email" autocomplete="email" inputmode="email" required placeholder="ban@email.com" value="${esc(loginEmail)}"></label>
+        ${loginStep === "code" ? `<label class="fld"><span>Mã 6 số</span><input name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required placeholder="••••••"></label>` : ""}
+        <button class="primary" type="submit">${loginStep === "code" ? "Đăng nhập" : "Gửi mã"}</button>
+        ${loginMsg ? `<p class="muted msg">${esc(loginMsg)}</p>` : ""}
+        ${loginStep === "code" ? `<button class="ghost" type="button" data-a="login-back">Đổi email / gửi lại mã</button>` : ""}</form>
+        <p class="muted">Đăng nhập để giữ tiến độ khi đổi máy và mở khoá gói đã mua. Tiến độ trên máy này được gộp vào tài khoản.</p>`;
+    },
     read() {
       const lim = READ_LIMIT[s.plan] || READ_LIMIT.free, r = readRes;
       const known = (c) => learn.stat(c.id)?.box >= MASTER ? "thuộc" : learn.stat(c.id)?.seen ? "đang học" : "chưa học";
@@ -139,7 +158,8 @@ export function createHud(game, root) {
       <p class="muted">Mẹo: chạm 1 lần = mèo đố bạn · chạm đúp = đập tay · vuốt = gãi.</p>`;
     },
     menu() {
-      return head(APP.name, APP.tagline) + `<div class="menu">
+      const U = game.account?.user;
+      return head(APP.name, APP.tagline) + `<button class="acct-row" data-a="account"><span class="av">${U ? esc((U.nick || U.email)[0].toUpperCase()) : icon("user")}</span><span><b>${U ? esc(U.nick || U.email) : "Đăng nhập"}</b><small>${U ? `Gói ${PLANS[U.plan]?.vi || U.plan} · đồng bộ mọi máy` : "Lưu tiến độ, học trên nhiều máy"}</small></span>${icon("chevron")}</button><div class="menu">
         <button data-a="learn"><span>${icon("pencil")}</span>Học</button><button data-a="review"><span>${icon("bolt")}</span>Ôn nhanh</button>
         <button data-a="words"><span>${icon("book")}</span>Sổ từ</button><button data-a="read"><span>${icon("eye")}</span>Đọc cùng mèo</button><button data-a="stats"><span>${icon("chart")}</span>Tiến độ</button>
         <button data-a="notes"><span>${icon("letter")}</span>Giấy nhắn</button><button data-a="cat"><span>${icon("cat")}</span>Hồ sơ mèo</button>
@@ -152,10 +172,15 @@ export function createHud(game, root) {
         <p class="muted">Đổi ngôn ngữ không mất tiến độ – mỗi ngôn ngữ có hoa riêng trong vườn.</p>`;
     },
     plans() {
-      const rows = [["Học mỗi ngày, ôn lặp lại, vườn hoa chữ", 1, 1, 1], ["Cấp độ", "A2 · HSK 1", "Đến B2 · HSK 3", "+ gói chuyên ngành"], ["Từ mới mỗi ngày", "tối đa 5", "tối đa 20", "tối đa 50"], ["Câu nghe đọc & tự gõ", 0, 1, 1], ["Thống kê 30 ngày, từ hay sai", 0, 1, 1], ["Đọc lại giấy nhắn cũ", 0, 1, 1], ["Tiếng Anh tài chính – kinh doanh", 0, 0, 1], ["Tự nhập danh sách từ (CSV)", 0, 0, 1], ["Mèo kháy bằng AI theo đúng từ bạn sai", 0, 0, 1]];
+      const rows = [["Học mỗi ngày, ôn lặp lại, vườn hoa chữ", 1, 1, 1], ["Vibe khu vườn", "Nhà · Nhật", "+ Trung · Ý · Pháp", "+ Thượng Hải xưa"], ["Tranh chữ (chữ sâu)", "12 chữ", "24 chữ", "24 chữ"], ["Đồng bộ nhiều máy", 1, 1, 1], ["Cấp độ", "A2 · HSK 1", "Đến B2 · HSK 3", "+ gói chuyên ngành"], ["Từ mới mỗi ngày", "tối đa 5", "tối đa 20", "tối đa 50"], ["Câu nghe đọc & tự gõ", 0, 1, 1], ["Thống kê 30 ngày, từ hay sai", 0, 1, 1], ["Đọc lại giấy nhắn cũ", 0, 1, 1], ["Tiếng Anh tài chính – kinh doanh", 0, 0, 1], ["Tự nhập danh sách từ (CSV)", 0, 0, 1], ["Mèo kháy bằng AI theo đúng từ bạn sai", 0, 0, 1]];
       const cell = (v) => (v === 1 ? "✓" : v === 0 ? "–" : v);
       return head("Gói", "Bản thử: chọn gói để mở khoá ngay (chưa nối thanh toán).") + `<div class="plans">${Object.entries(PLANS).map(([k, p]) => `<button data-plan="${k}" class="${s.plan === k ? "on" : ""}"><b>${p.vi}</b><span>${p.price}</span><small>${p.note}</small>${s.plan === k ? "<em>Đang dùng</em>" : ""}</button>`).join("")}</div>
       <table class="cmp"><thead><tr><th></th><th>Free</th><th>Plus</th><th>Pro</th></tr></thead><tbody>${rows.map((r) => `<tr><td>${r[0]}</td>${r.slice(1).map((v) => `<td>${cell(v)}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+    },
+    vibe() {
+      const cur = game.vibe?.chosen || "home", pv = game.vibe?.preview;
+      return head("Vibe khu vườn", "Đổi đồ trang trí, mèo có chỗ chơi mới, kèm chữ riêng của từng vibe.") + `<div class="vibes">${Object.entries(VIBES).map(([k, v]) => { const f = vibeFeat(k), lk = f && lock(f); return `<button data-vibe="${k}" class="${cur === k ? "on" : ""} ${lk ? "lockd" : ""}" aria-pressed="${cur === k}"><span class="ve">${v.emo}</span><b>${v.vi}</b><small>${v.sub}</small>${lk ? `<em>${icon("lock")} ${PLANS[v.tier].vi} · ${pv === k ? "đang thử" : s.vibeTry?.[k] === dayKey() ? "mai thử lại" : "xem thử"}</em>` : cur === k ? "<em>Đang dùng</em>" : ""}</button>`; }).join("")}</div>
+        <p class="muted">Mỗi vibe có 8 chữ riêng (Anh và Trung). Chạm vào đồ trang trí trong vườn để nghe chữ.</p>`;
     },
     settings() {
       const h = s.settings.hour, L = s.learn;
@@ -163,6 +188,9 @@ export function createHud(game, root) {
         <button class="row link" data-a="lang"><span>Ngôn ngữ & trình độ</span><span>${LANGS[L.lang].vi} ›</span></button>
         <div class="row"><span>Từ mới mỗi ngày</span><span class="seg">${DAILY_OPTS[s.plan].map((n) => `<button data-daily="${n}" class="${L.daily === n ? "on" : ""}">${n}</button>`).join("")}</span></div>
         <div class="row"><span>Đổi chữ trên tường</span><span class="seg">${[5, 15, 60].map((n) => `<button data-rot="${n}" class="${(s.settings.rotate || 15) === n ? "on" : ""}">${n === 60 ? "1 giờ" : n + "′"}</button>`).join("")}</span></div>
+        <button class="row link" data-a="vibe"><span>Vibe khu vườn</span><span>${game.vibe ? `${VIBES[game.vibe.chosen].emo} ${VIBES[game.vibe.chosen].vi}` : ""} ›</span></button>
+        <div class="row"><span>Màn hình chính</span><span class="seg">${[["poster", "Tranh chữ"], ["card", "Thẻ học"]].map(([k, v]) => `<button data-home="${k}" class="${(s.settings.home || "poster") === k ? "on" : ""}">${v}</button>`).join("")}</span></div>
+        <div class="row"><span>Tầm nhìn</span><span class="seg">${[["near", "Gần"], ["mid", "Vừa"], ["far", "Xa"]].map(([k, v]) => `<button data-zoom="${k}" class="${(s.settings.zoom || "mid") === k ? "on" : ""}">${v}</button>`).join("")}</span></div>
         <div class="row"><span>Sân vườn</span><span class="seg">${[["full", "Đầy đủ"], ["calm", "Gọn"], ["bare", "Trống"]].map(([k, v]) => `<button data-yard="${k}" class="${(s.settings.yard || "full") === k ? "on" : ""}">${v}</button>`).join("")}</span></div>
         <div class="row"><span>Thời tiết${game.weather ? ` <small>${game.weather.label()} · ${esc(game.weather.st.src === "real" ? game.weather.st.place : game.weather.st.src === "sim" ? "tự đổi" : "cố định")}</small>` : ""}</span><span class="seg">${[["real", "Trời thật"], ["sim", "Tự đổi"], ["off", "Tắt"]].map(([k, v]) => `<button data-wxmode="${k}" class="${(s.settings.wx?.mode || "real") === k ? "on" : ""}">${v}</button>`).join("")}</span></div>
         ${(s.settings.wx?.mode || "real") === "real" ? `<button class="row link" data-a="wxplace"><span>Nơi lấy thời tiết</span><span>${esc(s.settings.wx?.place?.name || "TP. Hồ Chí Minh")} · dùng vị trí của tôi ›</span></button>` : ""}
@@ -195,7 +223,7 @@ export function createHud(game, root) {
   // ------------------------------------------------------------------ bấm nút
   el.addEventListener("click", (e) => {
     unlock(); game.lastInput = Date.now(); game.musicResume?.();
-    const b = e.target.closest("[data-a],[data-plan],[data-skin],[data-ui],[data-setlang],[data-level],[data-daily],[data-wtab],[data-wd],[data-rate],[data-rot],[data-yard],[data-wxmode],[data-wxfix],[data-rtime],[data-bsay],[data-unbook],[data-rsave],[data-rnew],[data-hstar]"); if (!b || !el.contains(b)) return;
+    const b = e.target.closest("[data-a],[data-plan],[data-skin],[data-ui],[data-setlang],[data-level],[data-daily],[data-wtab],[data-wd],[data-rate],[data-rot],[data-yard],[data-wxmode],[data-wxfix],[data-rtime],[data-bsay],[data-unbook],[data-rsave],[data-rnew],[data-hstar],[data-vibe],[data-zoom],[data-home]"); if (!b || !el.contains(b)) return;
     if (b.dataset.bsay) { game.speakCard(learn.card(b.dataset.bsay)); return; }
     if (b.dataset.hstar) { const id = b.dataset.hstar; if (learn.booked(id)) learn.unbook(id); else { const h = learn.hotOf(id), r = learn.bookmark({ ...learn.card(id), src: "hot", url: h?.src?.[0]?.u || "" }, s.plan); if (r.full) return toast("Sổ đầy rồi. Plus lưu thoải mái."); game.jab?.("book"); } save(s); show("words"); return; }
     if (b.dataset.unbook) { learn.unbook(b.dataset.unbook); save(s); show("words"); return; }
@@ -215,7 +243,11 @@ export function createHud(game, root) {
     if (b.dataset.wtab) { wordsTab = b.dataset.wtab; show("words"); return; }
     if (b.dataset.wd) { const ex = b.nextElementSibling; ex.hidden = !ex.hidden; game.speakCard(learn.card(b.dataset.wd)); return; }
     if (b.dataset.ui) { s.settings.ui = b.dataset.ui; applyUi(); save(s); show("settings"); return; }
-    if (b.dataset.plan) { s.plan = b.dataset.plan; if (!DAILY_OPTS[s.plan].includes(s.learn.daily)) learn.setDaily(DAILY_OPTS[s.plan].at(-1)); save(s, true); show("plans"); refresh(); return; }
+    if (b.dataset.plan && game.account?.user) { toast("Gói theo tài khoản. Nâng cấp qua thanh toán (sắp có) hoặc nhờ quản trị bật."); return; }
+    if (b.dataset.home) { s.settings.home = b.dataset.home; game.persist(); game.wall?.refresh?.(); show("settings"); return; }
+    if (b.dataset.zoom) { s.settings.zoom = b.dataset.zoom; game.yard.setZoom(b.dataset.zoom); game.persist(); show("settings"); return; }
+    if (b.dataset.vibe) { const r = game.vibe.set(b.dataset.vibe); if (r.used) { toast(`Hôm nay xem thử rồi. Mở hẳn với gói ${PLANS[r.tier].vi}.`); show("plans"); return; } if (r.preview) toast(`Xem thử 30 giây. Mở hẳn với gói ${PLANS[r.tier].vi}.`); show("vibe"); return; }
+    if (b.dataset.plan) { s.plan = b.dataset.plan; game.emit("plan", s.plan); if (!DAILY_OPTS[s.plan].includes(s.learn.daily)) learn.setDaily(DAILY_OPTS[s.plan].at(-1)); save(s, true); show("plans"); refresh(); return; }
     if (b.dataset.skin) { if (!game.setSkin(b.dataset.skin)) { const k = SKINS.find((x) => x.id === b.dataset.skin); return toast(k.feat && lock(k.feat) ? "Mũ phớt có trong gói Pro" : `Cần ${k.flowers} bông hoa (từ đã thuộc) để mở`); } show("cat"); return; }
     const a = b.dataset.a;
     switch (a) {
@@ -223,6 +255,10 @@ export function createHud(game, root) {
       case "learn": close(); return game.wall.lesson("full");
       case "learnbook": close(); return game.wall.lesson("book");
       case "learnhot": close(); return game.wall.lesson("hot");
+      case "login-back": loginStep = "email"; loginMsg = ""; show("account"); return;
+      case "acct-sync": game.account.sync().then((ok) => { toast(ok ? "Đồng bộ xong." : "Chưa đồng bộ được. Lát thử lại."); show("account"); }); return;
+      case "acct-out": game.account.logout().then(() => { toast("Đăng xuất rồi. Tiến độ vẫn nằm trong máy."); loginStep = "email"; show("account"); }); return;
+      case "acct-del": if (b.dataset.sure) game.account.remove().then(() => { toast("Xoá tài khoản rồi."); show("account"); }, () => toast("Chưa xoá được. Kiểm tra mạng rồi thử lại.")); else { b.dataset.sure = 1; b.textContent = "Chạm lần nữa để xoá hẳn"; } return;
       case "remind-on": game.notify.enable().then((r) => { toast(r === "ok" ? `Ok. ${game.cat.name} sẽ nhắc. Đừng tắt.` : r === "denied" ? "Bị chặn rồi. Mở cài đặt trình duyệt cho phép lại." : r === "ios-install" ? "Thêm app vào màn hình chính trước đã." : "Chưa bật được thông báo."); show("settings"); }); return;
       case "remind-test": game.notify.test(); return;
       case "wxplace": game.weather.useMyPlace().then((ok) => { toast(ok ? "Ok, lấy thời tiết chỗ bạn." : "Không lấy được vị trí. Vẫn dùng TP. Hồ Chí Minh."); show("settings"); }); return;
@@ -245,6 +281,19 @@ export function createHud(game, root) {
     r.say = line(key, mood, null, { n: nk || r.found.length }); return r;
   }
   game.readText = (text) => { readText = String(text || "").slice(0, READ_LIMIT[s.plan] || READ_LIMIT.free); readRes = runScan(readText); show("read"); game.sayLine?.(readRes.say, 4200); };
+  // đăng nhập: gửi mã → nhập mã
+  const ERR = { email: "Email chưa đúng.", slow_down: "Gửi nhiều quá. Đợi chút rồi thử lại.", wrong: "Sai mã.", expired: "Mã hết hạn. Gửi mã mới.", too_many: "Sai quá 5 lần. Đợi 15 phút rồi gửi mã mới.", banned: "Tài khoản này bị khoá.", mail_not_ready: "Máy chủ chưa gửi được email.", no_endpoint: "Máy chủ tài khoản chưa bật." };
+  el.addEventListener("submit", async (e) => {
+    if (!e.target.matches("[data-login]")) return; e.preventDefault();
+    const f = new FormData(e.target), btn = e.target.querySelector("[type=submit]"); btn.disabled = true; loginEmail = String(f.get("email") || "").trim();
+    try {
+      if (loginStep === "email") { await game.account.start(loginEmail); loginStep = "code"; loginMsg = `Đã gửi mã tới ${loginEmail}. Coi cả hộp thư rác.`; }
+      else { const u = await game.account.verify(loginEmail, String(f.get("code") || "")); loginStep = "email"; loginMsg = ""; toast(`Chào ${u.nick || "Sen"}. Tiến độ đã lưu vào tài khoản.`); }
+    } catch (err) { loginMsg = ERR[err.code] || "Không kết nối được. Thử lại."; }
+    show("account");
+  });
+  game.on("vibe", () => { if (!wrap.hidden && wrap.classList.contains("sh-vibe")) show("vibe"); });
+  game.on("account", () => { if (!wrap.hidden && (wrap.classList.contains("sh-account") || wrap.classList.contains("sh-menu"))) show(wrap.classList.contains("sh-account") ? "account" : "menu"); });
   el.addEventListener("input", (e) => { if (e.target.matches("[data-rtext]")) { readText = e.target.value; const m = q(".rlim"); if (m) m.textContent = `${readText.length}/${e.target.maxLength} ký tự`; } });
   el.addEventListener("change", (e) => {
     if (e.target.matches("[data-remind]")) { if (!e.target.checked) { game.notify.disable(); show("settings"); } return; }

@@ -19,6 +19,7 @@ import { LANGS } from "./learn/packs.js";
 import { speak, onSpeakIssue, unlockSpeech } from "./learn/tts.js";
 import { createWeather } from "./world/weather.js";
 import { createPlay } from "./world/play.js";
+import { createVibe } from "./world/vibe.js";
 import { noteToday } from "./meta/note.js";
 import { createCloseup } from "./ui/closeup.js";
 import { createWall } from "./ui/wall.js";
@@ -58,7 +59,7 @@ export async function createGame(root) {
 
   // ------------------------------------------------------------------ khu vườn (một cảnh, nhìn từ trên xuống)
   const yard = createYard(root); game.yard = yard; game.scene = yard;
-  yard.S.forceHour = s.settings.hour; yard.setDensity(s.settings.yard || "full"); yard.light();
+  yard.S.forceHour = s.settings.hour; yard.setDensity(s.settings.yard || "full"); yard.setZoom(s.settings.zoom || "mid"); yard.light();
   const B = createBody(R, yard); game.body = B;
   const p0 = s.cat.uv || { u: 50, v: 50 }, [x0, y0] = yard.P(p0.u, p0.v);
   B.setRoom("yard", x0, y0, 0); B.mount();
@@ -68,7 +69,8 @@ export async function createGame(root) {
   B.speedMul = (0.92 + ((game.today.mood.speed || 1) - 1) * 0.4) * game.age.speed * CHILL.speed; B.ageScale = game.age.scale; R.durMul = CHILL.transition; B.runMul = CHILL.run; B.accelT = CHILL.accel; game.chill = CHILL;
   const critters = createCritters(game); game.critters = critters;
   const weather = createWeather(game); game.weather = weather;
-  const play = createPlay(game); game.play = play; yard.redraw();
+  const play = createPlay(game); game.play = play;
+  game.vibe = createVibe(game); yard.redraw();
   // mèo làm gì → chữ của việc đó hiện cạnh mèo (sau 1,5 giây, khi mèo đã bắt đầu làm)
   const ACT_WORD = { scratchtree: "scratchtree", sunbathe: "sunbathe", shadenap: "shade", rainwatch: "puddle", chaseleaf: "wind", flowerpounce: "pounce", chase: "pounce", zoomies: "zoomies", knead: "knead", nap: "nap", groom: "groom", pondgaze: "pond", sleepnear: "nap" };
   game.on("activity", (id) => { const w = ACT_WORD[id]; if (w) setTimeout(() => { if (brain.activity === id) play.sceneWord(w); }, 1800); });
@@ -173,7 +175,7 @@ export async function createGame(root) {
     const dt = last ? Math.min(0.05, (t - last) / 1000) : 0; last = t;
     B.tick(dt);
     catUV = yard.unP(B.x, B.y); s.cat.uv = catUV;
-    critters.tick(dt); weather.tick(dt); play.tick(dt);
+    critters.tick(dt); weather.tick(dt); play.tick(dt); game.vibe?.tick(dt);
     if (t - tLight > 30000) { tLight = t; yard.light(); if (dayKey() !== game.today.key) { game.today = todayOf(game.cat); ev.emit("mood"); } }
     if (t - tNeeds > 10000) { const h = (t - tNeeds) / 3600e3; tNeeds = t; if (h < 0.01) decay(N, h, brain.sleeping); s.cat.x = B.x; s.cat.y = B.y; save(s); }      // lưu thưa: ghi bộ nhớ mỗi giây làm khựng hình
     if (t - tHud > 400) { tHud = t; ev.emit("tick"); }
@@ -189,7 +191,7 @@ export async function createGame(root) {
   addEventListener("visibilitychange", () => { if (document.hidden) save(s, true); });
   addEventListener("pagehide", () => save(s, true));
   ev.on("bloom", plant);
-  ev.on("hot", (e) => { const h = learn.hotToday()[0]; if (e.fresh && h) setTimeout(() => game.jab("hot_new", { w: h.card.w }, true), 2500); });
+  ev.on("hot", (e) => { if (e.fresh) setTimeout(() => { const h = learn.hotToday()[0]; if (h && h.card.lang === learn.lang) game.jab("hot_new", { w: h.card.w }, true); }, 2500); });      // đọc lại lúc nói: người dùng có thể vừa đổi tiếng
 
   game.start = () => {
     game.wall = createWall(game, root);
@@ -303,6 +305,7 @@ function interactions(game, root) {
     const p = scene.toRoom(e.clientX, e.clientY);
     if (game.play?.tap(p)) return;
     if (scene.flowerSpots?.length) { let best = null, bd = 34; for (const f of scene.flowerSpots) { const d = Math.hypot(f.x - p.x, f.y - p.y); if (d < bd) { bd = d; best = f; } } if (best) { game.emit("flower", best.card); game.speakCard(best.card, false, true); return; } }
+    if (game.vibe?.tap(p)) return;      // đồ trang trí vibe: sau hoa để không che chữ trong luống
     // chạm đúp xuống đất = gọi mèo
     if (Date.now() - lastGround < 380) { lastGround = 0; game.call(); } else lastGround = Date.now();
   });

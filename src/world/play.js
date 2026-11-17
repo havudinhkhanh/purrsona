@@ -12,7 +12,7 @@ export const PROPS = {
   pots: [[66.6, 32.2], [88, 32.2], [95, 32.2]],
 };
 // việc của mèo → chữ hiện ra (id thẻ trong gói en-scene / zh-scene, hoặc gói khác)
-const SCENE = {
+export const SCENE = {
   dig: { en: ["dig", "soil"], zh: ["挖", "泥土"] }, snap: { en: ["rose", "snap"], zh: ["玫瑰", "弄断"] },
   swing: { en: ["swing"], zh: ["秋千", "荡秋千"] }, slide: { en: ["slide", "ladder"], zh: ["滑梯", "梯子"] },
   trellis: { en: ["climb", "trellis", "gourd", "vine"], zh: ["爬", "瓜架", "葫芦", "藤"] }, pot: { en: ["knock over", "flower pot"], zh: ["打翻", "花盆"] },
@@ -116,9 +116,12 @@ export function createPlay(game) {
   });
   function placeTag() {
     if (tag.hidden) return; if (Date.now() > tagUntil) { tag.hidden = true; return; }
-    const w = tag.offsetWidth, h = tag.offsetHeight, vw = Y.S.vw, k = B.k || 0.6;
-    let x = B.x - 90 * k - w, y = B.y - B.h - h - 10; if (x < 8) x = Math.min(vw - w - 8, B.x + 90 * k);
-    tag.style.transform = `translate(${x.toFixed(0)}px, ${clamp(y, 60, Y.S.vh - h - 90).toFixed(0)}px)`;
+    // đặt cạnh mèo (trái hoặc phải); hẹp quá thì xuống dưới chân, không bao giờ che mèo
+    const sc = Math.min(1, Math.max(0.72, Y.S.k / 4)), w = tag.offsetWidth * sc, h = tag.offsetHeight * sc, vw = Y.S.vw, vh = Y.S.vh, cH = Y.S.catH, cw = cH * 0.55 + 4, top = B.y - B.h;
+    let x, y = top - cH * 0.75 - h / 2;
+    if (B.x - cw - w >= 8) x = B.x - cw - w; else if (B.x + cw + w <= vw - 8) x = B.x + cw;
+    else { x = clamp(B.x - w / 2, 8, vw - w - 8); y = top + 12; if (y + h > vh - 90) y = top - cH * 1.15 - h; }
+    tag.style.transform = `translate(${x.toFixed(0)}px, ${clamp(y, 60, vh - h - 90).toFixed(0)}px) scale(${sc.toFixed(2)})`; tag.style.transformOrigin = "0 0";
   }
 
   // ------------------------------------------------------------------ mèo chơi đồ vật (brain gọi acts(h))

@@ -1,9 +1,10 @@
 // Service worker: tải trước vỏ app, sau đó "mạng trước – lỗi thì dùng bản đã lưu" cho mọi file cùng nguồn.
 // Mỗi lần phát hành: tăng VERSION để máy người dùng lấy bản mới.
-const VERSION = "purrsona-2.2.0";
+const VERSION = "purrsona-2.3.0";
 const SHELL = ["./", "index.html", "styles/app.css", "manifest.webmanifest", "icons/icon.svg", "icons/apple-touch-icon.png", "assets/graphite.png", "src/main.js", "src/game.js", "src/config.js",
-  "src/world/yard.js", "src/world/critters.js", "src/world/weather.js", "src/world/play.js", "src/ui/wall.js", "src/ui/hud.js", "src/ui/icons.js", "src/ui/closeup.js", "src/vendor/rough.js",
-  "src/learn/srs.js", "src/learn/packs.js", "src/learn/tts.js", "src/learn/scan.js", "src/learn/trends.js", "src/meta/bridge.js", "src/meta/notify.js", "src/learn/packs/en-core.js", "src/learn/packs/zh-core.js", "src/learn/packs/en-business.js", "src/learn/packs/en-scene.js", "src/learn/packs/zh-scene.js",
+  "src/world/yard.js", "src/world/critters.js", "src/world/weather.js", "src/world/play.js", "src/world/vibe.js", "src/ui/wall.js", "src/ui/hud.js", "src/ui/icons.js", "src/ui/closeup.js", "src/vendor/rough.js",
+  "src/learn/srs.js", "src/learn/packs.js", "src/learn/tts.js", "src/learn/scan.js", "src/learn/trends.js", "src/meta/bridge.js", "src/meta/notify.js", "src/learn/packs/en-core.js", "src/learn/packs/zh-core.js", "src/learn/packs/en-business.js", "src/learn/packs/en-scene.js", "src/learn/packs/zh-scene.js", "src/learn/packs/en-vibe.js", "src/learn/packs/zh-vibe.js", "src/meta/account.js",
+  "src/core/store.js", "src/core/util.js", "src/core/sound.js", "src/core/music.js", "src/world/art.js", "src/cat/voice.js", "src/render/clips.js", "src/render/registry.js", "src/render/sprite/sprite-renderer.js", "src/render/vector/morph.js", "src/render/vector/vector-renderer.js",
   "src/cat/brain.js", "src/cat/body.js", "src/cat/bond.js", "src/cat/lines.js", "src/cat/memory.js", "src/cat/personality.js", "src/meta/note.js",
   "assets/fonts/ph-latin-400.woff2", "assets/fonts/ph-vietnamese-400.woff2", "assets/fonts/bvp-latin-400.woff2", "assets/fonts/bvp-vietnamese-400.woff2",
   "assets/cats/index.json", "assets/cats/nana/cat.json", "assets/cats/nana/poses.json"];

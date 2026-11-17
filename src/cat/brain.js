@@ -24,6 +24,8 @@ export function createBrain(game) {
   const zone = () => { const p = uv(); return Y.zoneOf(p.u, p.v); };
 
   // ------------------------------------------------------------------ di chuyển trên mặt đất
+  // nhảy vồ: đích tính theo đơn vị sân (không theo px) → cảnh xa/gần đều đúng, không nhảy xuyên tường nhà / qua rào
+  function hop(du) { const p = Y.unP(B.x, B.y); let u = clamp(p.u + B.face * du, 3, UW - 3); const v = clamp(p.v, 3, UH - 3); if (u > HOUSE.u0 - 1 && v < HOUSE.v1 + 1 && p.u <= HOUSE.u0) u = HOUSE.u0 - 2; return Y.P(u, v); }
   async function down() { if (B.h > 0) { const p = Y.unP(B.x, B.y), [x, y] = Y.P(clamp(p.u + (B.face > 0 ? 3 : -3), 2, UW - 2), clamp(p.v + 2.5, 2, UH - 2)); await B.jumpTo(x, y, 0, null); } B.perch = null; }
   /** đi tới (u, v); đi qua cửa nếu đổi khu nhà ↔ vườn */
   async function goUV(u, v, gait = "walk") {
@@ -90,7 +92,7 @@ export function createBrain(game) {
           const b = game.critters.nearest(B.x, B.y); if (!b) break; const p = Y.unP(b.x, b.y + 60), me = uv();
           if (Math.hypot(p.u - me.u, p.v - me.v) > 18) await goUV(clamp((p.u + me.u * 0.3) / 1.3, 3, UW - 3), clamp((p.v + me.v * 0.3) / 1.3, 3, UH - 3), "run");      // đuổi bướm: được chạy
           await goUV(clamp(p.u, 3, UW - 3), clamp(p.v, 3, UH - 3), "stalk"); B.faceTo(b.x - B.x);
-          await B.act("crouch", 700 + Math.random() * 500); await B.jumpTo(B.x + B.face * 30, B.y, 0, null, { apex: Y.S.catH * 0.9 });
+          await B.act("crouch", 700 + Math.random() * 500); await B.jumpTo(...hop(6), 0, null, { apex: Y.S.catH * 0.9 });
           game.critters.scare(b); game.memory.xp("hunter", 1); N().fun = clamp(N().fun + 8, 0, 100);
           if (Math.random() < 0.4) say("chase"); await B.act("look_up", 1200);
         }
@@ -135,7 +137,7 @@ export function createBrain(game) {
     { id: "shadenap", score: () => (wx().hot && !wx().raining ? 1 + T().lazy * 0.5 : 0),
       async run() { await goUV(rand(44, 52), rand(11, 14)); await B.act("lie", rand(15, 30) * 1000); if (Math.random() < 0.3) say("wx_hot"); await B.act("stretch", 2400); } },
     { id: "chaseleaf", score: () => (wx().windy && !wx().raining && cool("leaf", 3) ? 0.6 + T().playful * 0.6 : 0),
-      async run() { used("leaf"); const me = uv(); for (let i = 0; i < 2; i++) { await goUV(clamp(me.u + rand(-25, 25), 4, 60), clamp(me.v + rand(-12, 12), 4, UH - 4), "run"); B.faceTo(Math.random() < 0.5 ? 1 : -1); await B.act("crouch", 600); await B.jumpTo(B.x + B.face * 26, B.y, 0, null, { apex: Y.S.catH * 0.6 }); } if (Math.random() < 0.4) say("wx_leaf"); await B.act("look_up", 1500); } },
+      async run() { used("leaf"); const me = uv(); for (let i = 0; i < 2; i++) { await goUV(clamp(me.u + rand(-25, 25), 4, 60), clamp(me.v + rand(-12, 12), 4, UH - 4), "run"); B.faceTo(Math.random() < 0.5 ? 1 : -1); await B.act("crouch", 600); await B.jumpTo(...hop(5.5), 0, null, { apex: Y.S.catH * 0.6 }); } if (Math.random() < 0.4) say("wx_leaf"); await B.act("look_up", 1500); } },
     // ---- thêm việc chậm rãi
     { id: "sniff", score: () => 0.35 + T().curious * 0.4,
       async run() { const b = pick(BEDS); await goUV(clamp(rand(b.u0, b.u1), 3, UW - 3), clamp(b.v1 + 2, 3, UH - 3)); B.faceTo(Math.random() < 0.5 ? 1 : -1); await B.act("crouch", rand(1.8, 3) * 1000); await B.act("look_up", 1600); await B.act("lick_lip", 1200); await B.act("idle_tail", rand(4, 8) * 1000); } },
@@ -150,14 +152,14 @@ export function createBrain(game) {
     { id: "yarn", score: () => (cool("yarn", 10) ? T().playful * 0.35 + (100 - N().fun) / 260 : 0),
       async run() { used("yarn"); await goSpot("rug"); await B.act("play_yarn", rand(4, 7) * 1000); N().fun = clamp(N().fun + 10, 0, 100); await B.act("loaf", 4000); } },
     { id: "flowerpounce", score: () => (cool("pounce", 6) && game.yard.flowerSpots?.length ? 0.2 + T().playful * 0.5 : 0),
-      async run() { used("pounce"); const f = pick(game.yard.flowerSpots), p = Y.unP(f.x, f.y + 40); await goUV(clamp(p.u - 6, 3, UW - 3), clamp(p.v + 2, 3, UH - 3), "run"); B.faceTo(1); await B.act("crouch", 900); await B.jumpTo(B.x + 30, B.y, 0, null, { apex: Y.S.catH * 0.7 }); await B.act("roll_play", 2600); if (Math.random() < 0.3) say("chase"); N().fun = clamp(N().fun + 10, 0, 100); } },
+      async run() { used("pounce"); const f = pick(game.yard.flowerSpots), p = Y.unP(f.x, f.y + 40); await goUV(clamp(p.u - 6, 3, UW - 3), clamp(p.v + 2, 3, UH - 3), "run"); B.faceTo(1); await B.act("crouch", 900); await B.jumpTo(...hop(6), 0, null, { apex: Y.S.catH * 0.7 }); await B.act("roll_play", 2600); if (Math.random() < 0.3) say("chase"); N().fun = clamp(N().fun + 10, 0, 100); } },
   ];
 
   // việc ngoài vườn: trời mưa thì thôi
-  const OUTDOOR = new Set(["swing", "slide", "trellis", "dig", "knockpot", "sniff", "sunbathe", "sitpretty", "pondgaze", "scratchtree", "flowerpounce", "chase", "zoomies", "explore", "watch", "perch", "sulk"]);
+  const OUTDOOR = new Set(["swing", "slide", "trellis", "dig", "knockpot", "sniff", "sunbathe", "sitpretty", "pondgaze", "scratchtree", "flowerpounce", "chase", "vibe", "koi", "zoomies", "explore", "watch", "perch", "sulk"]);
   const wxMod = (id) => (wx().raining && OUTDOOR.has(id) ? 0 : wx().hot && id === "sunbathe" ? 0 : 1);
   // đồ chơi trong vườn (xích đu, cầu tuột, giàn bầu, đào đất, xô chậu) – world/play.js
-  ACTS.push(...(game.play?.acts({ goUV, down, say, cool, used, T, N }) || []));
+  ACTS.push(...(game.play?.acts({ goUV, down, say, cool, used, T, N }) || []), ...(game.vibe?.acts({ goUV, down, say, cool, used, T, N }) || []));
   function choose() {
     const kid = game.age.stage === "kitten";
     const scored = ACTS.map((a) => ({ a, s: Math.max(0, a.score()) * qmod(a.id) * wxMod(a.id) * (kid && ["selfplay", "zoomies", "explore", "chase"].includes(a.id) ? 1.6 : 1) * (a.id === st.cur ? 0.35 : 1) * rand(0.75, 1.25) }));

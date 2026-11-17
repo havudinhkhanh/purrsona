@@ -1,0 +1,60 @@
+// Gói "Chữ theo vibe" (tiếng Trung): chữ gắn với đồ trang trí từng vibe. Có vài chữ lạ dễ nhớ:
+// 锦鲤 (cá koi = người siêu may), 小绵羊 (cừu non = xe tay ga), 摩登 (phiên âm "modern" thời Thượng Hải xưa), 福 dán ngược.
+// Mỗi từ: [chữ Hán, pinyin, từ loại, nghĩa, câu ví dụ, pinyin câu ví dụ, dịch câu ví dụ]
+export default {
+  id: "zh-vibe", lang: "zh", vi: "Chữ theo vibe", tier: "free",
+  levels: [
+    { id: "JAPAN", vi: "Vibe Nhật Bản", tier: "free", words: [
+      ["鸟居", "niǎojū", "danh từ", "cổng torii (cổng đền Nhật)", "猫在鸟居下面睡午觉。", "Māo zài niǎojū xiàmiàn shuì wǔjiào.", "Mèo ngủ trưa dưới cổng torii."],
+      ["神社", "shénshè", "danh từ", "đền thần (Nhật)", "猫把神社当成自己的卧室。", "Māo bǎ shénshè dàngchéng zìjǐ de wòshì.", "Mèo coi đền như phòng ngủ của mình."],
+      ["鞠躬", "jūgōng", "động từ", "cúi chào", "日本人说谢谢的时候会鞠躬。", "Rìběnrén shuō xièxie de shíhou huì jūgōng.", "Người Nhật cúi chào khi nói cảm ơn."],
+      ["石灯笼", "shí dēnglong", "danh từ", "đèn lồng đá", "池塘边有一个石灯笼。", "Chítáng biān yǒu yí ge shí dēnglong.", "Cạnh ao có một cây đèn đá."],
+      ["宁静", "níngjìng", "tính từ", "tĩnh lặng, thanh tịnh", "猫醒之前，院子很宁静。", "Māo xǐng zhīqián, yuànzi hěn níngjìng.", "Trước khi mèo thức, sân rất tĩnh lặng."],
+      ["樱花", "yīnghuā", "danh từ", "hoa anh đào", "樱花落在它的鼻子上。", "Yīnghuā luò zài tā de bízi shang.", "Hoa anh đào rơi trúng mũi nó."],
+      ["花瓣", "huābàn", "danh từ", "cánh hoa", "每一片花瓣它都要追。", "Měi yí piàn huābàn tā dōu yào zhuī.", "Cánh hoa nào nó cũng đòi đuổi."],
+      ["锦鲤", "jǐnlǐ", "danh từ", "cá koi; (lóng) người siêu may mắn", "转发这条锦鲤，明天考试全对。", "Zhuǎnfā zhè tiáo jǐnlǐ, míngtiān kǎoshì quán duì.", "Chia sẻ con cá koi này, mai thi đúng hết."],
+      ["溅", "jiàn", "động từ", "bắn, văng (nước)", "猫一爪子下去，水溅了一地。", "Māo yì zhuǎzi xiàqu, shuǐ jiànle yí dì.", "Mèo khều một cái, nước văng đầy đất."],
+      ["滑倒", "huádǎo", "động từ", "trượt ngã", "它滑倒在池塘里，还假装是故意的。", "Tā huádǎo zài chítáng li, hái jiǎzhuāng shì gùyì de.", "Nó trượt ngã xuống ao, còn giả vờ là cố ý."],
+    ] },
+    { id: "CHINA", vi: "Vibe Trung Hoa", tier: "plus", words: [
+      ["竹子", "zhúzi", "danh từ", "cây tre, trúc", "它躲在竹子后面，以为没人看见。", "Tā duǒ zài zhúzi hòumiàn, yǐwéi méi rén kànjiàn.", "Nó trốn sau bụi trúc, tưởng không ai thấy."],
+      ["月亮门", "yuèliangmén", "danh từ", "cổng tròn (cổng mặt trăng)", "猫最喜欢坐在月亮门中间。", "Māo zuì xǐhuan zuò zài yuèliangmén zhōngjiān.", "Mèo thích nhất ngồi giữa cổng tròn."],
+      ["院子", "yuànzi", "danh từ", "cái sân", "这个院子现在是猫的了。", "Zhège yuànzi xiànzài shì māo de le.", "Cái sân này giờ là của mèo rồi."],
+      ["福", "fú", "danh từ", "phúc", "福字倒着贴，意思是“福到了”。", "Fú zì dàozhe tiē, yìsi shì “fú dào le”.", "Chữ Phúc dán ngược nghĩa là \"phúc tới rồi\" (倒 đọc giống 到)."],
+      ["倒", "dào", "động từ", "lộn ngược", "猫倒着睡在石头上。", "Māo dàozhe shuì zài shítou shang.", "Mèo nằm ngủ lộn ngược trên hòn đá."],
+      ["太湖石", "tàihúshí", "danh từ", "đá Thái Hồ (đá cảnh nhiều lỗ)", "太湖石上都是洞，猫钻来钻去。", "Tàihúshí shang dōu shì dòng, māo zuān lái zuān qù.", "Đá Thái Hồ toàn lỗ, mèo chui ra chui vào."],
+      ["灯笼", "dēnglong", "danh từ", "đèn lồng", "过年了，院子里挂满了红灯笼。", "Guònián le, yuànzi li guàmǎnle hóng dēnglong.", "Tết rồi, sân treo đầy đèn lồng đỏ."],
+      ["吉利", "jílì", "tính từ", "may mắn, cát lợi", "红色很吉利。", "Hóngsè hěn jílì.", "Màu đỏ rất may mắn."],
+    ] },
+    { id: "SHANGHAI", vi: "Vibe Thượng Hải xưa", tier: "pro", words: [
+      ["黄包车", "huángbāochē", "danh từ", "xe kéo (Thượng Hải xưa)", "猫坐在黄包车上，像个阔太太。", "Māo zuò zài huángbāochē shang, xiàng ge kuò tàitai.", "Mèo ngồi trên xe kéo như một bà lớn."],
+      ["留声机", "liúshēngjī", "danh từ", "máy hát đĩa", "老留声机里放着爵士乐。", "Lǎo liúshēngjī li fàngzhe juéshìyuè.", "Máy hát cũ đang phát nhạc jazz."],
+      ["爵士乐", "juéshìyuè", "danh từ", "nhạc jazz", "它只在晚上跟着爵士乐跳舞。", "Tā zhǐ zài wǎnshang gēnzhe juéshìyuè tiàowǔ.", "Nó chỉ nhảy theo nhạc jazz vào buổi tối."],
+      ["霓虹灯", "níhóngdēng", "danh từ", "đèn neon", "霓虹灯整晚都在闪。", "Níhóngdēng zhěng wǎn dōu zài shǎn.", "Đèn neon nhấp nháy cả đêm."],
+      ["摩登", "módēng", "tính từ", "thời thượng (phiên âm \"modern\", chữ của Thượng Hải xưa)", "三十年代的上海很摩登。", "Sānshí niándài de Shànghǎi hěn módēng.", "Thượng Hải thập niên 30 rất thời thượng."],
+      ["旗袍", "qípáo", "danh từ", "sườn xám", "模特架上挂着一件丝绸旗袍。", "Mótèjià shang guàzhe yí jiàn sīchóu qípáo.", "Trên giá ma-nơ-canh treo một chiếc sườn xám lụa."],
+      ["路灯", "lùdēng", "danh từ", "đèn đường", "猫坐在路灯下，像个电影明星。", "Māo zuò zài lùdēng xià, xiàng ge diànyǐng míngxīng.", "Mèo ngồi dưới đèn đường như minh tinh."],
+      ["外滩", "Wàitān", "danh từ", "bến Thượng Hải (The Bund)", "晚上的外滩灯火通明。", "Wǎnshang de Wàitān dēnghuǒ tōngmíng.", "Bến Thượng Hải ban đêm đèn đuốc sáng trưng."],
+    ] },
+    { id: "ITALY", vi: "Vibe Ý", tier: "plus", words: [
+      ["柏树", "bǎishù", "danh từ", "cây bách", "一棵高高的柏树守着院子。", "Yì kē gāogāo de bǎishù shǒuzhe yuànzi.", "Một cây bách cao canh cái sân."],
+      ["小绵羊", "xiǎo miányáng", "danh từ", "xe tay ga (lóng: \"cừu non\")", "猫睡在小绵羊的座位上，因为暖和。", "Māo shuì zài xiǎo miányáng de zuòwèi shang, yīnwèi nuǎnhuo.", "Mèo ngủ trên yên xe tay ga vì ấm."],
+      ["柠檬", "níngméng", "danh từ", "chanh vàng", "它闻了一下柠檬，后悔了。", "Tā wénle yíxià níngméng, hòuhuǐ le.", "Nó ngửi trái chanh một cái, hối hận liền."],
+      ["陶盆", "táopén", "danh từ", "chậu gốm, chậu đất nung", "柠檬树种在陶盆里。", "Níngméng shù zhòng zài táopén li.", "Cây chanh trồng trong chậu đất nung."],
+      ["晾衣服", "liàng yīfu", "động từ", "phơi quần áo", "风一吹，晾的衣服飘起来，猫就扑上去。", "Fēng yì chuī, liàng de yīfu piāo qǐlai, māo jiù pū shàngqu.", "Gió thổi, đồ phơi bay lên, mèo vồ ngay."],
+      ["冰淇淋", "bīngqílín", "danh từ", "kem", "猫不能吃冰淇淋，它不同意。", "Māo bù néng chī bīngqílín, tā bù tóngyì.", "Mèo không được ăn kem, nó không đồng ý."],
+      ["浓缩咖啡", "nóngsuō kāfēi", "danh từ", "cà phê espresso", "站着喝一杯浓缩咖啡，十秒钟。", "Zhànzhe hē yì bēi nóngsuō kāfēi, shí miǎozhōng.", "Đứng uống một ly espresso, mười giây."],
+      ["悠闲", "yōuxián", "tính từ", "nhàn nhã", "晒太阳、睡午觉，生活真悠闲。", "Shài tàiyáng, shuì wǔjiào, shēnghuó zhēn yōuxián.", "Phơi nắng, ngủ trưa, sống thật nhàn."],
+    ] },
+    { id: "FRANCE", vi: "Vibe Pháp", tier: "plus", words: [
+      ["埃菲尔铁塔", "Āifēi'ěr Tiětǎ", "danh từ", "tháp Eiffel", "从院子里看，埃菲尔铁塔小小的。", "Cóng yuànzi li kàn, Āifēi'ěr Tiětǎ xiǎoxiǎo de.", "Từ trong sân nhìn ra, tháp Eiffel bé xíu."],
+      ["浪漫", "làngmàn", "tính từ", "lãng mạn", "串灯一亮，院子就浪漫了。", "Chuàndēng yí liàng, yuànzi jiù làngmàn le.", "Dây đèn sáng lên là sân lãng mạn liền."],
+      ["咖啡馆", "kāfēiguǎn", "danh từ", "quán cà phê", "猫占了咖啡馆最好的位子。", "Māo zhànle kāfēiguǎn zuì hǎo de wèizi.", "Mèo chiếm chỗ đẹp nhất quán cà phê."],
+      ["遮阳伞", "zhēyángsǎn", "danh từ", "dù che nắng", "它当然睡在遮阳伞下面。", "Tā dāngrán shuì zài zhēyángsǎn xiàmiàn.", "Nó dĩ nhiên ngủ dưới dù che nắng."],
+      ["自行车", "zìxíngchē", "danh từ", "xe đạp", "没人骑自行车，只有猫坐在上面。", "Méi rén qí zìxíngchē, zhǐyǒu māo zuò zài shàngmiàn.", "Không ai đạp xe, chỉ có mèo ngồi trên."],
+      ["法棍", "fǎgùn", "danh từ", "bánh mì baguette (\"gậy Pháp\")", "自行车筐里露出一根法棍。", "Zìxíngchē kuāng li lùchū yì gēn fǎgùn.", "Một ổ baguette ló ra khỏi giỏ xe đạp."],
+      ["薰衣草", "xūnyīcǎo", "danh từ", "oải hương", "它在薰衣草里打滚，香香的。", "Tā zài xūnyīcǎo li dǎgǔn, xiāngxiāng de.", "Nó lăn trong oải hương, thơm phức."],
+      ["串灯", "chuàndēng", "danh từ", "dây đèn trang trí", "猫想咬串灯的电线。", "Māo xiǎng yǎo chuàndēng de diànxiàn.", "Mèo muốn cắn dây điện của dây đèn."],
+    ] },
+  ],
+};

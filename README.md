@@ -15,11 +15,16 @@ Màn hình là một khu vườn nhìn từ trên xuống, hơi xiên, có căn 
 - **Chữ nóng hôm nay**: mỗi sáng một mẻ 6–10 chữ đang nổi trên báo và mạng (Anh + Trung), kèm nghĩa, câu ví dụ tự viết, lý do đang hot và link tin gốc. Hiện ngay trên tường, có tab riêng trong Sổ từ, tối đa 2 chữ vào bài học hôm nay.
 - **Sân chơi & đồ vật**: xích đu, cầu tuột, giàn bầu (mỗi ngày bạn học dây bầu leo thêm, ra trái), luống hồng, chậu cây. Mèo tự ra đu, tuột, trèo giàn, cào cây, đào đất (có khi làm gãy hồng), xô đổ chậu. Bày bừa thì để nguyên tới hôm sau; sáng ra vườn sạch, mèo làm bộ ngẫm nghĩ "Sen cuối cùng cũng biết động tay động chân". Chạm đồ chơi là mèo ra chơi, chạm chậu đổ hay lỗ đất là dọn liền.
 - **Mèo làm gì học nấy**: mỗi việc của mèo hiện chữ đó cạnh mèo theo tiếng đang học (đào → dig · 挖 wā, đất → soil · 泥土, nhào bột → make biscuits · 踩奶 cǎi nǎi). Chạm chữ để nghe, ☆ để lưu sổ. Gói "Chữ trong vườn" (Free) có 35 chữ mỗi thứ tiếng, học như gói thường.
+- **Tranh chữ** (màn hình chính mặc định): chữ sâu nằm giữa khoảng trời trống như hình nền – một chữ đẹp, nghĩa, một câu tự viết kèm dịch ("ephemeral", "sonder", 缘分, 释怀, 一期一会…). Tự đổi theo giờ, chạm để nghe, ☆ để lưu. Muốn kiểu cũ thì Cài đặt › Màn hình chính › Thẻ học. Free 12 chữ mỗi thứ tiếng, Plus 24.
+- **Tầm nhìn Gần / Vừa / Xa**: vườn, nhà, đồ vật nhỏ lại, chừa trời trống; mèo cao đúng tỉ lệ đồ vật (không to hơn xích đu).
+- **Vibe khu vườn**: Nhà mình, Nhật Bản (cổng torii, đèn đá, anh đào, cờ cá chép, cánh hoa rơi, ao cá koi bơi thật – mèo khều nước, bắt cá lên ngắm rồi thả, có khi giật mình rớt xuống ao), Trung Hoa (trúc, cổng trăng có chữ Phúc dán ngược, đá Thái Hồ, đèn lồng), Thượng Hải xưa (cột đèn, xe kéo, máy hát, bảng neon, sườn xám, lọc màu ảnh cũ), Ý (cây bách, Vespa, chậu chanh, dây phơi đồ, xe kem), Pháp (tháp xa xa, quán cà phê, xe đạp chở bánh mì, oải hương, dây đèn). Mèo ra ngồi chơi với đồ trang trí; chạm đồ là hiện chữ. Mỗi vibe có 8 chữ riêng mỗi thứ tiếng (gói "Chữ theo vibe").
+- **Tài khoản**: đăng nhập bằng mã 6 số gửi qua email, không cần mật khẩu. Tiến độ đồng bộ giữa các máy (học trên máy nào cũng cộng dồn). Gói lấy theo tài khoản.
+- **Trang quản trị** (`admin.html`): số người dùng, người vào hôm nay / 7 ngày / 30 ngày, đăng ký mới, gói, ngôn ngữ, vibe; tìm người dùng, đổi gói, cấp quyền, khoá; đăng thông báo chung (mèo đọc cho mọi người); xem mẻ chữ nóng; nhật ký thao tác.
 - **Thời tiết**: nắng chói, mây, gió, mưa, giông theo trời thật (Open-Meteo) hoặc tự đổi; mèo trú mưa, nằm bóng cây, vồ lá.
 - **Đọc cùng mèo**: dán một đoạn văn (hoặc bấm Chia sẻ → Purrsona trên điện thoại). Mèo quét, chỉ ra chữ trong gói và chữ lạ đáng lưu, rồi kháy một câu.
 - **Tiện ích Chrome "Mèo đọc ké"** (thư mục `extension/`): mèo ngồi góc mọi trang, gạch dưới chữ đã học, rê chuột vào ra nghĩa, bôi đen chữ là lưu vô sổ, kháy theo loại trang (mạng xã hội, báo, mua sắm, làm việc…). Mở app là sổ tự đồng bộ.
 
-Gói: **Free** (A2, HSK 1, tối đa 5 từ/ngày, sổ 30 từ, đọc ké 1.500 ký tự, 2 chữ nóng/ngày) · **Plus** (đến B2 và HSK 3, câu nghe, 20 từ/ngày, thống kê 30 ngày, sổ không giới hạn, đọc ké bài dài, đủ mẻ chữ nóng) · **Pro** (gói tiếng Anh tài chính – kinh doanh, tự nhập từ bằng CSV, mèo kháy bằng AI, kho chữ nóng 30 ngày). Mọi chỗ khoá đều đi qua `can()` trong `src/config.js`.
+Gói: **Free** (A2, HSK 1, tối đa 5 từ/ngày, sổ 30 từ, đọc ké 1.500 ký tự, 2 chữ nóng/ngày) · **Plus** (đến B2 và HSK 3, câu nghe, 20 từ/ngày, thống kê 30 ngày, sổ không giới hạn, đọc ké bài dài, đủ mẻ chữ nóng) · **Pro** (gói tiếng Anh tài chính – kinh doanh, tự nhập từ bằng CSV, mèo kháy bằng AI, kho chữ nóng 30 ngày, vibe Thượng Hải xưa). Vibe: Free có Nhà mình và Nhật Bản, Plus mở Trung Hoa, Ý, Pháp; vibe đang khoá vẫn xem thử được 30 giây. Mọi chỗ khoá đều đi qua `can()` trong `src/config.js`.
 
 ---
 
@@ -105,7 +110,23 @@ npx wrangler deploy
 ```
 Sửa `ALLOWED_ORIGINS` trong `wrangler.toml` thành địa chỉ web, rồi dán địa chỉ worker vào `REMIND.endpoint` trong `src/config.js`. Tin push không chứa nội dung: máy người dùng tự soạn câu nhắc từ tình hình học lưu sẵn trong máy. Worker chỉ giữ giờ nhắc, múi giờ và "hôm nay đã học chưa". iPhone cần mở app từ màn hình chính (iOS 16.4 trở lên) mới nhận thông báo.
 
-### Bước 11 – Phát hành bản mới
+### Bước 11 – (Tuỳ chọn) Tài khoản, đồng bộ và trang quản trị
+
+Chưa làm bước này thì app chạy như cũ, lưu trong máy. Muốn đăng nhập bằng email và đồng bộ nhiều máy (Cloudflare Worker + D1, gửi mã bằng Cloudflare Email Service):
+
+```bash
+cd worker/api
+npx wrangler d1 create purrsona                       # dán database_id vào wrangler.toml
+npx wrangler d1 migrations apply purrsona --remote
+npx wrangler secret put PEPPER                        # chuỗi ngẫu nhiên dài, giữ bí mật
+npx wrangler email sending enable <tên-miền-của-bạn>  # tên miền gửi mã đăng nhập
+npx wrangler deploy
+```
+Trong `wrangler.toml`: sửa `ALLOWED_ORIGINS` thành địa chỉ web, `MAIL_FROM` thành địa chỉ gửi (thuộc tên miền vừa bật), `ADMIN_EMAILS` thành email được vào trang quản trị (đặt bằng biến môi trường trên Cloudflare nếu không muốn ghi vào kho mã). Dán địa chỉ worker vào `ACCOUNT.endpoint` trong `src/config.js`. Trang quản trị nằm ở `/admin.html`, đăng nhập cùng kiểu mã 6 số.
+
+Máy chủ chỉ lưu: email, tên gọi, gói, bản sao tiến độ học và vài số tóm tắt (chuỗi ngày, số chữ đã thuộc, ngôn ngữ, vibe). Mã đăng nhập và phiên chỉ lưu dạng băm. Xoá tài khoản trong app là xoá hết dữ liệu trên máy chủ.
+
+### Bước 12 – Phát hành bản mới
 
 1. Tăng `VERSION` trong `sw.js`.
 2. Tăng `APP.version` trong `src/config.js` (và `version` trong `extension/manifest.json` nếu tiện ích đổi).

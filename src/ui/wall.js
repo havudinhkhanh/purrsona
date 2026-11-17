@@ -3,7 +3,8 @@
 // đố thì bướm bay ra mang đáp án, chạm đúng con là xong. Không có cửa sổ bật lên.
 import { esc, dayKey, pick } from "../core/util.js";
 import { icon } from "./icons.js";
-import { LANGS } from "../learn/packs.js";
+import { LANGS, cardsOfLevel } from "../learn/packs.js";
+import { can } from "../config.js";
 
 const WD = ["chủ nhật", "thứ hai", "thứ ba", "thứ tư", "thứ năm", "thứ sáu", "thứ bảy"];
 const norm = (s) => (s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[\s'’\-.,!?。，！？]/g, "");
@@ -61,9 +62,34 @@ export function createWall(game, root) {
   const exBox = (c) => (c.ex ? `<div class="exbox"><div><p class="ex ${c.lang}">${esc(c.ex)}</p>${c.exPh ? `<p class="exph">${esc(c.exPh)}</p>` : ""}${c.exVi ? `<p class="exvi">${esc(c.exVi)}</p>` : ""}</div>${say(c, true)}</div>` : "");
   const body = (c) => `${wordH(c)}<p class="ph">${esc(c.ph || "")}${c.pos ? ` · ${esc(c.pos)}` : ""}</p><p class="vi">${esc(c.vi)}</p>${exBox(c)}${why(c)}`;
   const autoSay = (c) => { if (s.settings.tts && s.settings.autoSay !== false && navigator.userActivation?.hasBeenActive && !document.hidden) setTimeout(() => game.speakCard(c, false, false), 500); };
+  // TRANH CHỮ: chữ sâu + 1 câu như hình nền, chữ to nằm giữa khoảng trời trống; học vẫn ở nút Học
+  const posterOn = () => (s.settings.home || "poster") === "poster";
+  function deepList() {
+    const L = cardsOfLevel(`${learn.lang}-deep/DEEP1`); if (can(s.plan, "level.plus")) L.push(...cardsOfLevel(`${learn.lang}-deep/DEEP2`));
+    return L;
+  }
+  function deepFeatured() {
+    const L = deepList(); if (!L.length) return null;
+    const mins = Math.floor((Date.now() - new Date().setHours(0, 0, 0, 0)) / 60000), every = s.settings.rotate || 15, day = Math.floor(Date.now() / 864e5);
+    return L[((Math.floor(mins / every) + shift + day * 7) % L.length + L.length) % L.length];
+  }
+  function poster(force) {
+    const c = deepFeatured(); if (!c) return false;
+    if (!force && cur && cur.id === c.id && tl.dataset.id === c.id && tl.classList.contains("poster")) return true;
+    cur = c; tl.dataset.id = c.id; const t = learn.todo(), n = t.neu + t.due;
+    write(`<p class="p-kick">chữ sâu · ${esc(LANGS[c.lang].vi.replace(/^Tiếng /, ""))}</p>
+      <h1 class="pw ${c.lang}" data-say="${esc(c.id)}">${esc(c.w)}</h1>
+      <p class="pph">${esc(c.ph || "")}<span>·</span>${esc(c.vi)}</p>
+      ${c.ex ? `<p class="pex ${c.lang}" data-sayex="${esc(c.id)}">${esc(c.ex)}</p>${c.exPh ? `<p class="pexph">${esc(c.exPh)}</p>` : ""}<p class="pexvi">${esc(c.exVi || "")}</p>` : ""}
+      <div class="pacts">${say(c)}${star(c)}<button class="ib" data-w="next" aria-label="Chữ khác">${icon("arrow")}</button>${n ? `<button class="pchip" data-w="${t.neu ? "learn" : "review"}">${t.neu ? `${t.neu} từ mới` : `${t.due} từ cần ôn`} · ${t.neu ? "Học" : "Ôn"}</button>` : ""}</div>`, "poster");
+    requestAnimationFrame(() => game.yard?.setReserve?.(tl.getBoundingClientRect().bottom + 6));      // chừa trời cho tranh chữ, vườn lùi xuống
+    return true;
+  }
   function ambient(force) {
     if (!s.onboarded) return onboard();
-    mode = "ambient"; const c = featured();
+    mode = "ambient";
+    if (posterOn() && poster(force)) return;
+    const c = featured();
     if (!c) { write(`${top(LANGS[learn.lang].vi)}<h1 class="w">Xong rồi</h1><p class="lead">Hôm nay hết chữ. Mai ${esc(game.cat.name)} đem chữ mới tới.</p>`); cur = null; return; }
     if (!force && cur && cur.id === c.id && tl.dataset.id === c.id) return;
     cur = c; tl.dataset.id = c.id;
@@ -156,7 +182,7 @@ export function createWall(game, root) {
     const an = e.target.closest("[data-ans]"); if (an) return answer(an.dataset.ans);
     const lg = e.target.closest("[data-picklang]"); if (lg) { learn.setLang(lg.dataset.picklang); s.onboarded = true; game.save && game.persist(); whisper(`Ok, học ${LANGS[lg.dataset.picklang].vi.replace(/^Tiếng/, "tiếng")}.`); ambient(true); clock(); return lesson("full"); }
     const b = e.target.closest("[data-w]");
-    if (!b) { if (tl.contains(e.target) && !e.target.closest("a,button") && tl.classList.contains("mini") && mode !== "result") tl.classList.toggle("open"); return; }
+    if (!b) { if (tl.contains(e.target) && !e.target.closest("a,button") && tl.classList.contains("mini") && !tl.classList.contains("poster") && mode !== "result") tl.classList.toggle("open"); return; }
     const a = b.dataset.w;
     if (a === "seen" && cur) { learn.seen(cur.id); whisper(game.lineOf("newword", { w: cur.w })); setTimeout(() => quiz(cur), 900); return; }
     if (a === "seen-next" && cur) { learn.seen(cur.id); return quiz(cur); }
@@ -189,9 +215,9 @@ export function createWall(game, root) {
   for (const k of ["learn", "lang", "streak", "weather"]) game.on(k, clock);
   // dòng mèo viết lề hết đúng nữa thì tự xoá (vd: "chưa học chữ nào" sau khi đã học)
   game.on("learn", () => { const t = learn.todo(), n0 = (s.wall || []).length; s.wall = (s.wall || []).filter((n) => !((n.kind === "new" && !t.neu) || (n.kind === "due" && !t.due))); if (s.wall.length !== n0) drawScribs(false); });
-  game.on("lang", () => { shift = 0; ambient(true); });
+  game.on("lang", () => { shift = 0; series = []; ambient(true); });
   game.on("hot", (e) => { if (mode !== "ambient") return; const h = learn.hotToday()[0]; if (e.fresh && h) { const L = features(), i = L.findIndex((c) => c.id === h.card.id); if (i >= 0) { const mins = Math.floor((Date.now() - new Date().setHours(0, 0, 0, 0)) / 60000); shift = ((i - Math.floor(mins / (s.settings.rotate || 15))) % L.length + L.length) % L.length; } } ambient(true); });
   clock(); ambient(true); drawScribs(false);
-  return { ambient, quiz, lesson, whisper, scribble, clock, get mode() { return mode; } };
+  return { ambient, quiz, lesson, whisper, scribble, clock, refresh: () => { series = []; if (!posterOn()) game.yard?.setReserve?.(0); ambient(true); }, get mode() { return mode; } };
 }
 export { norm, dayKey };

@@ -23,14 +23,19 @@ export const SPOTS = {
   branch: { u: 46, v: 8, h: 15, zone: "garden", use: ["perch", "watch"] },
   stone: { u: 60, v: 52, h: 0, zone: "garden", use: ["nap", "groom"] },
   flowers: { u: 30, v: 37, h: 0, zone: "garden", use: ["play", "roll", "watch"] },
-  pond: { u: 24, v: 57, h: 0, zone: "garden", use: ["watch"] },
+  pond: { u: 25, v: 49.7, h: 0, zone: "garden", use: ["watch"] },
 };
 
+const ZOOM = {
+  near: { p: { x0: 0.05, x1: 0.95, y0: 0.3, y1: 0.885 }, l: { x0: 0.12, x1: 0.97, y0: 0.2, y1: 0.86 }, over: 1.32, cat: 12 },
+  mid: { p: { x0: 0.04, x1: 0.96, y0: 0.42, y1: 0.86 }, l: { x0: 0.1, x1: 0.9, y0: 0.44, y1: 0.88 }, over: 1.08, cat: 10 },
+  far: { p: { x0: 0.12, x1: 0.88, y0: 0.5, y1: 0.86 }, l: { x0: 0.2, x1: 0.8, y0: 0.52, y1: 0.88 }, over: 1, cat: 10 },
+};
 export function createYard(root) {
   const vp = document.createElement("div"); vp.className = "viewport"; root.appendChild(vp);
   vp.innerHTML = `<svg class="ground"></svg><div class="world"><div class="actors"></div></div><div class="shade"></div><div class="topfx"></div>`;
   const G = rough.generator(), ground = vp.querySelector(".ground"), world = vp.querySelector(".world"), actors = vp.querySelector(".actors"), topfx = vp.querySelector(".topfx");
-  const S = { vp, vw: 1, vh: 1, k: 1, ox: 0, oy: 0, night: 0, hour: 12, follow: false, forceHour: null, portrait: false, catH: 70, density: "full" };
+  const S = { vp, vw: 1, vh: 1, k: 1, ox: 0, oy: 0, night: 0, hour: 12, follow: false, forceHour: null, portrait: false, catH: 70, density: "full", zoom: "mid" };
   // độ dày chi tiết của vườn: full = đầy đủ, calm = gọn, bare = trống (chỉ giữ thứ mèo dùng: nhà, cây, ghế, ao, luống hoa)
   const DENS = { full: { grass: 260, stones: 1, bushes: 4, wild: 10, beds: "dots" }, calm: { grass: 110, stones: 1, bushes: 2, wild: 4, beds: "dots" }, bare: { grass: 28, stones: 0, bushes: 0, wild: 0, beds: "line" } };
   const Dn = () => DENS[S.density] || DENS.full;
@@ -58,16 +63,30 @@ export function createYard(root) {
     // màn dọc: xoay mạnh hơn + nhìn gần thẳng từ trên xuống để mảnh vườn cao lên, đầy màn hình hơn
     PHI = ((S.portrait ? -24 : -13) * Math.PI) / 180; TILT = S.portrait ? 0.7 : 0.56;
     // khung đặt khu vườn: chừa góc trên trái cho chữ, chừa đáy cho thanh chữ nhỏ
-    const R = S.portrait ? { x0: 0.05, x1: 0.95, y0: 0.3, y1: 0.885 } : { x0: 0.12, x1: 0.97, y0: 0.2, y1: 0.86 };      // khu vườn là chính: thẻ chữ chỉ là widget nhỏ ở góc
+    // TẦM NHÌN: gần = vườn tràn màn hình; vừa / xa = vườn lùi ra xa, chừa trời trống cho chữ, mèo nhỏ theo đúng tỉ lệ
+    const Z = ZOOM[S.zoom] || ZOOM.mid, R = { ...(S.portrait ? Z.p : Z.l) };
     S.k = 1; S.ox = 0; S.oy = 0;
     const c = [P(0, 0), P(UW, 0), P(UW, UH), P(0, UH)], xs = c.map((p) => p[0]), ys = c.map((p) => p[1]);
     const bw = Math.max(...xs) - Math.min(...xs), bh = Math.max(...ys) - Math.min(...ys);
-    S.k = Math.min(((R.x1 - R.x0) * S.vw * (S.portrait ? 1.32 : 1)) / bw, ((R.y1 - R.y0) * S.vh) / bh);      // màn dọc: cho tràn 2 mép như ảnh nền
+    S.k = Math.min(((R.x1 - R.x0) * S.vw * (S.portrait ? Z.over : 1)) / bw, ((R.y1 - R.y0) * S.vh) / bh);      // màn dọc "gần": cho tràn 2 mép như ảnh nền
     S.ox = (R.x0 * S.vw + (R.x1 - R.x0) * S.vw / 2) - ((Math.min(...xs) + bw / 2) * S.k);
     S.oy = (R.y0 * S.vh + (R.y1 - R.y0) * S.vh / 2) - ((Math.min(...ys) + bh / 2) * S.k);
+    // tranh chữ đang chiếm phần trời: lùi mặt sân xuống sao cho cả ngọn cây / mái nhà (~27 đơn vị cao) vẫn nằm dưới chữ
+    for (let i = 0; i < 4 && S.reserve; i++) {
+      const gTop = Math.min(...[P(0, 0), P(UW, 0), P(UW, UH), P(0, UH)].map((p) => p[1])), need = S.reserve + 27 * S.k * HS;
+      if (gTop >= need - 1) break;
+      R.y0 = Math.min(R.y1 - 0.25, R.y0 + (need - gTop) / S.vh + 0.005);
+      S.k = Math.min(((R.x1 - R.x0) * S.vw * (S.portrait ? Z.over : 1)) / bw, ((R.y1 - R.y0) * S.vh) / bh);
+      S.ox = (R.x0 * S.vw + (R.x1 - R.x0) * S.vw / 2) - ((Math.min(...xs) + bw / 2) * S.k);
+      S.oy = (R.y0 * S.vh + (R.y1 - R.y0) * S.vh / 2) - ((Math.min(...ys) + bh / 2) * S.k);
+    }
     const top = Math.min(...[P(0, 0), P(UW, 0), P(UW, UH), P(0, UH)].map((p) => p[1])), bot = Math.max(...[P(0, 0), P(UW, 0), P(UW, UH), P(0, UH)].map((p) => p[1]));
     S.yTop = top; S.yBot = bot;
-    S.catH = clamp(Math.min(S.vw, S.vh) * 0.2, 90, 170);      // mèo là nhân vật chính: to, dễ thấy
+    // mèo cao theo đơn vị sân (xích đu cao 13): luật xa gần đúng, mèo không to hơn đồ vật; tối thiểu 26px cho dễ thấy
+    S.catH = Math.max(26, S.k * Z.cat);
+    document.documentElement.style.setProperty("--sc", clamp(S.k / 4, 0.72, 1).toFixed(2));      // lời mèo / chữ cạnh mèo co theo cảnh
+    document.documentElement.style.setProperty("--gw", `${Math.round((Math.max(...[P(0, 0), P(UW, 0), P(UW, UH), P(0, UH)].map((p) => p[0])) - Math.min(...[P(0, 0), P(UW, 0), P(UW, UH), P(0, UH)].map((p) => p[0]))) * 1.1)}px`);
+    vp.style.setProperty("--crit", clamp(S.k / 4.6, 0.5, 1).toFixed(2));      // bướm ong bay chơi thu nhỏ theo cảnh
     draw(); api.onLayout?.();
   }
 
@@ -197,6 +216,8 @@ export function createYard(root) {
       const [x, y] = P(48, 9), deg = (a * 5).toFixed(2);
       for (const n of world.querySelectorAll('.spr[data-id="tree"],.spr[data-id^="bush"]')) { n.style.transformOrigin = n.dataset.id === "tree" ? `${x}px ${y}px` : "50% 100%"; n.style.transform = Math.abs(a) < 0.01 ? "" : `skewX(${n.dataset.id === "tree" ? deg : (a * 1.5).toFixed(2)}deg)`; }
     },
+    setReserve(px) { px = Math.max(0, Math.round(px)); if (Math.abs(px - (S.reserve || 0)) < 24) return; S.reserve = px; layout(); },
+    setZoom(z) { if (!ZOOM[z] || z === S.zoom) return; S.zoom = z; layout(); },
     setDensity(d) { if (!DENS[d] || d === S.density) return; S.density = d; draw(); },
   };
   let rt = 0; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(layout, 120); });

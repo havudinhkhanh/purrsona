@@ -114,7 +114,7 @@ export function createLearn(game) {
       L.book.unshift({ id: c.id, t: Date.now(), src: item.src || "app", url: item.url || "", ctx: (item.ctx || "").slice(0, 200) });
       game.emit("book", c); return { ok: true, card: c };
     },
-    unbook(id) { L.book = L.book.filter((b) => b.id !== id); game.emit("book", null); },
+    unbook(id) { L.book = L.book.filter((b) => b.id !== id); (L.bookGone ||= {})[id] = Date.now(); game.emit("book", null); },      // bookGone: dấu đã xoá, để đồng bộ không hồi sinh chữ đã bỏ
     /** điền nghĩa cho từ lạ đã lưu */
     setMeaning(id, vi) { const c = L.custom.find((x) => x.id === id); if (c) { c.vi = vi.trim().slice(0, 80); game.emit("book", c); } },
     counts() { const all = Object.entries(L.cards).filter(([id]) => get(id)?.lang === L.lang).map(([, c]) => c); return { learning: all.filter((c) => c.seen && c.box < MASTER).length, mastered: all.filter((c) => c.box >= MASTER).length, total: cardsOfLevel(L.level[L.lang], L.custom).length }; },

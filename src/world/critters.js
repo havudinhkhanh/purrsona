@@ -9,7 +9,7 @@ export function createCritters(game) {
   const Y = game.yard; let list = [];
   const area = () => { const b = Y.bbox(), S = Y.S; return { x0: Math.max(b.x0 + 20, 70), x1: Math.min(b.x1 - 20, S.vw - 90), y0: Math.max(b.y0 - 30, S.vh * 0.3), y1: Math.min(b.y1 - 20, S.vh - 90) }; };
   function add(kind, o = {}) {
-    const el = document.createElement("button"); el.className = kind; el.type = "button";
+    const el = document.createElement("button"); el.className = kind + (o.answer ? "" : " amb"); el.type = "button";
     el.innerHTML = (kind === "bfly" ? BFLY : BEE) + (o.tag ? `<span class="tag${o.lang === "zh" ? " zh" : ""}">${esc(o.tag)}</span>` : "");
     el.setAttribute("aria-label", o.tag ? `Đáp án: ${o.tag}` : kind === "bfly" ? "Bướm" : "Ong");
     const A = area(), x = o.x ?? rand(A.x0, A.x1), y = o.y ?? rand(A.y0, A.y1);
@@ -52,12 +52,12 @@ export function createCritters(game) {
         const sp = c.answer ? 0.35 : 0.6;
         c.vx += ((c.tx - c.x) * sp - c.vx) * dt * 1.5; c.vy += ((c.ty - c.y) * sp - c.vy) * dt * 1.5;
         c.x += c.vx * dt; c.y += c.vy * dt + Math.sin(c.t * 6 + c.ph) * (c.answer ? 0.25 : 0.6);
-        c.el.style.transform = `translate(${c.x.toFixed(1)}px, ${c.y.toFixed(1)}px)`; c.el.firstChild.style.transform = `scaleX(${c.vx < 0 ? -1 : 1})`;
+        c.el.style.transform = `translate(${c.x.toFixed(1)}px, ${c.y.toFixed(1)}px)`; c.el.firstChild.style.transform = `scaleX(${c.vx < 0 ? -1 : 1})${c.answer ? "" : " scale(var(--crit,1))"}`;
       } else {
         if (!c.cx || Math.random() < dt * 0.08) { const f = game.yard.flowerSpots?.length ? game.yard.flowerSpots[Math.floor(Math.random() * game.yard.flowerSpots.length)] : { x: rand(A.x0, A.x1), y: rand(A.y0 + 60, A.y1) }; c.cx = f.x; c.cy = f.y - 20; c.r = rand(30, 70); }
         const tx = c.cx + Math.sin(c.t * 1.6) * c.r, ty = c.cy + Math.sin(c.t * 3.2) * c.r * 0.35, px = c.x;
         c.x += (tx - c.x) * Math.min(1, dt * 3); c.y += (ty - c.y) * Math.min(1, dt * 3);
-        c.el.style.transform = `translate(${c.x.toFixed(1)}px, ${c.y.toFixed(1)}px)`; c.el.firstChild.style.transform = `scaleX(${c.x < px ? -1 : 1})`;
+        c.el.style.transform = `translate(${c.x.toFixed(1)}px, ${c.y.toFixed(1)}px)`; c.el.firstChild.style.transform = `scaleX(${c.x < px ? -1 : 1})${c.answer ? "" : " scale(var(--crit,1))"}`;
       }
     }
   }
