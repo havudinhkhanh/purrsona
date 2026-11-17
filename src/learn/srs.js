@@ -26,8 +26,7 @@ export function createLearn(game) {
   function pickToday() {
     const d = dayKey(); if (L.today.d === d && L.today.lang === L.lang) return L.today.ids;
     const booked = L.book.map((b) => get(b.id)).filter((c) => c && c.lang === L.lang && c.vi && !L.cards[c.id]);      // từ trong sổ được học trước
-    const hot = api.hotToday().map((h) => h.card).filter((c) => c.vi && !L.cards[c.id] && !booked.includes(c)).slice(0, 2);      // tối đa 2 chữ nóng vào bài hôm nay
-    booked.push(...hot);
+    // chữ nóng (tin tức) KHÔNG trộn vào bài theo cấp – học riêng ở mục Chữ nóng, để bài hôm nay liền mạch một trình độ
     const order = levelPool(booked);
     const keep = L.today.d === d ? L.today.ids.filter((id) => get(id)?.lang === L.lang) : [];
     const seenIds = new Set(keep), want = [...booked, ...order].filter((c) => (seenIds.has(c.id) ? false : (seenIds.add(c.id), true)));      // không trùng chữ
@@ -142,13 +141,29 @@ export function createLearn(game) {
     setLevel(key) { L.level[L.lang] = key; L.today.d = ""; game.emit("lang", L.lang); },
     setDaily(n, auto = false) { L.daily = n; if (!auto) L.dailySetAt = Date.now(); L.today.d = ""; pickToday(); },
     levels: () => levelsOf(L.lang, L.custom),
-    /** 4 lựa chọn: đáp án đúng + 3 từ cùng ngôn ngữ, ưu tiên cùng cấp */
-    options(c, n = 4) {
-      const same = [...cards().values()].filter((x) => x.lang === c.lang && x.id !== c.id && x.vi && x.vi !== c.vi);
-      const hot = c.pack === "trend", lvl = same.filter((x) => x.level === c.level || (hot && x.pack === "trend")), pool = lvl.length >= (hot ? n - 1 : n + 2) ? lvl : same;      // chữ nóng: nhiễu cũng là chữ nóng, khỏi đoán bừa
-      const out = [c]; const r = Math.random; while (out.length < n && pool.length) { const x = pool.splice(Math.floor(r() * pool.length), 1)[0]; if (!out.some((o) => o.w === x.w || o.vi === x.vi)) out.push(x); }
-      return out.sort(() => r() - 0.5);
+    /** n lựa chọn: đáp án đúng + từ nhiễu. Nhiễu cũng là chữ ĐANG HỌC (bài hôm nay, chữ đang ôn) để mỗi con bướm đều là
+     *  một chữ đáng học; thiếu mới lấy cùng cấp, rồi cùng tiếng. Ưu tiên cùng từ loại & độ dài nghĩa gần nhau (khỏi đoán theo hình dáng). */
+    options(c, n = 4, prefer = []) {
+      const all = [...cards().values()], hot = c.pack === "trend";
+      const ok = (x) => x && x.lang === c.lang && x.id !== c.id && x.vi && x.vi !== c.vi && x.w !== c.w && (hot || x.pack !== "trend");
+      const learning = Object.keys(L.cards).filter((id) => L.cards[id].seen).map(get);
+      const tiers = [
+        [...prefer, ...pickToday().map(get)].filter(ok),
+        learning.filter(ok),
+        all.filter((x) => ok(x) && (hot ? x.pack === "trend" : x.pack === c.pack && x.level === c.level)),
+        all.filter(ok),
+      ];
+      const lenD = (x) => Math.abs((x.vi || "").length - (c.vi || "").length) / 12 + (x.pos && c.pos && x.pos !== c.pos ? 0.6 : 0) + Math.random() * 0.9;
+      const out = [c];
+      for (const tier of tiers) {
+        const cand = [...new Map(tier.map((x) => [x.id, x])).values()].sort((a, b) => lenD(a) - lenD(b));
+        for (const x of cand) { if (out.length >= n) break; if (!out.some((o) => o.w === x.w || o.vi === x.vi)) out.push(x); }
+        if (out.length >= n) break;
+      }
+      return out.sort(() => Math.random() - 0.5);
     },
+    /** cho một chữ (vd chữ sâu trên tranh, chữ cạnh mèo) vào bài hôm nay để học thật */
+    adopt(id) { const c = get(id); if (!c || !c.vi) return false; pickToday(); if (L.cards[id]?.seen) return "learning"; if (!L.today.ids.includes(id)) L.today.ids.push(id); game.emit("learn", { type: "adopt", id }); return true; },
     // ---- CHỮ NÓNG HÔM NAY (src/learn/trends.js nạp vào L.hot)
     hotItems: (lang = L.lang) => (L.hot?.items || []).filter((h) => h.lang === lang).map((h) => ({ ...h, card: get(h.id) })).filter((h) => h.card),
     hotToday(lang = L.lang) { const all = api.hotItems(lang); return can(s.plan, "trend.all") ? all : all.slice(0, TREND_FREE); },

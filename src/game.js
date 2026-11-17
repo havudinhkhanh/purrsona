@@ -101,6 +101,7 @@ export async function createGame(root) {
   // ---- KHÁY: câu cộc lốc hiện tooltip cạnh mèo. Có giãn cách để không lải nhải.
   let lastJab = 0, lastWrong = null;
   game.jab = (key, vars, force = false) => {
+    if (/^(quiz|result)$/.test(game.wall?.mode || "") && key !== "adopt_word") return null;      // đang đố: mèo im, khỏi che đáp án / lạc đề
     const now = performance.now(); if (!force && now - lastJab < 6000) return null;
     if (!force && B.sayUntil > now) return null;
     lastJab = now; return game.say(key, null, 4200, vars);
