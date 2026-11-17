@@ -124,7 +124,10 @@ export function createPlay(game) {
     let x, y = top - cH * 0.75 - h / 2;
     if (bx - cw - w >= 8) x = bx - cw - w; else if (bx + cw + w <= vw - 8) x = bx + cw;
     else { x = clamp(bx - w / 2, 8, vw - w - 8); y = top + 12; if (y + h > vh - 130) y = top - cH * 1.15 - h; }
-    tag.style.transform = `translate(${x.toFixed(0)}px, ${clamp(y, 60, vh - h - 130).toFixed(0)}px)`;
+    y = clamp(y, 60, vh - h - 130);
+    // né lời mèo: đè lên bóng chữ thì nhảy lên trên bóng chữ (hết chỗ thì xuống dưới chân mèo)
+    const bb = B.bubbleBox; if (bb && x < bb.x1 + 6 && x + w > bb.x0 - 6 && y < bb.y1 + 6 && y + h > bb.y0 - 6) y = bb.y0 - h - 8 >= 60 ? bb.y0 - h - 8 : Math.min(vh - h - 96, B.y + cmy + 14);
+    tag.style.transform = `translate(${x.toFixed(0)}px, ${y.toFixed(0)}px)`;
   }
 
   // ------------------------------------------------------------------ mèo chơi đồ vật (brain gọi acts(h))

@@ -19,6 +19,8 @@ const L = {
   "wrong.grumpy": ["Sai nữa. Mệt.", "Trời đất."],
   "wrong.clingy": ["Sai rồi. Lại nha.", "Gần trúng. Mà sai."],
   lapse: ["'{w}' lần {n}. Thù hả?", "'{w}' = {vi}. Nói hoài.", "Lại '{w}'. Hết nói."],
+  pause_ok: ["Nghỉ thì nghỉ. Lát đừng có than.", "Ờ, nghỉ. Tui canh giờ đó.", "Nghỉ học? Được. Tui cũng nghỉ… làm mèo."],
+  pause_back: ["Về rồi hả. Học tiếp.", "Nghỉ đủ rồi đó {sen}.", "Hết giờ chơi. Vô học."],
   adopt_word: ["'{w}' hả. Gu cũng được đó. Học luôn.", "Thích '{w}'? Ok, vô bài.", "'{w}'. Chọn chữ khó dữ. Học đi."],
   newword: ["'{w}'. Nhớ đi.", "Chữ mới. Đừng có quên.", "'{w}'. Lát hỏi."],
   master: ["'{w}' thuộc. Mọc một bông.", "Thêm bông hoa. Công tui.", "Thuộc rồi. Đừng vênh."],

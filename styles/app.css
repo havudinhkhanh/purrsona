@@ -720,3 +720,12 @@ body.sheet-on .zoomchip{opacity:0;pointer-events:none}
 .oth span{flex:1;color:var(--ink-2)}.oth small{font:500 .72rem var(--font);color:var(--ink-2)}
 .oth .ib.sm{width:32px;height:32px;font:600 1.1rem/1 var(--font)}
 .pchip.ghost{background:transparent;color:var(--ink);box-shadow:0 0 0 1.5px var(--ink) inset}
+/* ---- 2.6.1 · tạm nghỉ học ---- */
+.c-top{justify-content:flex-start}.c-top .kick{margin-right:auto}
+.c-top .pz-btn{opacity:.7}.c-top .pz-btn:hover,.c-top .pz-btn:focus-visible{opacity:1}
+.card.mini:not(.open) .c-top .pz-btn{width:30px;height:30px}
+.card .acts.wrap{flex-wrap:wrap}
+.card.paused{padding:8px 8px 8px 14px;width:auto;max-width:calc(100vw - 32px)}
+.pz{display:flex;align-items:center;gap:12px}
+.pz-t{display:flex;align-items:center;gap:6px;font:400 1.15rem var(--hand);color:var(--ink)}
+.pz-t .ico{width:16px;height:16px}.pz-t small{font:500 .78rem var(--font);color:var(--ink-2)}

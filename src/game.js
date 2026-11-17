@@ -101,13 +101,16 @@ export async function createGame(root) {
   // ---- KHÁY: câu cộc lốc hiện tooltip cạnh mèo. Có giãn cách để không lải nhải.
   let lastJab = 0, lastWrong = null;
   game.jab = (key, vars, force = false) => {
-    if (/^(quiz|result)$/.test(game.wall?.mode || "") && key !== "adopt_word") return null;      // đang đố: mèo im, khỏi che đáp án / lạc đề
+    if (/^(quiz|result|pauseask)$/.test(game.wall?.mode || "") && key !== "adopt_word") return null;
+    if (game.paused?.()) return null;      // đang nghỉ học: mèo khỏi kháy      // đang đố: mèo im, khỏi che đáp án / lạc đề
     const now = performance.now(); if (!force && now - lastJab < 6000) return null;
     if (!force && B.sayUntil > now) return null;
     lastJab = now; return game.say(key, null, 4200, vars);
   };
+  /** đang tạm nghỉ học (người dùng bấm Nghỉ): mèo không đố, không kháy chuyện học */
+  game.paused = () => (s.settings.pauseUntil || 0) > Date.now();
   const jabTick = () => {
-    if (!game.attention() || brain.sleeping) return;
+    if (!game.attention() || brain.sleeping || game.paused()) return;
     const t = learn.todo(), r = Math.random();
     if (lastWrong && Date.now() - lastWrong.t < 6 * 6e4 && r < 0.35) return game.jab("jab_wrong_recent", { w: lastWrong.w });
     if (t.due + t.neu === 0 && learn.studiedToday()) return game.jab(r < 0.5 ? "jab_done" : "jab_misc");
@@ -142,6 +145,7 @@ export async function createGame(root) {
   };
   /** mèo kháy theo tình hình học */
   game.nag = () => {
+    if (game.paused()) return null;
     const t = learn.todo(), sk = learn.streakAlive(), h = new Date().getHours();
     if (t.due + t.neu === 0) return game.say(learn.studiedToday() ? "done" : "idle_tap");
     if (sk >= 2 && !learn.studiedToday() && h >= 19) return game.say("nag_streak", null, 3600, { n: sk });
@@ -151,6 +155,7 @@ export async function createGame(root) {
   };
   /** mèo đố bất chợt: HUD hiện thẻ đố, trả kết quả */
   game.catQuiz = async () => {
+    if (game.paused()) return;
     const pool = [...learn.due(), ...learn.learning(), ...learn.mastered().filter((c) => c.lang === learn.lang)]; const c = pick(pool); if (!c) return;
     game.say("quiz_ask", null, 4000, { w: c.w });
     game.wall?.quiz(c, "cat");

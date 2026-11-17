@@ -17,6 +17,7 @@ const P = {
   locate: '<circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="2" fill="currentColor"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"/>',
   menu: '<path d="M4 7h16M4 12h16M4 17h10"/>',
   close: '<path d="M6 6l12 12M18 6 6 18"/>',
+  pause: '<path d="M9 6v12M15 6v12"/>',
   fish: '<path d="M3 12c3-4.5 7.5-6 11-4.5 2 .8 3.4 2.3 4.2 4.5-.8 2.2-2.2 3.7-4.2 4.5-3.5 1.5-8 0-11-4.5Z"/><path d="M18.2 12 21.5 9v6l-3.3-3Z"/><circle cx="13.5" cy="11" r=".9" fill="currentColor"/>',
   heart: '<path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.4a4.3 4.3 0 0 1 7.5 2.4C19.5 15.4 12 20 12 20Z"/>',
   heartFill: '<path fill="currentColor" stroke="none" d="M12 20.6S3.6 15.6 3.6 9.5A4.9 4.9 0 0 1 12 6.6a4.9 4.9 0 0 1 8.4 2.9c0 6.1-8.4 11.1-8.4 11.1Z"/>',

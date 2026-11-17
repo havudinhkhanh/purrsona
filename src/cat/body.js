@@ -119,8 +119,9 @@ export function createBody(R, scene, opts = {}) {
     const baseH = B.jump ? Math.min(B.jump.h0, B.jump.h1) : B.h;
     shadow.style.transform = `translate(${(B.x + ((l + r) / 2) * k * fx).toFixed(1)}px, ${(B.y - baseH).toFixed(1)}px) scale(${(sw / 100).toFixed(3)}, ${(sw / 100).toFixed(3)})`;
     shadow.style.opacity = B.hidden ? 0 : (0.32 * air).toFixed(3); shadow.style.zIndex = el.style.zIndex - 1;
+    if (bubble.hidden) B.bubbleBox = null;
     if (!bubble.hidden) {
-      if (performance.now() > B.sayUntil) bubble.hidden = true;
+      if (performance.now() > B.sayUntil) { bubble.hidden = true; B.bubbleBox = null; }
       // đáy bóng chữ luôn cao hơn đỉnh tai (mắt − ~60 đơn vị hình) – không bao giờ che đầu mèo
       const e0 = R.eye(), cmx0 = scene.cam?.x || 0, cmy0 = scene.cam?.y || 0, hx = (e0 ? B.x + e0[0] * k * fx : B.x) + cmx0, earTop = (e0 ? B.y - B.h + (e0[1] - 62) * k : B.y - B.h - (R.box.ay - 30) * k * 0.82) + cmy0;
       const vw = scene.S?.vw || innerWidth, bw = bubW || 60, bh = bubH || 40;
@@ -129,6 +130,7 @@ export function createBody(R, scene, opts = {}) {
       const cr = cardRect(), hit = cr && by - bh < cr.bottom + 4 && bx + bw > cr.left && bx - bw < cr.right;
       if (hit) { const right = hx + 26 + 2 * bw < vw - 8; bx = right ? hx + 26 + bw : hx - 26 - bw; by = Math.max(cr.bottom + bh + 8, earTop + bh * 0.9); bx = Math.min(Math.max(bx, bw + 8), vw - bw - 8); }
       bubble.classList.toggle("side", !!hit); bubble.classList.toggle("left", !!hit && bx < hx);
+      B.bubbleBox = { x0: bx - bw, x1: bx + bw, y0: by - bh, y1: by };      // để chữ cạnh mèo né lời mèo
       bubble.style.transform = `translate(${bx.toFixed(1)}px, ${by.toFixed(1)}px) translate(-50%, -100%)`; bubble.style.setProperty("--tail", `${clamp(hx - bx, -bw + 18, bw - 18).toFixed(0)}px`);
     }
     const e = R.eye(), n = scene.S.night || 0;
