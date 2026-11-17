@@ -30,7 +30,7 @@ export function createNotify(game) {
   // ---- tình hình hôm nay → Cache cho service worker đọc
   function state() {
     const t = learn.todo(), hot = learn.hotToday()[0];
-    return { d: dayKey(), studied: learn.studiedToday(), done: learn.doneToday?.() || false, due: t.due, neu: t.neu, streak: learn.streakAlive(), hot: hot ? hot.card.w : "", cat: game.cat.name, sen: s.profile.nick || "Sen", times: R.on ? R.times : [], streakNag: R.on && R.streak && can(s.plan, "remind.multi"), tz: Intl.DateTimeFormat().resolvedOptions().timeZone, endpoint: REMIND.endpoint || "", id: s.device.id, vapid: vapidKey || "" };
+    return { d: dayKey(), studied: learn.studiedToday(), done: learn.doneToday?.() || false, due: t.due, neu: t.neu, streak: learn.streakAlive(), hot: hot ? hot.card.w : "", cat: game.cat.name, sen: s.profile.nick || "Sen", times: R.on ? R.times : [], streakNag: R.on && R.streak && can(s.plan, "remind.multi"), tz: Intl.DateTimeFormat().resolvedOptions().timeZone, endpoint: REMIND.endpoint || "", id: s.device.id, vapid: vapidKey || "", mood: game.today?.mood?.id || "", emo: game.today?.mood?.emo || "", wx: game.weather?.kind || "", angry: !!game.memory?.angry };
   }
   async function writeState() {
     try { const c = await caches.open("purr-state"); await c.put("state.json", new Response(JSON.stringify(state()), { headers: { "content-type": "application/json" } })); } catch { /* không có Cache API */ }
@@ -85,7 +85,7 @@ export function createNotify(game) {
     sync: writeState,
   };
   // cập nhật tình hình mỗi khi học, đổi ngày, ẩn app
-  for (const k of ["learn", "streak", "hot", "lang"]) game.on(k, () => { clearTimeout(api._w); api._w = setTimeout(writeState, 1500); });
+  for (const k of ["learn", "streak", "hot", "lang", "mood", "weather"]) game.on(k, () => { clearTimeout(api._w); api._w = setTimeout(writeState, 1500); });
   addEventListener("visibilitychange", () => { if (document.hidden) writeState(); });
   if (support()) { writeState(); plan(); if (R.on && status() === "ok") { periodic(); if (REMIND.endpoint && !s.device.push) pushSubscribe(); } }
   return api;

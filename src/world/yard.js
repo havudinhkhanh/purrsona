@@ -58,7 +58,7 @@ export function createYard(root) {
     // màn dọc: xoay mạnh hơn + nhìn gần thẳng từ trên xuống để mảnh vườn cao lên, đầy màn hình hơn
     PHI = ((S.portrait ? -24 : -13) * Math.PI) / 180; TILT = S.portrait ? 0.7 : 0.56;
     // khung đặt khu vườn: chừa góc trên trái cho chữ, chừa đáy cho thanh chữ nhỏ
-    const R = S.portrait ? { x0: 0.06, x1: 0.94, y0: 0.45, y1: 0.885 } : { x0: 0.3, x1: 0.97, y0: 0.2, y1: 0.86 };      // chừa chỗ cho thẻ chữ (dọc: phía trên, ngang: bên trái)
+    const R = S.portrait ? { x0: 0.05, x1: 0.95, y0: 0.3, y1: 0.885 } : { x0: 0.12, x1: 0.97, y0: 0.2, y1: 0.86 };      // khu vườn là chính: thẻ chữ chỉ là widget nhỏ ở góc
     S.k = 1; S.ox = 0; S.oy = 0;
     const c = [P(0, 0), P(UW, 0), P(UW, UH), P(0, UH)], xs = c.map((p) => p[0]), ys = c.map((p) => p[1]);
     const bw = Math.max(...xs) - Math.min(...xs), bh = Math.max(...ys) - Math.min(...ys);
@@ -154,7 +154,7 @@ export function createYard(root) {
   function paint() {
     world.querySelectorAll(".spr").forEach((n) => n.remove());
     const frag = document.createDocumentFragment();
-    for (const sp of sprites) { const n = document.createElementNS("http://www.w3.org/2000/svg", "svg"); n.setAttribute("class", "spr"); n.setAttribute("viewBox", `0 0 ${S.vw} ${S.vh}`); n.style.zIndex = sp.z; n.innerHTML = sp.svg; frag.appendChild(n); }
+    for (const sp of sprites) { const n = document.createElementNS("http://www.w3.org/2000/svg", "svg"); n.setAttribute("class", "spr"); n.dataset.id = sp.id; n.setAttribute("viewBox", `0 0 ${S.vw} ${S.vh}`); n.style.zIndex = sp.z; n.innerHTML = sp.svg; frag.appendChild(n); }
     world.insertBefore(frag, actors);
   }
 
@@ -189,6 +189,12 @@ export function createYard(root) {
       vp.style.setProperty("--shadeA", a.toFixed(3)); S.night = clamp(a / 0.42, 0, 1); S.day = a < 0.05; vp.dataset.night = S.night > 0.5 ? "1" : "0";
     },
     resize: layout,
+    /** cây (và bụi) lắc theo gió: a = -1…1 */
+    sway(a) {
+      if (Math.abs(a - (api._sw || 0)) < 0.01) return; api._sw = a;
+      const [x, y] = P(48, 9), deg = (a * 5).toFixed(2);
+      for (const n of world.querySelectorAll('.spr[data-id="tree"],.spr[data-id^="bush"]')) { n.style.transformOrigin = n.dataset.id === "tree" ? `${x}px ${y}px` : "50% 100%"; n.style.transform = Math.abs(a) < 0.01 ? "" : `skewX(${n.dataset.id === "tree" ? deg : (a * 1.5).toFixed(2)}deg)`; }
+    },
     setDensity(d) { if (!DENS[d] || d === S.density) return; S.density = d; draw(); },
   };
   let rt = 0; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(layout, 120); });

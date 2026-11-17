@@ -20,6 +20,7 @@ export function createCritters(game) {
   function remove(c) { c.el.classList.add("gone"); setTimeout(() => c.el.remove(), 400); list = list.filter((x) => x !== c); }
   function ambient() {
     list.filter((c) => !c.answer).forEach(remove);
+    if (game.weather?.raining) return;      // mưa: bướm ong trốn hết
     add("bfly", { onTap: (c) => { c.tx += rand(-200, 200); c.ty -= 120; game.say?.("chase"); } });
     add("bfly", { onTap: (c) => { c.tx += rand(-200, 200); c.ty -= 120; } });
     const bees = { full: 2, calm: 1, bare: 0 }[game.yard.S.density] ?? 2;

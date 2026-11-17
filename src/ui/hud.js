@@ -12,7 +12,7 @@ import { line } from "../cat/lines.js";
 import { BOX_IV, MASTER } from "../learn/srs.js";
 import { icon } from "./icons.js";
 
-const ACT_VI = { nap: "Đang ngủ", watch: "Ngắm trời", explore: "Đi dạo", groom: "Liếm lông", zoomies: "Chạy rần rần", selfplay: "Tự chơi", perch: "Leo trèo", chase: "Đuổi bướm", seek: "Tìm bạn", sulk: "Đang dỗi", write: "Viết bậy lên tường", nag: "Kháy bạn", quizme: "Đố bạn", headbutt: "Dụi đầu", blinkat: "Chớp mắt", knead: "Nhào bột", bellyup: "Khoe bụng", pawtap: "Gõ màn hình", sleepnear: "Ngủ cạnh bạn", sniff: "Ngửi hoa", sunbathe: "Phơi nắng", sitpretty: "Ngồi ngắm bạn", pondgaze: "Ngắm ao", scratchtree: "Mài móng vô cây", yarn: "Chơi cuộn len", flowerpounce: "Vồ hoa", greet: "Đón bạn", follow: "Đi theo bạn", wander: "Thong thả", pet: "Được vuốt ve", sleep: "Ngủ" };
+const ACT_VI = { nap: "Đang ngủ", watch: "Ngắm trời", explore: "Đi dạo", groom: "Liếm lông", zoomies: "Chạy rần rần", selfplay: "Tự chơi", perch: "Leo trèo", chase: "Đuổi bướm", seek: "Tìm bạn", sulk: "Đang dỗi", write: "Viết bậy lên tường", nag: "Kháy bạn", quizme: "Đố bạn", headbutt: "Dụi đầu", blinkat: "Chớp mắt", knead: "Nhào bột", bellyup: "Khoe bụng", pawtap: "Gõ màn hình", sleepnear: "Ngủ cạnh bạn", sniff: "Ngửi hoa", sunbathe: "Phơi nắng", sitpretty: "Ngồi ngắm bạn", pondgaze: "Ngắm ao", scratchtree: "Mài móng vô cây", yarn: "Chơi cuộn len", flowerpounce: "Vồ hoa", rainwatch: "Ngồi coi mưa", shadenap: "Nằm bóng cây", chaseleaf: "Vồ lá bay", greet: "Đón bạn", follow: "Đi theo bạn", wander: "Thong thả", pet: "Được vuốt ve", sleep: "Ngủ" };
 const planChip = (p) => (p === "free" ? "" : `<span class="chip chip-${p}">${PLANS[p].vi}</span>`);
 
 export function createHud(game, root) {
@@ -164,6 +164,9 @@ export function createHud(game, root) {
         <div class="row"><span>Từ mới mỗi ngày</span><span class="seg">${DAILY_OPTS[s.plan].map((n) => `<button data-daily="${n}" class="${L.daily === n ? "on" : ""}">${n}</button>`).join("")}</span></div>
         <div class="row"><span>Đổi chữ trên tường</span><span class="seg">${[5, 15, 60].map((n) => `<button data-rot="${n}" class="${(s.settings.rotate || 15) === n ? "on" : ""}">${n === 60 ? "1 giờ" : n + "′"}</button>`).join("")}</span></div>
         <div class="row"><span>Sân vườn</span><span class="seg">${[["full", "Đầy đủ"], ["calm", "Gọn"], ["bare", "Trống"]].map(([k, v]) => `<button data-yard="${k}" class="${(s.settings.yard || "full") === k ? "on" : ""}">${v}</button>`).join("")}</span></div>
+        <div class="row"><span>Thời tiết${game.weather ? ` <small>${game.weather.label()} · ${esc(game.weather.st.src === "real" ? game.weather.st.place : game.weather.st.src === "sim" ? "tự đổi" : "cố định")}</small>` : ""}</span><span class="seg">${[["real", "Trời thật"], ["sim", "Tự đổi"], ["off", "Tắt"]].map(([k, v]) => `<button data-wxmode="${k}" class="${(s.settings.wx?.mode || "real") === k ? "on" : ""}">${v}</button>`).join("")}</span></div>
+        ${(s.settings.wx?.mode || "real") === "real" ? `<button class="row link" data-a="wxplace"><span>Nơi lấy thời tiết</span><span>${esc(s.settings.wx?.place?.name || "TP. Hồ Chí Minh")} · dùng vị trí của tôi ›</span></button>` : ""}
+        <div class="row"><span>Chọn trời ${lock("weather.pick") ? `<span class="chip chip-plus">Plus</span>` : ""}</span><span class="seg">${[["hot", "☀️"], ["rain", "🌧"], ["wind", "🍃"], ["storm", "⛈"], ["cloudy", "☁️"]].map(([k, v]) => `<button data-wxfix="${k}" class="${s.settings.wx?.mode === "fixed" && s.settings.wx?.fixed === k ? "on" : ""}" aria-label="${k}">${v}</button>`).join("")}</span></div>
         <label class="row"><span>${esc(game.cat.name)} gọi bạn là</span><input class="nick" type="text" maxlength="16" value="${esc(s.profile.nick || "Sen")}" data-nick placeholder="Sen"></label>
         <label class="row"><span>Đọc to từ vựng</span><input type="checkbox" data-set="tts" ${s.settings.tts ? "checked" : ""}></label>
         <label class="row"><span>Từ mới tự đọc khi hiện</span><input type="checkbox" data-set="autoSay" ${s.settings.autoSay !== false ? "checked" : ""}></label>
@@ -191,7 +194,7 @@ export function createHud(game, root) {
   // ------------------------------------------------------------------ bấm nút
   el.addEventListener("click", (e) => {
     unlock(); game.lastInput = Date.now(); game.musicResume?.();
-    const b = e.target.closest("[data-a],[data-plan],[data-skin],[data-ui],[data-setlang],[data-level],[data-daily],[data-wtab],[data-wd],[data-rate],[data-rot],[data-yard],[data-rtime],[data-bsay],[data-unbook],[data-rsave],[data-rnew],[data-hstar]"); if (!b || !el.contains(b)) return;
+    const b = e.target.closest("[data-a],[data-plan],[data-skin],[data-ui],[data-setlang],[data-level],[data-daily],[data-wtab],[data-wd],[data-rate],[data-rot],[data-yard],[data-wxmode],[data-wxfix],[data-rtime],[data-bsay],[data-unbook],[data-rsave],[data-rnew],[data-hstar]"); if (!b || !el.contains(b)) return;
     if (b.dataset.bsay) { game.speakCard(learn.card(b.dataset.bsay)); return; }
     if (b.dataset.hstar) { const id = b.dataset.hstar; if (learn.booked(id)) learn.unbook(id); else { const h = learn.hotOf(id), r = learn.bookmark({ ...learn.card(id), src: "hot", url: h?.src?.[0]?.u || "" }, s.plan); if (r.full) return toast("Sổ đầy rồi. Plus lưu thoải mái."); game.jab?.("book"); } save(s); show("words"); return; }
     if (b.dataset.unbook) { learn.unbook(b.dataset.unbook); save(s); show("words"); return; }
@@ -203,6 +206,8 @@ export function createHud(game, root) {
     if (b.dataset.level) { if (b.classList.contains("lockd")) return show("plans"); learn.setLevel(b.dataset.level); save(s); show(wrap.classList.contains("sh-onboard") ? "onboard" : "lang"); refresh(); return; }
     if (b.dataset.daily) { learn.setDaily(+b.dataset.daily); save(s); b.parentElement.querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b)); refresh(); return; }
     if (b.dataset.rtime) { if (!game.notify.toggleTime(b.dataset.rtime)) toast(`Gói Free nhắc 1 giờ/ngày. Plus thì 3.`); show("settings"); return; }
+    if (b.dataset.wxmode) { s.settings.wx.mode = b.dataset.wxmode; s.wxCache = null; save(s); game.weather.refresh().then(() => show("settings")); return; }
+    if (b.dataset.wxfix) { if (lock("weather.pick")) return show("plans"); s.settings.wx.mode = "fixed"; s.settings.wx.fixed = b.dataset.wxfix; save(s); game.weather.refresh().then(() => show("settings")); return; }
     if (b.dataset.yard) { s.settings.yard = b.dataset.yard; game.yard.setDensity(b.dataset.yard); game.critters?.ambient(); save(s); show("settings"); return; }
     if (b.dataset.rot) { s.settings.rotate = +b.dataset.rot; save(s); show("settings"); game.wall?.ambient(true); return; }
     if (b.dataset.rate) { s.settings.rate = +b.dataset.rate; save(s); show("settings"); game.speakCard(learn.todayCards()[0] || learn.due()[0]); return; }
@@ -219,6 +224,7 @@ export function createHud(game, root) {
       case "learnhot": close(); return game.wall.lesson("hot");
       case "remind-on": game.notify.enable().then((r) => { toast(r === "ok" ? `Ok. ${game.cat.name} sẽ nhắc. Đừng tắt.` : r === "denied" ? "Bị chặn rồi. Mở cài đặt trình duyệt cho phép lại." : r === "ios-install" ? "Thêm app vào màn hình chính trước đã." : "Chưa bật được thông báo."); show("settings"); }); return;
       case "remind-test": game.notify.test(); return;
+      case "wxplace": game.weather.useMyPlace().then((ok) => { toast(ok ? "Ok, lấy thời tiết chỗ bạn." : "Không lấy được vị trí. Vẫn dùng TP. Hồ Chí Minh."); show("settings"); }); return;
       case "scan": { const ta = q("[data-rtext]"); readText = (ta?.value || "").slice(0, READ_LIMIT[s.plan] || READ_LIMIT.free); readRes = runScan(readText); show("read"); game.sayLine?.(readRes.say, 4200); return; }
       case "review": close(); return game.wall.lesson(learn.todo().due ? "review" : "fun");
       case "call": return game.call();

@@ -447,9 +447,38 @@ button,a,[data-say],[data-w],.bfly{touch-action:manipulation;-webkit-tap-highlig
 .bubble.side::after{display:none}
 .bubble.side::before{content:"";position:absolute;left:-9px;bottom:12px;width:13px;height:13px;background:var(--paper);border-left:1.8px solid var(--ink);border-bottom:1.8px solid var(--ink);transform:rotate(45deg)}
 .bubble.side.left::before{left:auto;right:-9px;border-left:0;border-bottom:0;border-right:1.8px solid var(--ink);border-top:1.8px solid var(--ink)}
-/* màn dọc thấp (iPhone SE/8…): thẻ gọn – ví dụ, lý do, nguồn ẩn sau nút "Ví dụ" để chừa chỗ cho mèo */
-.card .more{display:none}
-@media (max-aspect-ratio:1/1) and (max-height:760px){
-  .card .more{display:inline-flex}
-  .card:not(.open) .exbox,.card:not(.open) .why,.card:not(.open) .src{display:none}
+
+/* =====================================================================
+   2.1 – THẺ CHỮ NHỎ (widget góc màn hình): mặc định chỉ chữ + nghĩa + 1 nút. Chạm thẻ để mở rộng.
+   ===================================================================== */
+.card .x-open{display:none}
+.card.mini{width:auto;max-width:min(330px,calc(100vw - 24px));padding:10px 14px 12px;border-radius:18px 21px 17px 20px/19px 17px 21px 18px}
+.card.mini:not(.open){overflow:hidden}
+.card.mini:not(.open) .c-top{min-height:22px;margin-bottom:0}
+.card.mini:not(.open) .c-top .star,.card.mini:not(.open) .ph,.card.mini:not(.open) .exbox,.card.mini:not(.open) .why,.card.mini:not(.open) .src,.card.mini:not(.open) .opts{display:none}
+.card.mini:not(.open) .w{font-size:clamp(1.9rem,6vmin,2.4rem)}.card.mini:not(.open) .w.zh{font-size:clamp(2rem,6.4vmin,2.6rem)}.card.mini:not(.open) .w.vi{font-size:1.4rem}
+.card.mini:not(.open) .c-word{gap:8px;flex-wrap:nowrap}.card.mini:not(.open) .c-word .ib{width:34px;height:34px}.card.mini:not(.open) .c-word .ib .ico{width:16px;height:16px}
+.card.mini:not(.open) .vi:not(.w){font-size:1.15rem;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card.mini:not(.open) .hint{font-size:1rem;margin-top:4px}
+.card.mini:not(.open) .acts{position:static;margin:8px 0 0!important;padding:0;background:none;gap:6px}
+.card.mini:not(.open) .acts .btn{min-height:38px;font-size:1.05rem;padding:0 14px}.card.mini:not(.open) .acts .btn.text{padding:0 6px}
+.card.mini:not(.open) .res{position:static;margin:6px 0 0!important;padding:0;background:none;font-size:1.15rem}
+.card.mini:not(.open){cursor:pointer}
+.card.mini.open{width:min(440px,calc(100vw - 20px))}
+.card.mini.open .x-mini{display:none}.card.mini.open .x-open{display:inline-flex}
+.card.big .x-mini{display:none}
+@media (max-aspect-ratio:1/1){
+  .card.mini:not(.open){right:auto;max-width:calc(100vw - 20px)}
+  .card.mini.open{right:calc(env(safe-area-inset-right,0px) + 10px);width:auto}
 }
+/* ---- thời tiết */
+.wx{position:absolute;left:0;top:0;z-index:2;pointer-events:none}
+.wxfog{position:absolute;inset:0;z-index:2;pointer-events:none;background:#4a4d55;mix-blend-mode:multiply;opacity:0;transition:opacity 3s}
+.viewport::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(120% 90% at 100% 0%,#fff 0%,rgba(255,255,255,.55) 35%,transparent 70%);mix-blend-mode:screen;opacity:calc(var(--sunA,0) * .55);transition:opacity 3s}
+.viewport[data-wx=hot] .spr[data-id=tree]{filter:drop-shadow(10px 14px 0 rgba(0,0,0,.18))}
+.card.mini:not(.open){max-width:min(300px,calc(100vw - 24px));padding:8px 12px 10px}
+.card.mini:not(.open) .kick{font-size:.6rem}
+.card.mini:not(.open) .w{font-size:clamp(1.7rem,5.4vmin,2.1rem)}
+.card.mini:not(.open) .vi:not(.w){font-size:1.05rem}
+.card.mini:not(.open) .acts .btn{min-height:36px;font-size:1rem;padding:0 12px}
+.card .btn::after{content:"";position:absolute;inset:-8px -5px}

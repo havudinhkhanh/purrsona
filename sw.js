@@ -1,8 +1,8 @@
 // Service worker: tải trước vỏ app, sau đó "mạng trước – lỗi thì dùng bản đã lưu" cho mọi file cùng nguồn.
 // Mỗi lần phát hành: tăng VERSION để máy người dùng lấy bản mới.
-const VERSION = "purrsona-2.0.0";
+const VERSION = "purrsona-2.1.0";
 const SHELL = ["./", "index.html", "styles/app.css", "manifest.webmanifest", "icons/icon.svg", "icons/apple-touch-icon.png", "assets/graphite.png", "src/main.js", "src/game.js", "src/config.js",
-  "src/world/yard.js", "src/world/critters.js", "src/ui/wall.js", "src/ui/hud.js", "src/ui/icons.js", "src/ui/closeup.js", "src/vendor/rough.js",
+  "src/world/yard.js", "src/world/critters.js", "src/world/weather.js", "src/ui/wall.js", "src/ui/hud.js", "src/ui/icons.js", "src/ui/closeup.js", "src/vendor/rough.js",
   "src/learn/srs.js", "src/learn/packs.js", "src/learn/tts.js", "src/learn/scan.js", "src/learn/trends.js", "src/meta/bridge.js", "src/meta/notify.js", "src/learn/packs/en-core.js", "src/learn/packs/zh-core.js", "src/learn/packs/en-business.js",
   "src/cat/brain.js", "src/cat/body.js", "src/cat/bond.js", "src/cat/lines.js", "src/cat/memory.js", "src/cat/personality.js", "src/meta/note.js",
   "assets/fonts/ph-latin-400.woff2", "assets/fonts/ph-vietnamese-400.woff2", "assets/fonts/bvp-latin-400.woff2", "assets/fonts/bvp-vietnamese-400.woff2",
@@ -16,6 +16,7 @@ self.addEventListener("fetch", (e) => {
 
 // ---------------------------------------------------------------- MÈO NHẮC: soạn thông báo từ "tình hình hôm nay" app đã lưu
 // Tin push không mang dữ liệu: service worker tự đọc Cache "purr-state" rồi chọn câu. Câu cộc, kháy chuyện lười – không chê người.
+// tính cách theo tâm trạng hôm nay của mèo (app ghi vào purr-state): mỗi tâm trạng một giọng
 const NAG = {
   none: ["Chưa học chữ nào. Tính sao?", "Hôm nay chưa thấy mặt.", "Lướt đủ chưa? Vô học 2 phút.", "Tui ngồi đợi nãy giờ đó."],
   due: ["{n} từ tới hạn ôn. Để mai là quên.", "{n} từ đang đợi. Tui cũng đợi.", "Ôn {n} từ thôi mà. Lẹ."],
@@ -23,6 +24,17 @@ const NAG = {
   hot: ["Chữ nóng nay: '{w}'. Biết chưa?", "Báo nay nói '{w}' hoài. Vô coi."],
   test: ["Ờ, nhắc được rồi đó. Giờ đi học."],
 };
+const MOOD = {
+  grumpy: { none: ["Hừ. Còn chưa học.", "Đừng để tui nhắc lần hai.", "Cáu rồi đó. Vô học."], due: ["{n} từ. Ôn liền. Hừ."], streak: ["Mất chuỗi {s} ngày là tui giận cả tuần."] },
+  clingy: { none: ["Nhớ {sen} rồi. Vô học với tui đi.", "Tui ngồi đợi ở cửa nè.", "Vô chơi xíu. Học xíu. Nha."], due: ["{n} từ đợi {sen}. Tui cũng đợi."], streak: ["Đừng bỏ tui với chuỗi {s} ngày."] },
+  diva: { none: ["Tui không nhắc lần hai đâu.", "Bổn mèo cho phép {sen} vô học.", "Hôm nay tui đẹp. {sen} thì chưa học."], due: ["{n} từ. Tui đã ra lệnh."], streak: ["Chuỗi {s} ngày. Giữ cho tui."] },
+  sleepy: { none: ["Tui ngủ dậy rồi. {sen} chưa học.", "Ngáp… học chưa?", "Học đi rồi tui ngủ tiếp."], due: ["{n} từ… zzz… ôn đi."], streak: ["Zzz… chuỗi {s} ngày… đừng đứt."] },
+  zoomie: { none: ["Tui chạy 3 vòng vườn rồi! {sen} chưa học chữ nào!", "Lẹ lẹ lẹ! Vô học!"], due: ["{n} từ! Ôn nhanh lên!"], streak: ["Chuỗi {s} ngày! Chạy vô giữ liền!"] },
+  explorer: { none: ["Tui lục được chữ mới. Vô coi.", "Có chữ lạ trong vườn. Vô đi."], due: ["Tui tìm ra {n} từ {sen} sắp quên."], streak: ["{s} ngày khám phá. Đừng dừng."] },
+  foodie: { none: ["Học 1 chữ = 1 viên snack cho tui. Vô.", "Đói chữ. Đói cá. Vô học."], due: ["{n} từ = {n} viên snack. Lẹ."], streak: ["Chuỗi {s} ngày = 1 con cá. Đừng đứt."] },
+  poet: { none: ["Trời hôm nay hợp học chữ.", "Gió thổi qua. Chữ chưa vô đầu."], due: ["{n} chữ chờ như mây chờ gió."], streak: ["{s} ngày. Đừng để thơ đứt đoạn."] },
+};
+const WXL = { rain: ["Mưa rồi. Ở nhà học đi.", "Mưa. Khỏi đi đâu. Học."], storm: ["Giông. Vô nhà học với tui."], hot: ["Nóng quá. Vô đây ngồi học cho mát."], wind: ["Gió bay hết chữ rồi. Vô học lại."] };
 const pickL = (a) => a[Math.floor(Math.random() * a.length)];
 const fillL = (t, v) => t.replace(/\{(\w+)\}/g, (m, k) => (v[k] ?? m));
 async function readState() { try { const r = await (await caches.open("purr-state")).match("state.json"); return r ? await r.json() : null; } catch { return null; } }
@@ -43,8 +55,11 @@ async function remind({ test = false, evening = false, slot = null } = {}) {
   if (!test && studied && !(st.due > 0)) return;      // học rồi, hết bài: khỏi nhắc
   const v = { n: st?.due || st?.neu || 3, s: st?.streak || 0, w: st?.hot || "" };
   const key = test ? "test" : evening && v.s > 1 && !studied ? "streak" : !studied && st?.hot && new Date().getHours() < 12 ? "hot" : fresh && st.due > 0 ? "due" : "none";
-  const body = fillL(pickL(NAG[key]), v);
-  return self.registration.showNotification(st?.cat || "na", { body, tag: "purr-remind", renotify: true, icon: "icons/icon-192.png", badge: "icons/icon-192.png", data: { url: "./" } });
+  v.sen = st?.sen || "Sen";
+  const moodL = MOOD[st?.mood]?.[key === "hot" ? "none" : key], r = Math.random();
+  const pool = key === "test" ? NAG.test : st?.wx && WXL[st.wx] && key === "none" && r < 0.35 ? WXL[st.wx] : moodL && r < 0.7 ? moodL : NAG[key];
+  const body = fillL(pickL(pool), v);
+  return self.registration.showNotification(`${st?.cat || "na"}${st?.emo ? " " + st.emo : ""}`, { body, tag: "purr-remind", renotify: true, icon: "icons/icon-192.png", badge: "icons/icon-192.png", data: { url: "./" } });
 }
 self.addEventListener("message", (e) => { if (e.data?.type === "remind-now") e.waitUntil(remind({ test: !!e.data.test, evening: new Date().getHours() >= 20, slot: e.data.slot || null })); });
 self.addEventListener("push", (e) => { let d = {}; try { d = e.data ? e.data.json() : {}; } catch { /* không có dữ liệu */ } e.waitUntil(readState().then((st) => remind({ evening: d.kind === "streak" || new Date().getHours() >= 20, slot: slotNow(st, 30) })).then((r) => r ?? self.registration.showNotification("na", { body: "Ghé coi bài hôm nay.", tag: "purr-remind", icon: "icons/icon-192.png", silent: true }))); });

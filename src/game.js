@@ -17,6 +17,7 @@ import { line, setNames } from "./cat/lines.js";
 import { createLearn } from "./learn/srs.js";
 import { LANGS } from "./learn/packs.js";
 import { speak, onSpeakIssue, unlockSpeech } from "./learn/tts.js";
+import { createWeather } from "./world/weather.js";
 import { noteToday } from "./meta/note.js";
 import { createCloseup } from "./ui/closeup.js";
 import { createWall } from "./ui/wall.js";
@@ -65,6 +66,15 @@ export async function createGame(root) {
   yard.onLayout = () => { const [x, y] = yard.P(catUV.u, catUV.v); B.cancel(); B.x = x; B.y = y; B.h = 0; B.perch = null; };
   B.speedMul = (0.92 + ((game.today.mood.speed || 1) - 1) * 0.4) * game.age.speed * CHILL.speed; B.ageScale = game.age.scale; R.durMul = CHILL.transition; B.runMul = CHILL.run; B.accelT = CHILL.accel; game.chill = CHILL;
   const critters = createCritters(game); game.critters = critters;
+  const weather = createWeather(game); game.weather = weather;
+  // trời đổi → mèo nói 1 câu, bướm ong trốn mưa
+  game.on("weather", ({ kind, prev }) => {
+    if (kind === "rain" || kind === "storm" || prev === "rain" || prev === "storm") critters.ambient();
+    const key = { rain: "wx_rain", storm: "wx_storm", hot: "wx_hot", wind: "wx_wind", cloudy: "wx_cloudy", clear: prev === "rain" || prev === "storm" ? "wx_after" : null }[kind];
+    if (key && game.wall) setTimeout(() => game.jab?.(key, {}, true), 1500);
+    if ((kind === "rain" || kind === "storm") && game.brain) game.brain.shelter?.();
+  });
+  game.on("thunder", () => { game.buzz?.([30, 40, 30]); if (Math.random() < 0.5) setTimeout(() => game.jab?.("wx_thunder", {}, true), 400); });
   const plant = () => yard.setWords(learn.mastered().filter((c) => c.lang === learn.lang));
   plant(); ev.on("lang", plant);
 
@@ -158,7 +168,7 @@ export async function createGame(root) {
     const dt = last ? Math.min(0.05, (t - last) / 1000) : 0; last = t;
     B.tick(dt);
     catUV = yard.unP(B.x, B.y); s.cat.uv = catUV;
-    critters.tick(dt);
+    critters.tick(dt); weather.tick(dt);
     if (t - tLight > 30000) { tLight = t; yard.light(); if (dayKey() !== game.today.key) { game.today = todayOf(game.cat); ev.emit("mood"); } }
     if (t - tNeeds > 10000) { const h = (t - tNeeds) / 3600e3; tNeeds = t; if (h < 0.01) decay(N, h, brain.sleeping); s.cat.x = B.x; s.cat.y = B.y; save(s); }      // lưu thưa: ghi bộ nhớ mỗi giây làm khựng hình
     if (t - tHud > 400) { tHud = t; ev.emit("tick"); }

@@ -50,7 +50,9 @@ export function createBrain(game) {
   const spotsWith = (use) => Object.entries(SPOTS).filter(([, s]) => s.use.includes(use)).map(([id, s]) => ({ id, s }));
   const near = (c) => (c.id === game.today.spot ? 2.2 : 1) * (c.id === game.obsession.spot ? 3 : 1) * game.quirks.reduce((v, q) => v * ((q.spot || {})[c.id] || 1), 1);
   /** tới phía trước khu vườn, gần chỗ bạn nhìn (lệch khỏi chữ ở góc trái) */
-  async function comeTo(gait = "walk") { await goUV(rand(48, 78), rand(55, 60), gait); B.faceTo(Math.random() < 0.5 ? 1 : -1); }
+  const wx = () => game.weather || {};
+  /** tới gần bạn: ngày mưa thì đứng trong nhà sát mép trước, còn lại ra phía trước vườn */
+  async function comeTo(gait = "walk") { if (wx().raining) await goUV(rand(70, 94), rand(22, 27), gait); else await goUV(rand(48, 78), rand(55, 60), gait); B.faceTo(Math.random() < 0.5 ? 1 : -1); }
   /** viết một dòng ra lề giấy */
   async function writeWall(text, kind) {
     await down(); B.lift = 1; await B.act("look_up", 600); await B.act("scratch", 1600);
@@ -127,6 +129,13 @@ export function createBrain(game) {
       } },
     { id: "wander", score: () => 0.5,
       async run() { const me = uv(); let p = Y.rand(); for (let i = 0; i < 8 && Math.hypot(p.u - me.u, p.v - me.v) > 26; i++) p = Y.rand(); await goUV(p.u, p.v); await B.act(pick(["idle", "idle_tail", "loaf", "look_up"]), rand(6, 14) * 1000); } },
+    // ---- theo thời tiết
+    { id: "rainwatch", score: () => (wx().raining ? 0.9 + T().curious * 0.4 : 0),
+      async run() { await goUV(rand(70, 94), rand(23, 27)); B.faceTo(-1); await B.act("loaf", rand(8, 16) * 1000); if (Math.random() < 0.4) say("wx_rainwatch"); await B.act("look_up", 2500); await B.act("idle_tail", rand(6, 12) * 1000); } },
+    { id: "shadenap", score: () => (wx().hot && !wx().raining ? 1 + T().lazy * 0.5 : 0),
+      async run() { await goUV(rand(44, 52), rand(11, 14)); await B.act("lie", rand(15, 30) * 1000); if (Math.random() < 0.3) say("wx_hot"); await B.act("stretch", 2400); } },
+    { id: "chaseleaf", score: () => (wx().windy && !wx().raining && cool("leaf", 3) ? 0.6 + T().playful * 0.6 : 0),
+      async run() { used("leaf"); const me = uv(); for (let i = 0; i < 2; i++) { await goUV(clamp(me.u + rand(-25, 25), 4, 60), clamp(me.v + rand(-12, 12), 4, UH - 4), "run"); B.faceTo(Math.random() < 0.5 ? 1 : -1); await B.act("crouch", 600); await B.jumpTo(B.x + B.face * 26, B.y, 0, null, { apex: Y.S.catH * 0.6 }); } if (Math.random() < 0.4) say("wx_leaf"); await B.act("look_up", 1500); } },
     // ---- thêm việc chậm rãi
     { id: "sniff", score: () => 0.35 + T().curious * 0.4,
       async run() { const b = pick(BEDS); await goUV(clamp(rand(b.u0, b.u1), 3, UW - 3), clamp(b.v1 + 2, 3, UH - 3)); B.faceTo(Math.random() < 0.5 ? 1 : -1); await B.act("crouch", rand(1.8, 3) * 1000); await B.act("look_up", 1600); await B.act("lick_lip", 1200); await B.act("idle_tail", rand(4, 8) * 1000); } },
@@ -144,9 +153,12 @@ export function createBrain(game) {
       async run() { used("pounce"); const f = pick(game.yard.flowerSpots), p = Y.unP(f.x, f.y + 40); await goUV(clamp(p.u - 6, 3, UW - 3), clamp(p.v + 2, 3, UH - 3), "run"); B.faceTo(1); await B.act("crouch", 900); await B.jumpTo(B.x + 30, B.y, 0, null, { apex: Y.S.catH * 0.7 }); await B.act("roll_play", 2600); if (Math.random() < 0.3) say("chase"); N().fun = clamp(N().fun + 10, 0, 100); } },
   ];
 
+  // việc ngoài vườn: trời mưa thì thôi
+  const OUTDOOR = new Set(["sniff", "sunbathe", "sitpretty", "pondgaze", "scratchtree", "flowerpounce", "chase", "zoomies", "explore", "watch", "perch", "sulk"]);
+  const wxMod = (id) => (wx().raining && OUTDOOR.has(id) ? 0 : wx().hot && id === "sunbathe" ? 0 : 1);
   function choose() {
     const kid = game.age.stage === "kitten";
-    const scored = ACTS.map((a) => ({ a, s: Math.max(0, a.score()) * qmod(a.id) * (kid && ["selfplay", "zoomies", "explore", "chase"].includes(a.id) ? 1.6 : 1) * (a.id === st.cur ? 0.35 : 1) * rand(0.75, 1.25) }));
+    const scored = ACTS.map((a) => ({ a, s: Math.max(0, a.score()) * qmod(a.id) * wxMod(a.id) * (kid && ["selfplay", "zoomies", "explore", "chase"].includes(a.id) ? 1.6 : 1) * (a.id === st.cur ? 0.35 : 1) * rand(0.75, 1.25) }));
     scored.sort((x, y) => y.s - x.s);
     return weighted(scored.slice(0, 3), (x) => x.s * x.s).a;
   }
@@ -166,6 +178,8 @@ export function createBrain(game) {
     start() { loop(); },
     get activity() { return st.cur; },
     get sleeping() { return !!st.sleeping; },
+    /** mưa tới mà đang ngoài vườn: chạy vô nhà, lắc nước */
+    shelter() { if (zone() !== "garden") return; this.interrupt(async () => { await down(); await goUV(rand(72, 92), rand(20, 26), "run"); await B.act("groom_full", 3500); }, "rainwatch"); },
     interrupt(fn, label) { st.interrupt = fn; if (label) { st.cur = label; game.emit("activity", label); } B.cancel(); },
   };
 }
