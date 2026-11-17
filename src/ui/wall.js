@@ -26,12 +26,13 @@ export function createWall(game, root) {
   let blind = null, mode = "ambient", shift = 0, cur = null, series = [], quizT = 0, lastQuiz = Date.now(), shownAt = 0;
 
   // ------------------------------------------------------------------ đồng hồ & số liệu (góc phải)
+  let lastChips = "";
   function clock() {
     const d = new Date(), t = learn.todo();
     q(".clock").textContent = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
     q(".date").textContent = `${WD[d.getDay()]}, ${d.getDate()}/${d.getMonth() + 1}`;
     const st = learn.streakAlive(), fl = learn.mastered().filter((c) => c.lang === learn.lang).length;
-    const W = game.weather; q(".chips").innerHTML = `${W && W.kind ? `<span class="chip-s" title="Thời tiết · ${W.st.place}">${W.label()}</span>` : ""}<span class="chip-s" title="Chuỗi ngày học">🔥 ${st || 0}</span><span class="chip-s" title="Hoa (từ đã thuộc)">🌼 ${fl}</span>`;
+    const W = game.weather; const chipsHtml = `<button class="chip-s chip-lang" data-w="lang" aria-label="Đổi ngôn ngữ học: đang học ${esc(LANGS[learn.lang].vi)}">${esc(LANGS[learn.lang].short)}<span aria-hidden="true">▾</span></button>${W && W.kind ? `<span class="chip-s" title="Thời tiết · ${W.st.place}">${W.label()}</span>` : ""}<span class="chip-s" title="Chuỗi ngày học">🔥 ${st || 0}</span><span class="chip-s" title="Hoa (từ đã thuộc)">🌼 ${fl}</span>`; if (chipsHtml !== lastChips) { lastChips = chipsHtml; q(".chips").innerHTML = chipsHtml; }      // chỉ vẽ lại khi đổi (vẽ lại liên tục làm nút mất lượt chạm);
     const badge = (sel, n) => { const b = q(`[data-w=${sel}] .badge`); b.hidden = !n; b.textContent = n > 99 ? "99+" : n; };
     badge("learn", t.neu); badge("review", t.due);
     q("[data-w=review] span").textContent = t.due ? "Ôn" : "Đố vui";
@@ -166,7 +167,7 @@ export function createWall(game, root) {
     if (!c || (src === "cat" && paused())) return; curRetry = !!(ctx.retry || c._retry); c = learn.card(c.id) || c; mode = "quiz"; cur = c; clearTimeout(quizT); lastQuiz = Date.now();
     let kind = chooseKind(c, ctx);
     if ((kind === "fill" && !blankOf(c)) || (kind === "read" && !(c.lang !== "en" && c.ph)) || ((kind === "spell" || kind === "type") && !/^[a-z]{2,14}$/i.test(c.w))) kind = "rev";
-    lastKind = qKind = kind; want = c.id; qOpts = [];
+    lastKind = qKind = kind; tried = new Set(); firstR = null; firstOk = null; tries = 0; want = c.id; qOpts = [];
     const head = top(`${src === "cat" ? `${esc(game.cat.name)} đố` : KIND_VI[kind]}${series.length ? ` · còn ${series.length}` : ""}`);
     const acts = `<div class="acts">${kind === "spell" || kind === "type" || kind === "tf" ? `<button class="btn text" data-w="giveup">Chịu, xem đáp án</button>` : `<button class="btn text x-mini" data-w="more">Hiện lựa chọn</button>`}<button class="btn text" data-w="skip">Bỏ qua</button></div>`;
     const bfly = (opts, tag, lang) => { qOpts = opts; cr.answers(opts.map((o) => ({ id: o.id, tag: tag(o), lang: lang(o) })), (id, b) => answer(id, b)); };
@@ -206,41 +207,61 @@ export function createWall(game, root) {
     write(head + html + acts, "quiz " + kind);
     quizT = setTimeout(() => { if (mode === "quiz") { whisper(game.lineOf("pawtap_no")); cr.clearAnswers(); series = []; ambient(true); } }, 60000);
   }
-  let spellState = null, curRetry = false;
+  let spellState = null, curRetry = false, tried = new Set(), firstR = null, firstOk = null, tries = 0;
+  // chỉ LẦN CHỌN ĐẦU được tính điểm (ôn ngắt quãng); sai thì phải chọn lại tới khi đúng mới qua câu
+  const record = (ok) => { if (firstR) return firstR; firstOk = ok; firstR = learn.answer(cur.id, ok, { blind: blind === cur.id }); blind = null; return firstR; };
   function spellTap(btn) {
     const S0 = spellState; if (mode !== "quiz" || !S0 || btn.disabled) return;
     if (btn.dataset.tile === S0.w[S0.i]) {
       btn.disabled = true; btn.classList.add("used"); const sl = tl.querySelectorAll(".slot")[S0.i]; sl.textContent = S0.w[S0.i]; sl.classList.add("on"); S0.i++;
-      game.buzz?.(4); if (S0.i >= S0.w.length) { spellState = null; setTimeout(() => answer(S0.miss <= 1 ? want : "x"), 250); }
-    } else { S0.miss++; btn.classList.remove("nope"); void btn.offsetWidth; btn.classList.add("nope"); game.buzz?.([12, 30, 12]); if (S0.miss >= 4) { spellState = null; answer("x"); } }
+      game.buzz?.(4); tl.querySelectorAll(".tile.hintme").forEach((x) => x.classList.remove("hintme")); if (S0.i >= S0.w.length) { spellState = null; setTimeout(() => answer(want), 250); }
+    } else {
+      S0.miss++; btn.classList.remove("nope"); void btn.offsetWidth; btn.classList.add("nope"); game.buzz?.([12, 30, 12]);
+      if (S0.miss === 2) record(false);      // sai 1 chữ cái thì tha, sai 2 là tính câu này sai – nhưng vẫn phải xếp cho xong
+      if (S0.miss >= 3) [...tl.querySelectorAll(".tile:not(.used)")].find((x) => x.dataset.tile === S0.w[S0.i])?.classList.add("hintme");      // sai nhiều: chỉ chữ kế tiếp
+    }
   }
   function typeCheck(v) {
     if (mode !== "quiz" || !cur) return; const a = norm(v), b = norm(cur.w);
     const near = (x, y) => { if (Math.abs(x.length - y.length) > 1 || y.length < 6) return false; let i = 0, j = 0, e = 0; while (i < x.length && j < y.length) { if (x[i] === y[j]) { i++; j++; } else { if (++e > 1) return false; if (x.length > y.length) i++; else if (y.length > x.length) j++; else { i++; j++; } } } return e + (x.length - i) + (y.length - j) <= 1; };
-    if (a === b) return answer(want); if (near(a, b)) { whisper(`Gần đúng: ${cur.w}`); return answer(want); } answer("x");
+    if (a === b) return answer(want); if (near(a, b)) { whisper(`Gần đúng: ${cur.w}`); return answer(want); }
+    record(false); tries++; const inp = tl.querySelector(".typein input"); game.fx?.shake(tl); game.buzz?.([20, 50, 20]);
+    if (inp) { inp.value = ""; inp.placeholder = `${cur.w.slice(0, Math.min(tries, cur.w.length - 1))}…`; inp.focus(); }
+    const h = tl.querySelector(".hint"); if (h) h.textContent = `Chưa đúng. Gợi ý: bắt đầu bằng "${cur.w.slice(0, Math.min(tries, cur.w.length - 1))}".`;
   }
   // các bướm còn lại cũng là chữ đáng học: hiện nghĩa của chúng sau khi trả lời, chạm + là cho vào bài
   const others = () => { const L = qOpts.filter((o) => o.id !== cur?.id && o.vi); if (!L.length) return ""; const today = new Set(learn.todayCards().map((x) => x.id)); return `<div class="others"><p class="kick">các bướm còn lại</p>${L.map((o) => { const lr = learn.stat(o.id)?.seen; return `<p class="oth"><b class="${o.lang}" data-say="${esc(o.id)}">${esc(o.w)}</b><span>${esc(o.vi)}</span>${lr ? `<small>đang học</small>` : today.has(o.id) ? `<small>bài hôm nay</small>` : `<button class="ib sm" data-adopt="${esc(o.id)}" aria-label="Học chữ này">＋</button>`}</p>`; }).join("")}</div>`; };
-  function answer(id, b) {
-    if (mode !== "quiz" || !cur) return; mode = "result"; clearTimeout(quizT); spellState = null;
-    const c = cur, ok = id === want, r = learn.answer(c.id, ok, { blind: blind === c.id }); blind = null;
-    tl.querySelectorAll("[data-ans]").forEach((x) => { x.disabled = true; if (x.dataset.ans === want) x.classList.add("right"); else if (x.dataset.ans === id) x.classList.add("wrong"); });
+  // chọn sai: gạch lựa chọn đó, đọc to chữ vừa chọn, mèo nhắc chọn lại – câu hỏi vẫn mở
+  function wrongTry(id, b) {
+    tried.add(id); tries++; record(false);
+    const btn = tl.querySelector(`[data-ans="${CSS.escape(id)}"]`); if (btn) { btn.disabled = true; btn.classList.add("wrong"); }
+    const bf = b || game.critters.list.find((x) => x.answer && x.id === id); if (bf) cr.land(bf, false);
+    const tapped = qOpts.find((o) => o.id === id); if (tapped) game.speakCard(tapped, false, false);
+    game.fx?.shake(tl); game.buzz?.([20, 50, 20]);
+    const h = tl.querySelector(".hint"); if (h) h.innerHTML = tapped && qKind === "read" ? `Chưa đúng: "${esc(tapped.ph)}" là <b>${esc(tapped.w)}</b> (${esc(tapped.vi)}). Chọn lại.` : tapped && tapped.vi && qKind !== "mc" ? `Chưa đúng: <b>${esc(tapped.w)}</b> là "${esc(tapped.vi)}". Chọn lại.` : tapped && qKind === "mc" ? `Chưa đúng: "${esc(tapped.vi)}" là <b>${esc(tapped.w)}</b>. Chọn lại.` : "Chưa đúng. Chọn lại.";
+    game.sayLine?.(game.lineOf("try_again"), 2200);
+    clearTimeout(quizT); quizT = setTimeout(() => { if (mode === "quiz") { cr.clearAnswers(); series = []; ambient(true); } }, 60000);
+  }
+  function answer(id, b, o = {}) {
+    if (mode !== "quiz" || !cur) return;
+    const c = cur, ok = id === want;
+    if (!ok && !o.giveup) { if (!tried.has(id)) wrongTry(id, b); return; }
+    mode = "result"; clearTimeout(quizT); spellState = null;
+    const r = record(ok && !tries), first = firstOk;
+    tl.querySelectorAll("[data-ans]").forEach((x) => { x.disabled = true; if (x.dataset.ans === want) x.classList.add("right"); });
     tl.querySelectorAll(".tile,.typein input,.typein button").forEach((x) => (x.disabled = true));
-    const bf = game.critters.list.find((x) => x.answer && x.id === want); if (bf) cr.land(bf, true); if (b && !ok) cr.land(b, false);
+    const bf = game.critters.list.find((x) => x.answer && x.id === want); if (bf) cr.land(bf, true);
     setTimeout(() => cr.clearAnswers(), 1400);
-    const line = game.react(r, c); game.sayLine(line, 3200);
-    const res = document.createElement("div"); res.className = "res " + (ok ? "ok" : "bad");
-    res.innerHTML = `<p>${ok ? `${icon("check")}Đúng${r.combo >= 3 ? ` · ${r.combo} câu liền` : ""}` : "Sai"} · <b class="${c.lang}">${esc(c.w)}</b> = ${esc(c.vi)}</p>${qKind === "fill" && c.ex ? `<p class="exr ${c.lang}">${esc(c.ex)}</p>` : ""}${others()}`;
+    const line = first ? game.react(r, c) : ok ? game.lineOf("fixed_ok") : game.react(r, c); game.sayLine(line, 3200);
+    const res = document.createElement("div"); res.className = "res " + (first ? "ok" : "bad");
+    res.innerHTML = `<p>${first ? `${icon("check")}Đúng${r.combo >= 3 ? ` · ${r.combo} câu liền` : ""}` : ok ? `${icon("check")}Đúng rồi · sửa ${tries} lần` : "Đáp án"} · <b class="${c.lang}">${esc(c.w)}</b> = ${esc(c.vi)}</p>${qKind === "fill" && c.ex ? `<p class="exr ${c.lang}">${esc(c.ex)}</p>` : ""}${others()}`;
     tl.querySelector(".acts")?.replaceWith(res); game.buzz?.(ok ? 8 : [20, 50, 20]);
-    // chạm lựa chọn nào thì đọc to chữ đó (cả bướm sai cũng là chữ để học); chọn sai thì đọc tiếp chữ đúng
-    const tapped = qOpts.find((o) => o.id === id);
-    if (qKind === "fill" && ok) game.speakCard(c, true, false);
-    else if (tapped && tapped.id !== c.id) { game.speakCard(tapped, false, false); setTimeout(() => game.speakCard(c, false, false), 1300); }
-    else game.speakCard(c, false, false);
+    // chạm lựa chọn nào thì đọc to chữ đó; điền câu đúng thì đọc cả câu
+    if (qKind === "fill" && ok) game.speakCard(c, true, false); else game.speakCard(c, false, false);
     // cảm giác game: đúng → nổ hạt ở con bướm / nút đúng + điểm bay lên; sai → thẻ rung
-    const fx = game.fx; if (fx) { if (ok) { const [x, y] = fx.center(bf?.el || tl.querySelector(".opt.right") || tl.querySelector(".slots") || tl); fx.burst(x, y, { n: r.combo >= 3 ? 16 : 11 }); fx.float(x, y - 24, `+${r.xp}`); if (r.combo >= 3) setTimeout(() => fx.float(x, y - 70, `${r.combo} câu liền!`, "big"), 180); if (r.box >= 2 && learn.stat(c.id)?.skip) fx.float(x, y + 30, "nhảy cóc", "sm"); } else fx.shake(tl); }
-    if (!ok && !curRetry) series.push(Object.assign(Object.create(c), { _retry: 1, __q2: 1 }));      // sai thì cuối bài hỏi lại 1 lần, kiểu khác
-    const wait = (ok ? 2000 : 3400) + (qOpts.length > 1 ? 1600 : 0);
+    const fx = game.fx; if (fx) { if (first) { const [x, y] = fx.center(bf?.el || tl.querySelector(".opt.right") || tl.querySelector(".slots") || tl); fx.burst(x, y, { n: r.combo >= 3 ? 16 : 11 }); fx.float(x, y - 24, `+${r.xp}`); if (r.combo >= 3) setTimeout(() => fx.float(x, y - 70, `${r.combo} câu liền!`, "big"), 180); if (r.box >= 2 && learn.stat(c.id)?.skip) fx.float(x, y + 30, "nhảy cóc", "sm"); } else if (ok) { const [x, y] = fx.center(bf?.el || tl.querySelector(".opt.right") || tl.querySelector(".slots") || tl); fx.burst(x, y, { n: 6 }); } }
+    if (!first && !curRetry) series.push(Object.assign(Object.create(c), { _retry: 1, __q2: 1 }));      // sai thì cuối bài hỏi lại 1 lần, kiểu khác
+    const wait = (first ? 2000 : 2800) + (qOpts.length > 1 ? 1600 : 0);
     nextT = setTimeout(next, wait);
   }
   let nextT = 0;
@@ -310,7 +331,7 @@ export function createWall(game, root) {
     if (a === "reveal" && cur) { const c = cur, o = Object.assign(Object.create(c), { __new: 1, __shown: 1 }); return showNew(o); }
     if (a === "next") { shift++; if (Math.random() < 0.35) game.jab("ui_next"); return ambient(true); }
     if (a === "quizme" && cur) return quiz(cur);
-    if (a === "giveup") return answer("x");
+    if (a === "giveup") return answer("x", null, { giveup: true });
     if (a === "pause") return pauseAsk();
     if (a === "resume") return resume();
     if (a === "skip") { game.emit("quiz-skip", cur?.id); cr.clearAnswers(); series = []; clearTimeout(quizT); game.jab("ui_skip"); return ambient(true); }

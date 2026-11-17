@@ -21,6 +21,8 @@ const L = {
   lapse: ["'{w}' lần {n}. Thù hả?", "'{w}' = {vi}. Nói hoài.", "Lại '{w}'. Hết nói."],
   pause_ok: ["Nghỉ thì nghỉ. Lát đừng có than.", "Ờ, nghỉ. Tui canh giờ đó.", "Nghỉ học? Được. Tui cũng nghỉ… làm mèo."],
   pause_back: ["Về rồi hả. Học tiếp.", "Nghỉ đủ rồi đó {sen}.", "Hết giờ chơi. Vô học."],
+  try_again: ["Trật. Chọn lại.", "Không phải con đó. Nữa.", "Sai. Đọc kỹ rồi bắt lại.", "Hửm? Lại.", "Gần thôi. Thử con khác."],
+  fixed_ok: ["Rồi. Sửa được là được.", "Ờ, vậy mới đúng. Nhớ giùm.", "Cuối cùng. Lát hỏi lại đó.", "Đúng rồi. Lần sau đúng ngay nha {sen}."],
   adopt_word: ["'{w}' hả. Gu cũng được đó. Học luôn.", "Thích '{w}'? Ok, vô bài.", "'{w}'. Chọn chữ khó dữ. Học đi."],
   newword: ["'{w}'. Nhớ đi.", "Chữ mới. Đừng có quên.", "'{w}'. Lát hỏi."],
   master: ["'{w}' thuộc. Mọc một bông.", "Thêm bông hoa. Công tui.", "Thuộc rồi. Đừng vênh."],

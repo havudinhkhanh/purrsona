@@ -729,3 +729,11 @@ body.sheet-on .zoomchip{opacity:0;pointer-events:none}
 .pz{display:flex;align-items:center;gap:12px}
 .pz-t{display:flex;align-items:center;gap:6px;font:400 1.15rem var(--hand);color:var(--ink)}
 .pz-t .ico{width:16px;height:16px}.pz-t small{font:500 .78rem var(--font);color:var(--ink-2)}
+/* ---- 2.6.2 · sai thì chọn lại tới khi đúng ---- */
+.opt.wrong{opacity:.45;text-decoration:line-through;text-decoration-thickness:1.5px}
+.card .hint b{font-weight:600}
+.tile.hintme{animation:tilehint 1s ease-in-out infinite;box-shadow:0 2px 0 var(--ink),0 0 0 2px var(--ink) inset}
+@keyframes tilehint{50%{transform:translateY(-4px)}}
+@media (prefers-reduced-motion:reduce){.tile.hintme{animation:none}}
+.chip-lang{pointer-events:auto;min-height:32px;display:inline-flex;align-items:center;gap:3px;font-weight:700;cursor:pointer;color:var(--ink)}.chip-lang span{font-size:.62rem;opacity:.6}
+.typo[data-lang=zh] .chip-lang,.typo[data-lang=ja] .chip-lang{font-family:var(--zh)}
