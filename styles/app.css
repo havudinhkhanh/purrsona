@@ -763,3 +763,8 @@ html.low .cu-face,html.low .cu-paw{filter:none}
   .bubble{font-size:clamp(1.4rem,2.6vmin,1.9rem)}
   .wtag{max-width:min(380px,60vw)}.wtag .wt b{font-size:1.65rem}.wtag .wt.sm b{font-size:1.4rem}.wtag .wt i{font-size:1rem}.wtag .wt small{font-size:.86rem}.bfly .tag{font-size:1.35rem}
 }
+.chip-mus{min-width:34px;justify-content:center;font-size:.95rem}.chip-mus.on{background:var(--ink);color:var(--paper)}
+/* bụi/đất bay khi đồ rơi */
+.puff{position:absolute;width:var(--s,7px);height:var(--s,7px);margin:calc(var(--s,7px) / -2);border-radius:50%;border:1.2px solid var(--ink);background:var(--paper);opacity:.85;pointer-events:none;animation:puff .55s cubic-bezier(.2,.7,.4,1) forwards}
+@keyframes puff{to{transform:translate(var(--dx),var(--dy)) scale(.3);opacity:0}}
+.splash{position:absolute;width:3px;height:6px;margin:-3px -1.5px;border-radius:2px;background:var(--ink-2);pointer-events:none;animation:puff .45s ease-out forwards}

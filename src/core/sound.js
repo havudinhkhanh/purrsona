@@ -53,3 +53,21 @@ export function thunk() {
 export function shutter() {
   if (!ok()) return; const t = AC.currentTime; for (const dt of [0, 0.07]) { const len = AC.sampleRate * 0.04, buf = AC.createBuffer(1, len, AC.sampleRate), d = buf.getChannelData(0); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len); const n = AC.createBufferSource(); n.buffer = buf; const hp = AC.createBiquadFilter(); hp.type = "bandpass"; hp.frequency.value = 3000; const g = AC.createGain(); g.gain.value = 0.25; n.connect(hp); hp.connect(g); g.connect(AC.destination); n.start(t + dt); }
 }
+
+// ------------------------------------------------------------------ tiếng đồ vật cho các trò của mèo (tổng hợp, không cần file)
+const noiseBuf = (sec, shape) => { const len = Math.max(1, Math.floor(AC.sampleRate * sec)), b = AC.createBuffer(1, len, AC.sampleRate), d = b.getChannelData(0); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * shape(i / len); return b; };
+function tone(f, t, d, v, type = "sine", f2) { const o = AC.createOscillator(), g = AC.createGain(); o.type = type; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, t + d); o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + d + 0.03); }
+/** cốc / chậu sứ va: vài hoạ âm cao tắt nhanh */
+export function clink(pitch = 1) { if (!ok()) return; const t = AC.currentTime; [1, 2.76, 5.4].forEach((m, i) => tone(1250 * pitch * m, t + i * 0.004, 0.35 - i * 0.08, 0.08 / (i + 1))); }
+/** vải sột soạt / đồ bay qua: nhiễu quét */
+export function swish() { if (!ok()) return; const t = AC.currentTime, s = AC.createBufferSource(); s.buffer = noiseBuf(0.45, (x) => Math.sin(Math.PI * x)); const f = AC.createBiquadFilter(); f.type = "bandpass"; f.Q.value = 1.2; f.frequency.setValueAtTime(700, t); f.frequency.exponentialRampToValueAtTime(2600, t + 0.4); const g = AC.createGain(); g.gain.value = 0.16; s.connect(f); f.connect(g); g.connect(AC.destination); s.start(t); }
+/** bụp nhẹ: đồ mềm rơi (khăn, gối, tất) */
+export function plop() { if (!ok()) return; const t = AC.currentTime; tone(180, t, 0.18, 0.25, "sine", 70); const s = AC.createBufferSource(); s.buffer = noiseBuf(0.12, (x) => Math.pow(1 - x, 3)); const f = AC.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 600; const g = AC.createGain(); g.gain.value = 0.18; s.connect(f); f.connect(g); g.connect(AC.destination); s.start(t); }
+/** chuông đồng hồ báo thức reng reng */
+export function ring() { if (!ok()) return; const t = AC.currentTime; for (let i = 0; i < 10; i++) tone(i % 2 ? 2350 : 2600, t + i * 0.06, 0.07, 0.05, "square"); }
+/** chìa khoá leng keng */
+export function jingle() { if (!ok()) return; const t = AC.currentTime; for (let i = 0; i < 5; i++) tone(3000 + Math.random() * 1600, t + i * 0.045 + Math.random() * 0.02, 0.12, 0.05, "triangle"); }
+/** bật dù: phựt */
+export function pop() { if (!ok()) return; const t = AC.currentTime; tone(420, t, 0.09, 0.2, "sine", 900); }
+/** đất văng lộp độp */
+export function patter() { if (!ok()) return; const t = AC.currentTime; for (let i = 0; i < 6; i++) tone(240 + Math.random() * 160, t + 0.05 + i * 0.035 + Math.random() * 0.02, 0.06, 0.06, "triangle", 90); }

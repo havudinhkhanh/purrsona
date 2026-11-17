@@ -283,6 +283,7 @@ export function createHud(game, root) {
         <label class="row"><span>Mèo kháy thường xuyên</span><input type="checkbox" data-set="nag" ${s.settings.nag !== false ? "checked" : ""}></label>
         <div class="row"><span>Tốc độ đọc</span><span class="seg">${[[0.7, "Chậm"], [0.9, "Vừa"], [1.05, "Nhanh"]].map(([v, k]) => `<button data-rate="${v}" class="${(s.settings.rate || 0.9) === v ? "on" : ""}">${k}</button>`).join("")}</span></div>
         <div class="row"><span>Cỡ giao diện</span><span class="seg">${[["s", "Nhỏ"], ["m", "Vừa"], ["l", "Lớn"]].map(([k, v]) => `<button data-ui="${k}" class="${(s.settings.ui || "m") === k ? "on" : ""}">${v}</button>`).join("")}</span></div>
+        <button class="row link" data-a="soundtest"><span>Thử loa <small>meo · đọc chữ · đọc câu · nhạc</small></span><span>▶</span></button>
         <label class="row"><span>Âm thanh (meo, rừ rừ)</span><input type="checkbox" data-set="sound" ${s.settings.sound ? "checked" : ""}></label>
         <label class="row"><span>Nhạc lo-fi</span><input type="checkbox" data-set="music" ${s.settings.music ? "checked" : ""}></label>
         <label class="row"><span>Rung nhẹ</span><input type="checkbox" data-set="haptics" ${s.settings.haptics !== false ? "checked" : ""}></label>
@@ -356,6 +357,7 @@ export function createHud(game, root) {
       case "review": close(); return game.wall.lesson(learn.todo().due ? "review" : "fun");
       case "call": return game.call();
       case "music": return game.music();
+      case "soundtest": return game.soundTest?.();
       case "immersive": return immersive(true);
       case "shoo": return;
       case "export": { const blob = new Blob([JSON.stringify(s, null, 1)], { type: "application/json" }); const u = URL.createObjectURL(blob); const l = document.createElement("a"); l.href = u; l.download = `purrsona-${dayKey()}.json`; l.click(); return; }

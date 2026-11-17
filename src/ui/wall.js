@@ -32,7 +32,7 @@ export function createWall(game, root) {
     q(".clock").textContent = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
     q(".date").textContent = `${WD[d.getDay()]}, ${d.getDate()}/${d.getMonth() + 1}`;
     const st = learn.streakAlive(), fl = learn.mastered().filter((c) => c.lang === learn.lang).length;
-    const W = game.weather; const chipsHtml = `<button class="chip-s chip-lang" data-w="lang" aria-label="Đổi ngôn ngữ học: đang học ${esc(LANGS[learn.lang].vi)}">${esc(LANGS[learn.lang].short)}<span aria-hidden="true">▾</span></button>${W && W.kind ? `<span class="chip-s" title="Thời tiết · ${W.st.place}">${W.label()}</span>` : ""}<span class="chip-s" title="Chuỗi ngày học">🔥 ${st || 0}</span><span class="chip-s" title="Hoa (từ đã thuộc)">🌼 ${fl}</span>`; if (chipsHtml !== lastChips) { lastChips = chipsHtml; q(".chips").innerHTML = chipsHtml; }      // chỉ vẽ lại khi đổi (vẽ lại liên tục làm nút mất lượt chạm);
+    const W = game.weather; const chipsHtml = `<button class="chip-s chip-lang chip-mus${s.settings.music ? " on" : ""}" data-w="musictoggle" aria-pressed="${!!s.settings.music}" aria-label="${s.settings.music ? "Tắt nhạc" : "Bật nhạc lo-fi"}">${s.settings.music ? "♫" : "♪"}</button><button class="chip-s chip-lang" data-w="lang" aria-label="Đổi ngôn ngữ học: đang học ${esc(LANGS[learn.lang].vi)}">${esc(LANGS[learn.lang].short)}<span aria-hidden="true">▾</span></button>${W && W.kind ? `<span class="chip-s" title="Thời tiết · ${W.st.place}">${W.label()}</span>` : ""}<span class="chip-s" title="Chuỗi ngày học">🔥 ${st || 0}</span><span class="chip-s" title="Hoa (từ đã thuộc)">🌼 ${fl}</span>`; if (chipsHtml !== lastChips) { lastChips = chipsHtml; q(".chips").innerHTML = chipsHtml; }      // chỉ vẽ lại khi đổi (vẽ lại liên tục làm nút mất lượt chạm);
     const badge = (sel, n) => { const b = q(`[data-w=${sel}] .badge`); b.hidden = !n; b.textContent = n > 99 ? "99+" : n; };
     badge("learn", t.neu); badge("review", t.due);
     q("[data-w=review] span").textContent = t.due ? "Ôn" : "Đố vui";
@@ -332,6 +332,7 @@ export function createWall(game, root) {
     if (a === "next") { shift++; if (Math.random() < 0.35) game.jab("ui_next"); return ambient(true); }
     if (a === "quizme" && cur) return quiz(cur);
     if (a === "giveup") return answer("x", null, { giveup: true });
+    if (a === "musictoggle") { const on = !s.settings.music; game.music(on); whisper(on ? "Bật nhạc lo-fi. Chill đi." : "Tắt nhạc."); clock(); return; }
     if (a === "pause") return pauseAsk();
     if (a === "resume") return resume();
     if (a === "skip") { game.emit("quiz-skip", cur?.id); cr.clearAnswers(); series = []; clearTimeout(quizT); game.jab("ui_skip"); return ambient(true); }
@@ -360,7 +361,7 @@ export function createWall(game, root) {
     if (mode === "paused" && !paused()) { resume(); return; }
     if (mode === "ambient") { ambient(); const quizable = [...learn.due(), ...learn.learning().filter(canQuiz)]; if (quizable.length && Date.now() - lastQuiz > (4 + Math.random() * 3) * 60e3 && Date.now() - (game.lastInput || 0) < 10 * 60e3) quiz(quizable[0]); }
   }, 15000);
-  for (const k of ["learn", "lang", "streak", "weather"]) game.on(k, clock);
+  for (const k of ["learn", "lang", "streak", "weather", "music"]) game.on(k, clock);
   // dòng mèo viết lề hết đúng nữa thì tự xoá (vd: "chưa học chữ nào" sau khi đã học)
   game.on("learn", () => { const t = learn.todo(), n0 = (s.wall || []).length; s.wall = (s.wall || []).filter((n) => !((n.kind === "new" && !t.neu) || (n.kind === "due" && !t.due))); if (s.wall.length !== n0) drawScribs(false); });
   game.on("lang", () => { shift = 0; series = []; ambient(true); });

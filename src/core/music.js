@@ -139,4 +139,6 @@ export const music = {
     setTimeout(() => { for (const s of old) { try { s?.stop(); } catch { /* đã dừng */ } } }, 3000);
   },
   volume(v) { if (master && on) master.gain.setTargetAtTime(v, AC.currentTime, 1.5); },
+  /** đánh thức lại sau khi iPhone treo bộ âm thanh (vào nền, có cuộc gọi, bật lúc chưa chạm hẳn) */
+  resume() { if (AC && AC.state !== "running") AC.resume().then(() => { if (on && nextT < AC.currentTime) nextT = AC.currentTime + 0.1; }).catch(() => {}); },
 };

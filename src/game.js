@@ -121,6 +121,18 @@ export async function createGame(root) {
 
   // ------------------------------------------------------------------ nhu cầu (nhẹ) + tiện ích
   const N = s.cat.needs;
+  /** Thử loa (gọi trong cú chạm): meo → đọc 1 chữ → đọc 1 câu → nhạc 8 giây. Báo rõ cái nào tắt / máy không có giọng. */
+  game.soundTest = () => {
+    try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch { /* cũ */ }
+    unlockSpeech(); snd.unlock(); snd.meow(1, game.cat.voicePitch || 1);
+    const c = learn.todayCards()[0] || learn.card(learn.lang === "en" ? "en:allow" : [...learn.learning()][0]?.id), L = LANGS[learn.lang];
+    setTimeout(() => speak(c?.w || "hello", L.tts, s.settings.rate || 0.9, false).then((ok) => { if (!ok) game.wall?.whisper("Máy chưa đọc được. Kiểm tra nút gạt im lặng / âm lượng, hoặc cài giọng đọc trong Cài đặt máy."); else if (c?.ex) speak(c.ex, L.tts, s.settings.rate || 0.9, true); }), 700);
+    const wasOn = music.on; if (!wasOn) { music.start(0.5); setTimeout(() => { if (!s.settings.music) music.stop(); }, 9000); } else music.resume();
+    const off = [!s.settings.sound && "Âm thanh", !s.settings.tts && "Đọc to", !s.settings.music && "Nhạc"].filter(Boolean);
+    game.wall?.whisper(off.length ? `Đang thử loa. Đang tắt: ${off.join(", ")} – bật lại ở ngay dưới.` : "Đang thử loa: nghe meo, chữ, câu, nhạc nha.", 6000);
+  };
+  /** tiếng đồ vật (đổ chậu, rớt khăn…): theo nút Âm thanh */
+  game.sfx = (name, ...a) => { if (s.settings.sound && snd[name]) try { snd[name](...a); } catch { /* máy không phát được */ } };
   game.meow = (n = 1) => { if (s.settings.sound) snd.meow(n, game.cat.voicePitch || 1); };
   game.purr = (on) => { if (!on || s.settings.sound) snd.purr(on); };
   const buzz = (p) => { if (s.settings.haptics !== false && navigator.userActivation?.hasBeenActive !== false) try { navigator.vibrate?.(p); } catch { /* không hỗ trợ */ } };
@@ -225,7 +237,12 @@ export async function createGame(root) {
   const brain = createBrain(game); game.brain = brain;
   const tick2 = interactions(game, root);
   game.music = (on = !music.on) => { s.settings.music = on; if (on) music.start(yard.S.night > 0.5 ? 0.35 : 0.5); else music.stop(); ev.emit("music", on); save(s); };
-  game.musicResume = () => { if (s.settings.music && !music.on) music.start(yard.S.night > 0.5 ? 0.35 : 0.5); };
+  // iPhone/iPad chỉ cho bật loa trong cú chạm thật (touchend/click), KHÔNG phải lúc vừa đặt ngón (pointerdown):
+  // nhạc bật lúc chạm xuống thì bộ âm thanh tạo ra bị "treo" → im mãi. Mỗi lần chạm đều đánh thức lại cho chắc.
+  game.musicResume = () => { if (!s.settings.music) return; if (!music.on) music.start(yard.S.night > 0.5 ? 0.35 : 0.5); else music.resume(); };
+  const wake = () => { try { if (navigator.audioSession && navigator.audioSession.type !== "playback") navigator.audioSession.type = "playback"; } catch { /* Safari cũ */ } snd.unlock(); game.musicResume(); };      // "playback": vẫn kêu khi gạt nút im lặng (iOS 17+)
+  for (const evn of ["touchend", "click", "pointerup", "keydown"]) addEventListener(evn, wake, { capture: true, passive: true });
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) setTimeout(() => music.resume?.(), 300); });
   addEventListener("visibilitychange", () => { if (document.hidden) save(s, true); });
   addEventListener("pagehide", () => save(s, true));
   ev.on("bloom", plant);

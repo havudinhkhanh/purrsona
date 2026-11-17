@@ -1,3 +1,4 @@
+import { play, pivot, puff } from "./motion.js";
 // SÂN CHƠI & ĐỒ VẬT trong vườn: xích đu, cầu tuột, giàn bầu (lớn dần theo ngày bạn học), luống hồng để mèo đào,
 // chậu cây để mèo xô đổ. Bày bừa thì để nguyên cả ngày; qua đêm "Sen" dọn lại, sáng ra mèo làm bộ ngẫm nghĩ.
 // Mèo làm gì → hiện chữ của việc đó cạnh mèo (gói "Chữ trong vườn"), chạm vào là nghe, ☆ là lưu sổ.
@@ -171,7 +172,14 @@ export function createPlay(game) {
       { id: "knockpot", score: () => (cool("pot", 6) && P0.pots.some((p) => !p) && !wx().raining ? 0.22 + T().sassy * 0.5 + (game.today.mood.id === "grumpy" ? 0.4 : 0) : 0),
         async run() { used("pot"); const L = P0.pots.map((p, i) => (p ? -1 : i)).filter((i) => i >= 0), i = pick(L), [pu, pv] = PROPS.pots[i];
           await goUV(pu - 2.4, pv + 1.2); B.faceTo(1); await B.act("look_up", 1200);       // nhìn bạn trước khi xô – kiểu mèo
-          await B.act("scratch", 500); P0.pots[i] = 1; Y.redraw(); game.persist(); game.buzz?.([12, 30, 12]);
+          // khều → chậu chao qua chao lại → nghiêng dần → đổ cái rầm, đất văng (chậu thật trong cảnh chuyển động, không phải ảnh thay)
+          const spr = Y.stage.querySelector(`.spr[data-id="pot${i}"]`), [x, y] = Y.P(pu, pv), w = Y.S.k * 1.1, swat = B.act("scratch", 900);
+          if (spr) {
+            pivot(spr, x + w * 0.7, y); game.sfx?.("clink", 0.55);
+            await play(spr, [{ transform: "rotate(0)" }, { transform: "rotate(-7deg)", offset: 0.16 }, { transform: "rotate(10deg)", offset: 0.34 }, { transform: "rotate(-4deg)", offset: 0.48 }, { transform: "rotate(3deg)", offset: 0.56, easing: "cubic-bezier(.55,0,.95,.5)" }, { transform: "rotate(94deg)", offset: 0.86 }, { transform: "rotate(84deg)", offset: 0.93 }, { transform: "rotate(90deg)" }], { duration: 1250 });
+          }
+          game.sfx?.("thunk"); game.sfx?.("patter"); dirt(pu + 1.4, pv); dirt(pu + 2.2, pv + 0.4); puff(Y.topfx, x + w * 2, y, 6, 30, 6);
+          await swat; P0.pots[i] = 1; Y.redraw(); game.persist(); game.buzz?.([12, 30, 12]);
           sceneWord("pot", true); await B.act("idle_tail", 900); say("play_pot"); await B.act("look_up", 1800); } },
     ];
   }
@@ -184,7 +192,7 @@ export function createPlay(game) {
   function tap(p) {
     const near = (u, v, r = 30) => { const [x, y] = Y.P(u, v); return Math.hypot(x - p.x, y - p.y) < r; };
     const go = (id, word) => { const a = game.brain?.ACTS.find((x) => x.id === id); if (a) game.brain.interrupt(() => a.run(), id); if (word) sceneWord(word, true); return true; };
-    for (const [i, [u, v]] of PROPS.pots.entries()) if (near(u, v, 28)) { if (P0.pots[i]) { P0.pots[i] = 0; Y.redraw(); game.persist(); game.jab?.("tidy_now", {}, true); sceneWord("tidy", true); return true; } sceneWord("pot", true); return true; }
+    for (const [i, [u, v]] of PROPS.pots.entries()) if (near(u, v, 28)) { if (P0.pots[i]) { P0.pots[i] = 0; Y.redraw(); { const sp = Y.stage.querySelector(`.spr[data-id="pot${i}"]`), [px, py] = Y.P(u, v); if (sp) { pivot(sp, px, py); play(sp, [{ transform: "rotate(70deg) scale(.9)" }, { transform: "rotate(-6deg)", offset: 0.7 }, { transform: "none" }], { duration: 480, easing: "cubic-bezier(.3,1.3,.5,1)" }); } game.sfx?.("clink", 0.6); } game.persist(); game.jab?.("tidy_now", {}, true); sceneWord("tidy", true); return true; } sceneWord("pot", true); return true; }
     for (const [i, [u, v]] of P0.holes.entries()) if (near(u, v, 20)) { P0.holes.splice(i, 1); Y.redraw(); game.persist(); game.jab?.("tidy_now", {}, true); sceneWord("tidy", true); return true; }
     for (const [i, [u, v]] of PROPS.roses.spots.entries()) if (near(u, v, 22)) { if (!P0.roses[i]) { game.jab?.("play_rosetap", {}, true); sceneWord("snap", true); } else sceneWord("dig", true); return true; }
     if (near(PROPS.swing.u, PROPS.swing.v, 46)) return go("swing", "swing");
