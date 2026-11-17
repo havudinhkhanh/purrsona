@@ -64,7 +64,7 @@ export function createYard(root) {
     S.oy = (R.y0 * S.vh + (R.y1 - R.y0) * S.vh / 2) - ((Math.min(...ys) + bh / 2) * S.k);
     const top = Math.min(...[P(0, 0), P(UW, 0), P(UW, UH), P(0, UH)].map((p) => p[1])), bot = Math.max(...[P(0, 0), P(UW, 0), P(UW, UH), P(0, UH)].map((p) => p[1]));
     S.yTop = top; S.yBot = bot;
-    S.catH = clamp(Math.min(S.vw, S.vh) * 0.13, 46, 120);
+    S.catH = clamp(Math.min(S.vw, S.vh) * 0.2, 90, 170);      // mèo là nhân vật chính: to, dễ thấy
     draw(); api.onLayout?.();
   }
 

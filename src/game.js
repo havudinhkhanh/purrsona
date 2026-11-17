@@ -77,6 +77,22 @@ export async function createGame(root) {
     return t;
   };
   game.persist = () => save(s);
+  // ---- KHÁY: câu cộc lốc hiện tooltip cạnh mèo. Có giãn cách để không lải nhải.
+  let lastJab = 0, lastWrong = null;
+  game.jab = (key, vars, force = false) => {
+    const now = performance.now(); if (!force && now - lastJab < 6000) return null;
+    if (!force && B.sayUntil > now) return null;
+    lastJab = now; return game.say(key, null, 4200, vars);
+  };
+  const jabTick = () => {
+    if (!game.attention() || brain.sleeping) return;
+    const t = learn.todo(), r = Math.random();
+    if (lastWrong && Date.now() - lastWrong.t < 6 * 6e4 && r < 0.35) return game.jab("jab_wrong_recent", { w: lastWrong.w });
+    if (t.due + t.neu === 0 && learn.studiedToday()) return game.jab(r < 0.5 ? "jab_done" : "jab_misc");
+    if (r < 0.4) return game.nag();
+    return game.jab(r < 0.7 ? "jab_idle" : "jab_misc");
+  };
+  const jabLoop = () => setTimeout(() => { if (s.settings.nag !== false) jabTick(); jabLoop(); }, (18 + Math.random() * 27) * 1000);
 
   // ------------------------------------------------------------------ nhu cầu (nhẹ) + tiện ích
   const N = s.cat.needs;
@@ -116,6 +132,7 @@ export async function createGame(root) {
   // phản ứng của mèo khi bạn trả lời (trong bài học hoặc đố nhanh)
   ev.on("learn", (e) => {
     if (e.type !== "answer") return; const c = learn.card(e.id);
+    if (!e.ok && c) lastWrong = { w: c.w, t: Date.now() };
     N.fun = clamp(N.fun + (e.ok ? 2 : 0), 0, 100); N.social = clamp(N.social + 1, 0, 100);
     if (e.ok) { memory.appease(3); if (e.combo >= 5 && e.combo % 5 === 0) bond.gain(0.3, "combo"); }
     if (e.mastered) { bond.gain(1, "master"); game.journal("master", `🌼 Thuộc “${c.w}”`); ev.emit("bloom", c); }
@@ -163,7 +180,7 @@ export async function createGame(root) {
     if (gap > 3 && bond.at("known")) setTimeout(() => brain.interrupt(() => brain.ACTS.find((a) => a.id === "greet").run(), "greet"), 1600);
     else if (gap > 48) setTimeout(() => game.say("back", null, 3600, { d: Math.floor(gap / 24) }), 1200);
     else setTimeout(() => game.say(h < 10 ? "morning" : h >= 22 ? "night" : game.age.stage === "kitten" ? "kitten" : "hello", null, 3200, { n: t.neu + t.due }), 1100);
-    brain.start();
+    brain.start(); jabLoop();
   };
   game.setSkin = (k) => { if (!game.skinOpen(k)) return false; s.skin = k; R.setSkin(k); save(s); return true; };
   game.setHour = (h) => { s.settings.hour = h; yard.S.forceHour = h; yard.light(); save(s); };

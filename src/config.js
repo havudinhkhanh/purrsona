@@ -3,7 +3,7 @@ export const APP = {
   name: "Purrsona",
   tagline: "Mèo đanh đá dạy chữ · Anh – Trung",
   saveKey: "purrsona.save.v2",      // v2: bản học chữ (không đọc bản lưu nuôi mèo cũ)
-  version: "1.0.0",
+  version: "1.1.0",
 };
 
 // ------------------------------------------------------------------ GÓI (free / plus / pro)
@@ -26,7 +26,12 @@ export const FEATURES = {
   "import.csv": "pro",         // tự nhập danh sách từ
   "ai.voice": "pro",           // mèo kháy bằng AI, theo đúng từ bạn hay sai
   "skin.fedora": "pro",
+  "book.unlimited": "plus",     // Sổ của tôi: Free 30 từ, Plus trở lên không giới hạn
+  "read.long": "plus",          // Đọc cùng mèo: Free quét 1.500 ký tự, Plus 60.000
+  "read.ai": "pro",             // mèo đọc bằng AI: giải nghĩa từ lạ theo ngữ cảnh
 };
+export const BOOK_LIMIT = { free: 30 };
+export const READ_LIMIT = { free: 1500, plus: 60000, pro: 60000 };
 export const can = (plan, feat) => RANK[plan || "free"] >= RANK[FEATURES[feat] || "free"];
 export const planOf = (feat) => FEATURES[feat] || "free";
 /** số từ mới tối đa mỗi ngày theo gói */

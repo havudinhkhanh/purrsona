@@ -1,5 +1,6 @@
 import { createGame } from "./game.js";
 import { createHud } from "./ui/hud.js";
+import { connectBridge } from "./meta/bridge.js";
 
 const root = document.getElementById("app");
 try {
@@ -8,6 +9,7 @@ try {
   if (game.save.settings.reduced) document.documentElement.classList.add("reduced");
   game.start();
   setTimeout(() => game.welcome(), 600);
+  connectBridge(game);
   document.getElementById("boot")?.classList.add("gone");
   window.PURR = game;      // tiện gỡ lỗi trên console
 } catch (e) {

@@ -1,4 +1,4 @@
-# Kiến trúc · Purrsona 1.0
+# Kiến trúc · Purrsona 1.1
 
 Không có bước build. ES modules chạy thẳng trên trình duyệt, PWA cache bằng `sw.js`.
 
@@ -55,3 +55,13 @@ Mọi câu trả lời đi qua `learn.answer(id, ok)` → sự kiện `learn` �
 | Mèo kháy bằng AI | `ai.voice` |
 
 Nối thanh toán thật chỉ cần ghi `save.plan` sau khi xác thực.
+
+## Sổ của tôi, đọc ké, tiện ích (1.1)
+
+- `s.learn.book`: mảng `{ id, t, src, url, ctx }` (mới nhất đầu). `src` là `app`, `read` (dán đoạn văn) hoặc `ext` (tiện ích). Từ không có trong gói thành thẻ riêng `lang:my:từ` trong `s.learn.custom`; thiếu nghĩa thì không vào câu đố cho tới khi điền.
+- `learn.bookmark / unbook / setMeaning / book()` trong `src/learn/srs.js`. `pickToday` ưu tiên từ trong sổ. `wall.lesson("book")` học riêng sổ.
+- `src/learn/scan.js`: quét văn bản, trả về chữ trong gói (kể cả cụm 2 chữ, chữ Hán dài trước) và chữ lạ đáng lưu. Dùng chung cho app và tiện ích.
+- `src/meta/bridge.js`: Web Share Target (`?title&text&url` → mở Đọc cùng mèo) và nhận tin từ tiện ích (`{src:"purrsona-ext", type:"hello"|"book"}`), trả `{src:"purrsona-app", type:"known"|"ack"}`. Chỉ nhận tin cùng cửa sổ, cùng origin.
+- Mèo kháy định kỳ: `game.jab(key)` mỗi 18–45 giây khi người dùng đang nhìn, có giãn cách 6 giây và không chen câu đang nói. Phản ứng giao diện: `ui_next`, `ui_skip`, `ui_menu`, `ui_speak`, `book`.
+- `extension/`: Manifest V3. `content.js` dùng CSS Custom Highlight API để gạch dưới (không sửa DOM của trang), giao diện trong shadow DOM đóng, lưu từ vào `chrome.storage.local.pending`. Tiện ích không gọi mạng.
+- Khoá theo gói: `book.unlimited` (Plus), `read.long` (Plus), `read.ai` (Pro, để dành cho giải nghĩa từ lạ bằng AI).

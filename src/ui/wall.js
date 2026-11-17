@@ -14,7 +14,7 @@ export function createWall(game, root) {
   el.innerHTML = `<section class="tl" aria-live="polite"></section>
     <aside class="tr"><div class="clock"></div><div class="date"></div><div class="stat"></div></aside>
     <div class="scribs"></div><p class="whisper" aria-live="polite"></p>
-    <nav class="bl"><button data-w="learn"></button><button data-w="review"></button><button data-w="words">sổ từ</button><button data-w="menu" aria-label="Menu">${icon("menu")}</button></nav>`;
+    <nav class="bl"><button data-w="learn"></button><button data-w="review"></button><button data-w="book">sổ ★</button><button data-w="read">đọc ké</button><button data-w="menu" aria-label="Menu">${icon("menu")}</button></nav>`;
   const q = (x) => el.querySelector(x), tl = q(".tl");
   let mode = "ambient", shift = 0, cur = null, series = [], quizT = 0, lastQuiz = Date.now(), shownAt = 0;
 
@@ -45,6 +45,9 @@ export function createWall(game, root) {
   const lab = (c) => { const st = learn.stat(c.id); if (!st || !st.seen) return "từ mới hôm nay"; if (st.box >= 4) return "đã thuộc · nhắc lại cho vui"; if (st.due <= Date.now() && st.right + st.wrong > 0) return "tới lúc ôn"; return "đang học"; };
   function write(html, cls = "") { tl.className = "tl " + cls; tl.innerHTML = html; tl.classList.remove("in"); void tl.offsetWidth; tl.classList.add("in"); shownAt = Date.now(); }
   const say = (c) => (s.settings.tts ? `<button class="sp" data-say="${esc(c.id)}" aria-label="Nghe">${icon("speaker")}</button>` : "");
+  const star = (c) => `<button data-star="${esc(c.id)}" class="${learn.booked(c.id) ? "on" : ""}">${learn.booked(c.id) ? "★ trong sổ" : "☆ lưu sổ"}</button>`;
+  const wordH = (c) => `<h1 class="w ${c.lang}"><span data-say="${esc(c.id)}" class="tapsay">${esc(c.w)}</span>${say(c)}</h1>`;
+  const autoSay = (c) => { if (s.settings.tts && s.settings.autoSay !== false && navigator.userActivation?.hasBeenActive && !document.hidden) setTimeout(() => game.speakCard(c), 500); };
   function ambient(force) {
     if (!s.onboarded) return onboard();
     mode = "ambient"; const c = featured();
@@ -52,9 +55,10 @@ export function createWall(game, root) {
     if (!force && cur && cur.id === c.id && tl.dataset.id === c.id) return;
     cur = c; tl.dataset.id = c.id;
     const st = learn.stat(c.id), isNew = !st || !st.seen;
-    write(`<p class="k">${lab(c)}</p><h1 class="w ${c.lang}">${esc(c.w)}${say(c)}</h1><p class="ph">${esc(c.ph || "")}${c.pos ? ` · ${esc(c.pos)}` : ""}</p><p class="vi">${esc(c.vi)}</p>
+    write(`<p class="k">${lab(c)}</p>${wordH(c)}<p class="ph">${esc(c.ph || "")}${c.pos ? ` · ${esc(c.pos)}` : ""}</p><p class="vi">${esc(c.vi)}</p>
       ${c.ex ? `<p class="ex ${c.lang}">${esc(c.ex)}${c.exPh ? `<small>${esc(c.exPh)}</small>` : ""}<i>${esc(c.exVi || "")}</i></p>` : ""}
-      <p class="acts">${isNew ? `<button data-w="seen">nhớ rồi ✓</button>` : `<button data-w="quizme">đố từ này</button>`}<button data-w="next">từ khác →</button></p>`);
+      <p class="acts">${isNew ? `<button data-w="seen">nhớ rồi ✓</button>` : `<button data-w="quizme">đố từ này</button>`}${star(c)}<button data-w="next">từ khác →</button></p>`);
+    if (isNew) autoSay(c);
   }
   function onboard() {
     mode = "onboard";
@@ -71,7 +75,7 @@ export function createWall(game, root) {
     const kind = plus && st.box >= 2 && Math.random() < 0.3 ? "listen" : Math.random() < 0.55 ? "mc" : "rev";
     const opts = learn.options(c, 4);
     const tag = (o) => (kind === "mc" ? o.vi : o.w);
-    const prompt = kind === "mc" ? `<h1 class="w ${c.lang}">${esc(c.w)}${say(c)}</h1><p class="ph">${esc(c.ph || "")}</p><p class="hint">nghĩa là gì? bắt con bướm đúng nghĩa</p>`
+    const prompt = kind === "mc" ? `${wordH(c)}<p class="ph">${esc(c.ph || "")}</p><p class="hint">nghĩa là gì? bắt con bướm đúng nghĩa</p>`
       : kind === "rev" ? `<h1 class="w vi">${esc(c.vi)}</h1><p class="hint">từ nào? bắt con bướm mang đúng chữ</p>`
       : `<h1 class="w">nghe nè ${say(c)}</h1><p class="hint">nghe rồi bắt con bướm mang đúng chữ</p>`;
     write(`<p class="k">${src === "cat" ? `${esc(game.cat.name)} đố` : "đố nè"}${series.length ? ` · còn ${series.length}` : ""}</p>${prompt}
@@ -99,7 +103,7 @@ export function createWall(game, root) {
   /** "học": từ mới hiện lên từng từ, bấm nhớ rồi → bướm đố ngay; xong tới các từ cần ôn */
   function lesson(kind = "full") {
     if (!s.onboarded) return onboard();
-    const neu = kind === "full" ? learn.newToday() : [], due = kind === "fun" ? [] : learn.due().slice(0, kind === "review" ? 8 : 12);
+    const neu = kind === "full" ? learn.newToday() : kind === "book" ? learn.book().map((b) => b.card).filter((c) => c.vi && c.lang === learn.lang && !(learn.stat(c.id)?.right + learn.stat(c.id)?.wrong > 0)) : [], due = kind === "fun" ? [] : kind === "book" ? learn.book().map((b) => b.card).filter((c) => c.vi && c.lang === learn.lang && learn.stat(c.id)?.seen) : learn.due().slice(0, kind === "review" ? 8 : 12);
     series = []; neu.forEach((c) => series.push(Object.assign(Object.create(c), { __new: 1 })));
     due.filter((c) => !neu.some((n) => n.id === c.id)).forEach((c) => series.push(c));
     if (!series.length) { const pool = [...learn.learning(), ...learn.mastered().filter((c) => c.lang === learn.lang)]; if (!pool.length) { whisper(game.lineOf("idle_tap")); return; } series = [pick(pool)]; }
@@ -107,9 +111,9 @@ export function createWall(game, root) {
   }
   function showNew(c0) {
     const c = Object.getPrototypeOf(c0); mode = "new"; cur = c; tl.dataset.id = c.id;
-    write(`<p class="k">từ mới${series.filter((x) => x.__new).length ? ` · còn ${series.filter((x) => x.__new).length} từ nữa` : ""}</p><h1 class="w ${c.lang}">${esc(c.w)}${say(c)}</h1><p class="ph">${esc(c.ph || "")}${c.pos ? ` · ${esc(c.pos)}` : ""}</p><p class="vi">${esc(c.vi)}</p>
-      ${c.ex ? `<p class="ex ${c.lang}">${esc(c.ex)}${c.exPh ? `<small>${esc(c.exPh)}</small>` : ""}<i>${esc(c.exVi || "")}</i></p>` : ""}<p class="acts"><button data-w="seen-next">nhớ rồi, đố đi ✓</button></p>`, "new");
-    if (s.settings.tts) setTimeout(() => game.speakCard(c), 400);
+    write(`<p class="k">từ mới${series.filter((x) => x.__new).length ? ` · còn ${series.filter((x) => x.__new).length} từ nữa` : ""}</p>${wordH(c)}<p class="ph">${esc(c.ph || "")}${c.pos ? ` · ${esc(c.pos)}` : ""}</p><p class="vi">${esc(c.vi)}</p>
+      ${c.ex ? `<p class="ex ${c.lang}">${esc(c.ex)}${c.exPh ? `<small>${esc(c.exPh)}</small>` : ""}<i>${esc(c.exVi || "")}</i></p>` : ""}<p class="acts"><button data-w="seen-next">nhớ rồi, đố đi ✓</button>${star(c)}</p>`, "new");
+    autoSay(c);
     game.sayLine(game.lineOf("newword", { w: c.w }), 3000);
   }
 
@@ -125,16 +129,18 @@ export function createWall(game, root) {
   // ------------------------------------------------------------------ bấm
   el.addEventListener("click", (e) => {
     game.lastInput = Date.now();
-    const sp = e.target.closest("[data-say]"); if (sp) { game.speakCard(learn.card(sp.dataset.say)); return; }
+    const sp = e.target.closest("[data-say]"); if (sp) { game.speakCard(learn.card(sp.dataset.say)); if (Math.random() < 0.2) game.jab("ui_speak"); return; }
+    const stb = e.target.closest("[data-star]"); if (stb) { const id = stb.dataset.star; if (learn.booked(id)) { learn.unbook(id); stb.classList.remove("on"); stb.textContent = "☆ lưu sổ"; } else { const r = learn.bookmark(learn.card(id), s.plan); if (r.full) { whisper("Sổ đầy rồi. Gói Plus thì lưu thoải mái."); return; } stb.classList.add("on"); stb.textContent = "★ trong sổ"; game.jab("book"); } game.persist(); return; }
     const an = e.target.closest("[data-ans]"); if (an) return answer(an.dataset.ans);
     const lg = e.target.closest("[data-picklang]"); if (lg) { learn.setLang(lg.dataset.picklang); s.onboarded = true; game.save && game.persist(); whisper(`Ok, học ${LANGS[lg.dataset.picklang].vi.replace(/^Tiếng/, "tiếng")}.`); ambient(true); clock(); return lesson("full"); }
     const b = e.target.closest("[data-w]"); if (!b) return; const a = b.dataset.w;
     if (a === "seen" && cur) { learn.seen(cur.id); whisper(game.lineOf("newword", { w: cur.w })); setTimeout(() => quiz(cur), 900); return; }
     if (a === "seen-next" && cur) { learn.seen(cur.id); return quiz(cur); }
-    if (a === "next") { shift++; return ambient(true); }
+    if (a === "next") { shift++; if (Math.random() < 0.35) game.jab("ui_next"); return ambient(true); }
     if (a === "quizme" && cur) return quiz(cur);
-    if (a === "skip") { cr.clearAnswers(); series = []; clearTimeout(quizT); return ambient(true); }
+    if (a === "skip") { cr.clearAnswers(); series = []; clearTimeout(quizT); game.jab("ui_skip"); return ambient(true); }
     if (a === "learn") return lesson("full");
+    if (a === "menu" && Math.random() < 0.4) game.jab("ui_menu");
     if (a === "review") return learn.todo().due ? lesson("review") : lesson("fun");
     game.showSheet?.(a);
   });
@@ -150,6 +156,6 @@ export function createWall(game, root) {
   game.on("learn", () => { const t = learn.todo(), n0 = (s.wall || []).length; s.wall = (s.wall || []).filter((n) => !((n.kind === "new" && !t.neu) || (n.kind === "due" && !t.due))); if (s.wall.length !== n0) drawScribs(false); });
   game.on("lang", () => { shift = 0; ambient(true); });
   clock(); ambient(true); drawScribs(false);
-  return { ambient, quiz, lesson, whisper, scribble, get mode() { return mode; } };
+  return { ambient, quiz, lesson, whisper, scribble, clock, get mode() { return mode; } };
 }
 export { norm, dayKey };

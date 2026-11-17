@@ -1,12 +1,14 @@
 // GIAO DIỆN nổi trên sân khấu chì: thẻ mèo, đảo thông báo, nút Học, bảng trượt (sheet).
-import { APP, PLANS, SKINS, DAILY_OPTS, can, planOf } from "../config.js";
+import { APP, PLANS, SKINS, DAILY_OPTS, BOOK_LIMIT, READ_LIMIT, can, planOf } from "../config.js";
 import { TRAITS, ZONES, SPOTS } from "../cat/personality.js";
 import { esc, hhmm, dayKey } from "../core/util.js";
 import { save } from "../core/store.js";
 import { unlock } from "../core/sound.js";
 import { SKILLS, levelOf, nextXp } from "../cat/memory.js";
 import { TIERS } from "../cat/bond.js";
-import { LANGS, parseCsv } from "../learn/packs.js";
+import { LANGS, parseCsv, allCards } from "../learn/packs.js";
+import { buildIndex, scanText } from "../learn/scan.js";
+import { line } from "../cat/lines.js";
 import { BOX_IV, MASTER } from "../learn/srs.js";
 import { icon } from "./icons.js";
 
@@ -36,17 +38,45 @@ export function createHud(game, root) {
   const lock = (feat) => !can(s.plan, feat);
   const boxDots = (b = 0) => `<i class="dots" title="Hộp ${b}/6">${Array.from({ length: 6 }, (_, i) => `<b class="${i < b ? "on" : ""}"></b>`).join("")}</i>`;
   const noteCard = (x, today) => `<article class="letter${today ? " today" : ""}"><header>${icon("letter")}<time>${x.d === dayKey() ? "Sáng nay" : new Date(x.d).toLocaleDateString("vi-VN", { weekday: "long", day: "numeric", month: "numeric" })}</time></header>${x.text.split("\n").map((l) => `<p>${esc(l)}</p>`).join("")}</article>`;
-  let wordsTab = "today";
+  let wordsTab = "book", readRes = null, readText = "";
+  const host = (u) => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return ""; } };
 
+  const tabBar = (tabs) => `<div class="tabs scroll">${tabs.map(([k, v]) => `<button data-wtab="${k}" class="${wordsTab === k ? "on" : ""}">${v}${k === "book" && s.learn.book.length ? ` <small>${s.learn.book.length}</small>` : ""}</button>`).join("")}</div>`;
+  function bookList() {
+    const B = learn.book().filter((b) => b.card.lang === learn.lang), lim = can(s.plan, "book.unlimited") ? 0 : BOOK_LIMIT.free, ready = B.filter((b) => b.card.vi).length;
+    const row = (b) => { const c = b.card, st = learn.stat(c.id) || {}, src = host(b.url) || (b.src === "read" ? "đọc ké" : b.src === "ext" ? "tiện ích" : "");
+      return `<li class="brow"><button class="sp" data-bsay="${esc(c.id)}" aria-label="Nghe">${icon("speaker")}</button><span class="w ${c.lang}">${esc(c.w)}</span>
+        ${c.vi ? `<span class="vi">${esc(c.vi)}</span>` : `<input class="bvi" data-bvi="${esc(c.id)}" placeholder="điền nghĩa…" maxlength="80">`}
+        ${boxDots(st.box || 0)}<button class="ic bx" data-unbook="${esc(c.id)}" aria-label="Bỏ khỏi sổ">${icon("close")}</button>
+        ${b.ctx || src ? `<small class="bctx">${b.ctx ? `“${esc(b.ctx.slice(0, 90))}”` : ""}${src ? ` · ${esc(src)}` : ""}</small>` : ""}</li>`; };
+    return `<p class="muted">${B.length} từ${lim ? ` / ${lim} (Free)` : ""} · bấm ☆ ở chữ trên tường, ở Đọc cùng mèo, hoặc bôi đen trên web (tiện ích) để lưu.</p>
+      ${ready ? `<button class="primary" data-a="learnbook">${icon("bolt")} Học sổ này (${ready} từ)</button>` : ""}
+      <ol class="wlist book">${B.map(row).join("") || `<p class="muted">Sổ trống. Lưu mấy chữ hay gặp đi.</p>`}</ol>
+      ${lim && B.length >= lim ? `<button class="locked" data-a="plans">${icon("lock")} Sổ đầy. Plus lưu không giới hạn</button>` : ""}`;
+  }
   const SHEETS = {
 
     words() {
       const lists = { today: learn.todayCards(), learning: learn.learning(), mastered: learn.mastered().filter((c) => c.lang === learn.lang), weak: learn.weak(30) };
       const L = lists[wordsTab] || [];
       const row = (c) => { const st = learn.stat(c.id) || {}; return `<li><button class="wrow" data-wd="${esc(c.id)}"><span class="w ${c.lang}">${esc(c.w)}</span><span class="vi">${esc(c.vi)}</span>${boxDots(st.box || 0)}</button><div class="wex" hidden>${esc(c.ph || "")}${c.ex ? `<br><i>${esc(c.ex)}</i>${c.exPh ? `<br><small>${esc(c.exPh)}</small>` : ""}<br><small>${esc(c.exVi || "")}</small>` : ""}${st.seen ? `<br><small>Đúng ${st.right || 0} · sai ${st.wrong || 0}${st.due ? ` · ôn lại ${st.due <= Date.now() ? "ngay" : new Date(st.due).toLocaleDateString("vi-VN")}` : ""}</small>` : ""}</div></li>`; };
-      const tabs = [["today", "Hôm nay"], ["learning", "Đang học"], ["mastered", "Đã thuộc"], ["weak", "Hay sai"]];
-      return head("Sổ từ", `${LANGS[learn.lang].vi} · ${esc(learn.levels().find((l) => l.key === s.learn.level[learn.lang])?.vi || "")}`) + `<div class="tabs">${tabs.map(([k, v]) => `<button data-wtab="${k}" class="${wordsTab === k ? "on" : ""}">${v}</button>`).join("")}</div>
+      const tabs = [["book", "Sổ của tôi"], ["today", "Hôm nay"], ["learning", "Đang học"], ["mastered", "Đã thuộc"], ["weak", "Hay sai"]];
+ if (wordsTab === "book") return head("Sổ từ", `${LANGS[learn.lang].vi}`) + tabBar(tabs) + bookList();
+      return head("Sổ từ", `${LANGS[learn.lang].vi} · ${esc(learn.levels().find((l) => l.key === s.learn.level[learn.lang])?.vi || "")}`) + tabBar(tabs) + `
         ${wordsTab === "weak" && lock("stats.full") ? `<button class="locked" data-a="plans">${icon("lock")} Danh sách từ hay sai có trong Plus</button>` : `<ol class="wlist">${L.map(row).join("") || `<p class="muted">Trống. ${wordsTab === "mastered" ? "Học đều tay thì sẽ có." : "Bấm Học để bắt đầu."}</p>`}</ol>`}`;
+    },
+    book() { wordsTab = "book"; return SHEETS.words(); },
+    read() {
+      const lim = READ_LIMIT[s.plan] || READ_LIMIT.free, r = readRes;
+      const known = (c) => learn.stat(c.id)?.box >= MASTER ? "thuộc" : learn.stat(c.id)?.seen ? "đang học" : "chưa học";
+      const chip = (c) => `<button class="rchip ${c.lang} k-${known(c) === "thuộc" ? "m" : known(c) === "đang học" ? "l" : "n"}" data-rsave="${esc(c.id)}" title="${esc(c.vi)}">${learn.booked(c.id) ? "★" : "☆"} ${esc(c.w)}<small>${esc(c.vi)}</small></button>`;
+      return head("Đọc cùng mèo", "Dán đoạn bạn đang đọc. Mèo quét, chỉ chữ đáng lưu.") + `<textarea class="rbox" data-rtext maxlength="${lim}" placeholder="Dán bài báo, email, caption…">${esc(readText)}</textarea>
+        <p class="muted rlim">${readText.length}/${lim} ký tự${lim < 60000 ? ` · Plus đọc bài dài` : ""}</p>
+        <button class="primary" data-a="scan">${icon("eye")} Cho mèo đọc</button>
+        ${r ? `<p class="rsay">${esc(r.say)}</p>
+          <h3>Chữ trong gói (${r.found.length})</h3><div class="rchips">${r.found.slice(0, 40).map((f) => chip(f.card)).join("") || `<p class="muted">Không có chữ nào trong gói ${LANGS[learn.lang].vi.toLowerCase()}.</p>`}</div>
+          ${r.strange.length ? `<h3>Chữ lạ đáng lưu</h3><div class="rchips">${r.strange.map((x) => `<button class="rchip k-n" data-rnew="${esc(x.w)}">${learn.booked(`en:my:${x.w}`) ? "★" : "☆"} ${esc(x.w)}${x.n > 1 ? `<small>×${x.n}</small>` : ""}</button>`).join("")}</div><p class="muted">Lưu chữ lạ vào sổ, rồi điền nghĩa trong Sổ của tôi để mèo đố.</p>` : ""}` : ""}
+        <p class="muted">Trên máy tính: cài tiện ích Purrsona cho Chrome, mèo đọc ké ngay trên trang. Trên điện thoại: bấm Chia sẻ → Purrsona.</p>`;
     },
     stats() {
       const days = lock("stats.full") ? 7 : 30, arr = []; for (let i = days - 1; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); const k = dayKey(d), v = s.learn.days[k] || { right: 0, wrong: 0, new: 0 }; arr.push({ k, d, v }); }
@@ -85,7 +115,7 @@ export function createHud(game, root) {
     menu() {
       return head(APP.name, APP.tagline) + `<div class="menu">
         <button data-a="learn"><span>${icon("pencil")}</span>Học</button><button data-a="review"><span>${icon("bolt")}</span>Ôn nhanh</button>
-        <button data-a="words"><span>${icon("book")}</span>Sổ từ</button><button data-a="stats"><span>${icon("chart")}</span>Tiến độ</button>
+        <button data-a="words"><span>${icon("book")}</span>Sổ từ</button><button data-a="read"><span>${icon("eye")}</span>Đọc cùng mèo</button><button data-a="stats"><span>${icon("chart")}</span>Tiến độ</button>
         <button data-a="notes"><span>${icon("letter")}</span>Giấy nhắn</button><button data-a="cat"><span>${icon("cat")}</span>Hồ sơ mèo</button>
         <button data-a="plans"><span>${icon("star")}</span>Gói ${planChip(s.plan) || "Miễn phí"}</button><button data-a="settings"><span>${icon("settings")}</span>Cài đặt</button></div>`;
     },
@@ -106,9 +136,11 @@ export function createHud(game, root) {
       return head("Cài đặt") + `<div class="settings">
         <button class="row link" data-a="lang"><span>Ngôn ngữ & trình độ</span><span>${LANGS[L.lang].vi} ›</span></button>
         <div class="row"><span>Từ mới mỗi ngày</span><span class="seg">${DAILY_OPTS[s.plan].map((n) => `<button data-daily="${n}" class="${L.daily === n ? "on" : ""}">${n}</button>`).join("")}</span></div>
-        <div class="row"><span>Đổi từ trên màn hình mỗi</span><span class="seg">${[5, 15, 60].map((n) => `<button data-rot="${n}" class="${(s.settings.rotate || 15) === n ? "on" : ""}">${n} phút</button>`).join("")}</span></div>
+        <div class="row"><span>Đổi chữ trên tường</span><span class="seg">${[5, 15, 60].map((n) => `<button data-rot="${n}" class="${(s.settings.rotate || 15) === n ? "on" : ""}">${n === 60 ? "1 giờ" : n + "′"}</button>`).join("")}</span></div>
         <label class="row"><span>${esc(game.cat.name)} gọi bạn là</span><input class="nick" type="text" maxlength="16" value="${esc(s.profile.nick || "Sen")}" data-nick placeholder="Sen"></label>
         <label class="row"><span>Đọc to từ vựng</span><input type="checkbox" data-set="tts" ${s.settings.tts ? "checked" : ""}></label>
+        <label class="row"><span>Từ mới tự đọc khi hiện</span><input type="checkbox" data-set="autoSay" ${s.settings.autoSay !== false ? "checked" : ""}></label>
+        <label class="row"><span>Mèo kháy thường xuyên</span><input type="checkbox" data-set="nag" ${s.settings.nag !== false ? "checked" : ""}></label>
         <div class="row"><span>Tốc độ đọc</span><span class="seg">${[[0.7, "Chậm"], [0.9, "Vừa"], [1.05, "Nhanh"]].map(([v, k]) => `<button data-rate="${v}" class="${(s.settings.rate || 0.9) === v ? "on" : ""}">${k}</button>`).join("")}</span></div>
         <div class="row"><span>Cỡ giao diện</span><span class="seg">${[["s", "Nhỏ"], ["m", "Vừa"], ["l", "Lớn"]].map(([k, v]) => `<button data-ui="${k}" class="${(s.settings.ui || "m") === k ? "on" : ""}">${v}</button>`).join("")}</span></div>
         <label class="row"><span>Âm thanh (meo, rừ rừ)</span><input type="checkbox" data-set="sound" ${s.settings.sound ? "checked" : ""}></label>
@@ -132,7 +164,13 @@ export function createHud(game, root) {
   // ------------------------------------------------------------------ bấm nút
   el.addEventListener("click", (e) => {
     unlock(); game.lastInput = Date.now(); game.musicResume?.();
-    const b = e.target.closest("[data-a],[data-plan],[data-skin],[data-ui],[data-setlang],[data-level],[data-daily],[data-wtab],[data-wd],[data-rate],[data-rot]"); if (!b || !el.contains(b)) return;
+    const b = e.target.closest("[data-a],[data-plan],[data-skin],[data-ui],[data-setlang],[data-level],[data-daily],[data-wtab],[data-wd],[data-rate],[data-rot],[data-bsay],[data-unbook],[data-rsave],[data-rnew]"); if (!b || !el.contains(b)) return;
+    if (b.dataset.bsay) { game.speakCard(learn.card(b.dataset.bsay)); return; }
+    if (b.dataset.unbook) { learn.unbook(b.dataset.unbook); save(s); show("words"); return; }
+    if (b.dataset.rsave || b.dataset.rnew) { const c = b.dataset.rsave ? learn.card(b.dataset.rsave) : null, id = c ? c.id : `en:my:${b.dataset.rnew}`;
+      if (learn.booked(id)) learn.unbook(id); else { const ctx = (readText.match(new RegExp(`[^.!?。！？\\n]*${(c?.lang === "zh" ? "" : "\\b") + (c ? c.w : b.dataset.rnew).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}[^.!?。！？\\n]*`, "i")) || [""])[0].trim();
+        const r = learn.bookmark(c || { w: b.dataset.rnew, lang: "en", ctx, src: "read" }, s.plan); if (r.full) return toast("Sổ đầy rồi. Plus lưu thoải mái."); if (c) s.learn.book[0].src = "read", s.learn.book[0].ctx = ctx.slice(0, 200); game.jab?.("book"); }
+      save(s); show("read"); return; }
     if (b.dataset.setlang) { learn.setLang(b.dataset.setlang); save(s); show(wrap.classList.contains("sh-onboard") ? "onboard" : "lang"); refresh(); return; }
     if (b.dataset.level) { if (b.classList.contains("lockd")) return show("plans"); learn.setLevel(b.dataset.level); save(s); show(wrap.classList.contains("sh-onboard") ? "onboard" : "lang"); refresh(); return; }
     if (b.dataset.daily) { learn.setDaily(+b.dataset.daily); save(s); b.parentElement.querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b)); refresh(); return; }
@@ -147,6 +185,8 @@ export function createHud(game, root) {
     switch (a) {
       case "close": return close();
       case "learn": close(); return game.wall.lesson("full");
+      case "learnbook": close(); return game.wall.lesson("book");
+      case "scan": { const ta = q("[data-rtext]"); readText = (ta?.value || "").slice(0, READ_LIMIT[s.plan] || READ_LIMIT.free); readRes = runScan(readText); show("read"); game.sayLine?.(readRes.say, 4200); return; }
       case "review": close(); return game.wall.lesson(learn.todo().due ? "review" : "fun");
       case "call": return game.call();
       case "music": return game.music();
@@ -157,9 +197,19 @@ export function createHud(game, root) {
       default: show(a);
     }
   });
+  function runScan(text) {
+    const idx = buildIndex([...allCards(s.learn.custom).values()].filter((c) => c.lang === learn.lang));
+    const r = scanText(text, idx, (w) => learn.booked(`en:my:${w}`)), mood = game.today?.mood?.id;
+    const nk = r.found.filter((f) => learn.stat(f.card.id)?.seen).length;
+    const key = r.tokens < 25 ? "read_short" : r.found.length === 0 ? "read_none" : nk === 0 ? "read_unlearned" : nk >= 8 ? "read_lots" : r.tokens > 900 && Math.random() < 0.4 ? "read_long" : "read_some";
+    r.say = line(key, mood, null, { n: nk || r.found.length }); return r;
+  }
+  game.readText = (text) => { readText = String(text || "").slice(0, READ_LIMIT[s.plan] || READ_LIMIT.free); readRes = runScan(readText); show("read"); game.sayLine?.(readRes.say, 4200); };
+  el.addEventListener("input", (e) => { if (e.target.matches("[data-rtext]")) { readText = e.target.value; const m = q(".rlim"); if (m) m.textContent = `${readText.length}/${e.target.maxLength} ký tự`; } });
   el.addEventListener("change", (e) => {
+    if (e.target.matches("[data-bvi]")) { if (e.target.value.trim()) { learn.setMeaning(e.target.dataset.bvi, e.target.value); save(s); show("words"); } return; }
     if (e.target.matches("[data-nick]")) { game.setNick(e.target.value); e.target.value = s.profile.nick; toast(`${game.cat.name} sẽ gọi bạn là “${s.profile.nick}”`); return; }
-    if (e.target.matches("[data-csv]") && e.target.files[0]) { e.target.files[0].text().then((txt) => { const L = parseCsv(txt, learn.lang); s.learn.custom = [...s.learn.custom.filter((c) => c.lang !== learn.lang), ...L]; learn.setLevel("custom/mine"); save(s, true); toast(`Đã nhập ${L.length} từ – đang học danh sách của bạn`); show("lang"); }); return; }
+    if (e.target.matches("[data-csv]") && e.target.files[0]) { e.target.files[0].text().then((txt) => { const L = parseCsv(txt, learn.lang); s.learn.custom = [...s.learn.custom.filter((c) => c.lang !== learn.lang || c.pack === "book"), ...L]; learn.setLevel("custom/mine"); save(s, true); toast(`Đã nhập ${L.length} từ – đang học danh sách của bạn`); show("lang"); }); return; }
     const k = e.target.dataset.set; if (!k) return;
     if (k === "hour") { const v = +e.target.value; game.setHour(v < 0 ? null : v); show("settings"); return; }
     if (k === "music") { game.music(e.target.checked); return; }

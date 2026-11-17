@@ -1,3 +1,4 @@
+import { BOOK_LIMIT, can } from "../config.js";
 // BỘ HỌC: chọn từ mới mỗi ngày + ôn lặp lại ngắt quãng (hộp Leitner 0–6).
 // Đúng → lên hộp, ôn lại sau 1, 2, 4, 8, 16, 35 ngày. Sai → về hộp 1, ôn lại sau 10 phút.
 // Hộp ≥ 4 = "thuộc" → nở thành 1 bông hoa trong vườn.
@@ -10,12 +11,12 @@ export const MASTER = 4;
 export const DAILY_MAX = { free: 5, plus: 20, pro: 50 };
 
 export function freshLearn() {
-  return { lang: "en", level: { en: "en-core/A2", zh: "zh-core/HSK1" }, daily: 3, cards: {}, days: {}, streak: { n: 0, last: "", best: 0, freezes: 0 }, xp: 0, today: { d: "", ids: [] }, custom: [], combo: 0 };
+  return { lang: "en", level: { en: "en-core/A2", zh: "zh-core/HSK1" }, daily: 3, cards: {}, days: {}, streak: { n: 0, last: "", best: 0, freezes: 0 }, xp: 0, today: { d: "", ids: [] }, custom: [], book: [], combo: 0 };
 }
 
 export function createLearn(game) {
   const s = game.save; s.learn ||= freshLearn();
-  const L = s.learn; L.level ||= { en: "en-core/A2", zh: "zh-core/HSK1" }; L.custom ||= [];
+  const L = s.learn; L.level ||= { en: "en-core/A2", zh: "zh-core/HSK1" }; L.custom ||= []; L.book ||= [];
   const cards = () => allCards(L.custom);
   const get = (id) => cards().get(id);
   const st = (id) => (L.cards[id] ||= { box: 0, due: 0, seen: 0, right: 0, wrong: 0, lapses: 0, last: 0, added: Date.now() });
@@ -24,10 +25,12 @@ export function createLearn(game) {
   /** từ mới hôm nay: lấy theo thứ tự trộn cố định của cấp đang học, bỏ từ đã có */
   function pickToday() {
     const d = dayKey(); if (L.today.d === d && L.today.lang === L.lang) return L.today.ids;
-    const pool = cardsOfLevel(L.level[L.lang], L.custom).filter((c) => !L.cards[c.id]);
+    const booked = L.book.map((b) => get(b.id)).filter((c) => c && c.lang === L.lang && c.vi && !L.cards[c.id]);      // từ trong sổ được học trước
+    const pool = cardsOfLevel(L.level[L.lang], L.custom).filter((c) => c.lang === L.lang && !L.cards[c.id] && !booked.includes(c));
     const r = rng(L.lang + "|" + L.level[L.lang]); const order = pool.map((c) => [r(), c]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
     const keep = L.today.d === d ? L.today.ids.filter((id) => get(id)?.lang === L.lang) : [];
-    L.today = { d, lang: L.lang, ids: [...keep, ...order.slice(0, Math.max(0, L.daily - keep.length)).map((c) => c.id)] };
+    const want = [...booked, ...order].filter((c) => !keep.includes(c.id));
+    L.today = { d, lang: L.lang, ids: [...keep, ...want.slice(0, Math.max(0, L.daily - keep.length)).map((c) => c.id)] };
     return L.today.ids;
   }
 
@@ -82,11 +85,31 @@ export function createLearn(game) {
     levels: () => levelsOf(L.lang, L.custom),
     /** 4 lựa chọn: đáp án đúng + 3 từ cùng ngôn ngữ, ưu tiên cùng cấp */
     options(c, n = 4) {
-      const same = [...cards().values()].filter((x) => x.lang === c.lang && x.id !== c.id && x.vi !== c.vi);
+      const same = [...cards().values()].filter((x) => x.lang === c.lang && x.id !== c.id && x.vi && x.vi !== c.vi);
       const lvl = same.filter((x) => x.level === c.level), pool = lvl.length >= n + 2 ? lvl : same;
       const out = [c]; const r = Math.random; while (out.length < n && pool.length) { const x = pool.splice(Math.floor(r() * pool.length), 1)[0]; if (!out.some((o) => o.w === x.w || o.vi === x.vi)) out.push(x); }
       return out.sort(() => r() - 0.5);
     },
+    // ---- SỔ CỦA TÔI: lưu từ từ app, từ đoạn đọc ké, từ tiện ích Chrome
+    booked: (id) => L.book.some((b) => b.id === id),
+    book() { return L.book.map((b) => ({ ...b, card: get(b.id) })).filter((b) => b.card); },
+    /** lưu 1 từ. item: thẻ có sẵn, hoặc { w, lang, vi?, ph?, ctx?, src?, url? } (từ lạ → tạo thẻ riêng) */
+    bookmark(item, plan = "free") {
+      if (!can(plan, "book.unlimited") && L.book.length >= BOOK_LIMIT.free) return { ok: false, full: true };
+      let c = item.id ? get(item.id) : null;
+      if (!c) {
+        const lang = item.lang || (/[\u4e00-\u9fff]/.test(item.w) ? "zh" : "en"), w = String(item.w || "").trim().slice(0, 40); if (!w) return { ok: false };
+        const pack = [...cards().values()].find((x) => x.lang === lang && x.w.toLowerCase() === w.toLowerCase());
+        c = pack || { id: `${lang}:my:${w.toLowerCase()}`, lang, pack: "book", level: "book", w, ph: item.ph || "", pos: "", vi: item.vi || "", ex: item.ctx || "", exPh: "", exVi: "" };
+        if (!pack && !L.custom.some((x) => x.id === c.id)) L.custom.push(c);
+      }
+      if (L.book.some((b) => b.id === c.id)) return { ok: true, card: c, dup: true };
+      L.book.unshift({ id: c.id, t: Date.now(), src: item.src || "app", url: item.url || "", ctx: (item.ctx || "").slice(0, 200) });
+      game.emit("book", c); return { ok: true, card: c };
+    },
+    unbook(id) { L.book = L.book.filter((b) => b.id !== id); game.emit("book", null); },
+    /** điền nghĩa cho từ lạ đã lưu */
+    setMeaning(id, vi) { const c = L.custom.find((x) => x.id === id); if (c) { c.vi = vi.trim().slice(0, 80); game.emit("book", c); } },
     counts() { const all = Object.entries(L.cards).filter(([id]) => get(id)?.lang === L.lang).map(([, c]) => c); return { learning: all.filter((c) => c.seen && c.box < MASTER).length, mastered: all.filter((c) => c.box >= MASTER).length, total: cardsOfLevel(L.level[L.lang], L.custom).length }; },
   };
   return api;

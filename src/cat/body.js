@@ -64,7 +64,7 @@ export function createBody(R, scene, opts = {}) {
     while (performance.now() < end) { await frame(); guard(t); if (!R.info(c).loop && R.done) break; }
     guard(t);
   };
-  B.say = (text, ms = 2600) => {
+  B.say = (text, ms = 4200) => {
     if (!text) return; bubble.textContent = text; bubble.hidden = false; bubble.classList.remove("pop"); void bubble.offsetWidth; bubble.classList.add("pop");
     B.sayUntil = performance.now() + ms;
   };

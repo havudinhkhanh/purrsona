@@ -9,9 +9,12 @@ Màn hình là một khu vườn nhìn từ trên xuống, hơi xiên, có căn 
 - **Mèo kháy**: viết câu ngắn ngay cạnh nó và ghi bậy ra lề giấy ("3 từ chưa ôn", "ôn đi trời"). Đúng thì khen nhỏ giọt, sai thì nói thẳng, sai một từ nhiều lần thì nhắc đích danh từ đó. Đang ngồi không lâu quá thì mèo tự chạy tới đố.
 - **Mèo có tính cách**: mỗi ngày một tâm trạng, có trí nhớ, biết giận khi bị bỏ bê, gắn bó tăng dần (dụi đầu vào màn hình, chớp mắt chậm, gõ kính đòi học, nhào bột, khoe bụng có bẫy).
 - **Giấy nhắn mỗi sáng**: mèo viết lại kết quả học hôm qua.
-- Đọc to bằng giọng có sẵn của máy (Web Speech), chạy offline sau lần mở đầu.
+- **Đọc to**: chạm vào chữ lớn là nghe, từ mới tự đọc khi hiện (tắt được trong Cài đặt). Dùng giọng có sẵn của máy (Web Speech), chạy offline sau lần mở đầu.
+- **Sổ của tôi**: bấm ☆ ở chữ trên tường để lưu. Sổ là tab đầu tiên trong Sổ từ, có nút "Học sổ này". Từ lạ lưu từ web thì tự điền nghĩa, mèo mới đố.
+- **Đọc cùng mèo**: dán một đoạn văn (hoặc bấm Chia sẻ → Purrsona trên điện thoại). Mèo quét, chỉ ra chữ trong gói và chữ lạ đáng lưu, rồi kháy một câu.
+- **Tiện ích Chrome "Mèo đọc ké"** (thư mục `extension/`): mèo ngồi góc mọi trang, gạch dưới chữ đã học, rê chuột vào ra nghĩa, bôi đen chữ là lưu vô sổ, kháy theo loại trang (mạng xã hội, báo, mua sắm, làm việc…). Mở app là sổ tự đồng bộ.
 
-Gói: **Free** (A2, HSK 1, tối đa 5 từ/ngày) · **Plus** (đến B2 và HSK 3, câu nghe, 20 từ/ngày, thống kê 30 ngày) · **Pro** (gói tiếng Anh tài chính – kinh doanh, tự nhập từ bằng CSV, mèo kháy bằng AI). Mọi chỗ khoá đều đi qua `can()` trong `src/config.js`.
+Gói: **Free** (A2, HSK 1, tối đa 5 từ/ngày, sổ 30 từ, đọc ké 1.500 ký tự) · **Plus** (đến B2 và HSK 3, câu nghe, 20 từ/ngày, thống kê 30 ngày, sổ không giới hạn, đọc ké bài dài) · **Pro** (gói tiếng Anh tài chính – kinh doanh, tự nhập từ bằng CSV, mèo kháy bằng AI). Mọi chỗ khoá đều đi qua `can()` trong `src/config.js`.
 
 ---
 
@@ -28,7 +31,7 @@ Mở <http://localhost:8765>. Phải chạy qua web server vì trình duyệt ch
 ### Bước 2 – Đưa lên GitHub
 
 ```bash
-git add . && git commit -m "Purrsona 1.0" && git push
+git add . && git commit -m "Purrsona 1.1" && git push
 ```
 
 ### Bước 3 – Đăng web bằng Cloudflare Pages
@@ -63,10 +66,21 @@ npx wrangler secret put ANTHROPIC_API_KEY
 ```
 Sửa `ALLOWED_ORIGINS` trong `wrangler.toml` thành địa chỉ web, rồi dán địa chỉ worker vào `AI.endpoint` trong `src/config.js`. Chưa làm bước này thì mèo dùng câu có sẵn.
 
-### Bước 8 – Phát hành bản mới
+### Bước 8 – Cài tiện ích Chrome "Mèo đọc ké"
+
+1. Chrome → `chrome://extensions` → bật **Developer mode**.
+2. **Load unpacked** → chọn thư mục `extension/`.
+3. Bấm biểu tượng Purrsona trên thanh công cụ → dán địa chỉ app (vd. địa chỉ Cloudflare Pages) vào ô **Địa chỉ app**.
+4. Mở app một lần để tiện ích biết bạn đã học những từ nào. Từ lưu trên web nằm chờ (số trên biểu tượng) và tự vào sổ khi mở app.
+
+Sau khi sửa gói từ hoặc `src/learn/scan.js`, chạy `node tools/build-extension.mjs` để sinh lại `extension/words.js`, `scan.js`, `poses.js`.
+
+**Quyền riêng tư:** tiện ích đọc chữ trên trang ngay trong máy, không gửi nội dung đi đâu, không có mạng. Không chạy trên trang có ô mật khẩu, trang thanh toán, Gmail, Outlook, trang đăng nhập. Ẩn mèo theo từng trang trong popup. Chỉ đồng bộ với app qua `postMessage` trong cùng thẻ trang app.
+
+### Bước 9 – Phát hành bản mới
 
 1. Tăng `VERSION` trong `sw.js`.
-2. Tăng `APP.version` trong `src/config.js`.
+2. Tăng `APP.version` trong `src/config.js` (và `version` trong `extension/manifest.json` nếu tiện ích đổi).
 3. `git push`.
 
 ---
