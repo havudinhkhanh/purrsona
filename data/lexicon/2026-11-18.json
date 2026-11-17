@@ -1,0 +1,58 @@
+{
+  "d": "2026-11-18",
+  "note": "Tiếp tục ưu tiên tiếng Nhật N5/N4 (N5 mới 21 chữ), bơm Starters và HSK 4 đang mỏng, và xoay vòng chủ đề Trường học cho cả 3 thứ tiếng.",
+  "add": [
+    { "pack": "ja-core", "level": "N5", "rows": [
+      ["天気", "てんき · tenki", "danh từ", "thời tiết", "いい天気だから、猫は外で寝ています。", "Ii tenki dakara, neko wa soto de nete imasu.", "Trời đẹp nên con mèo ra ngoài nằm ngủ."],
+      ["電車", "でんしゃ · densha", "danh từ", "tàu điện", "電車はもう出ました。", "Densha wa mō demashita.", "Tàu điện chạy mất tiêu rồi."],
+      ["買う", "かう · kau", "động từ", "mua", "猫のおやつを買うのを忘れた。", "Neko no oyatsu o kau no o wasureta.", "Quên mua đồ ăn vặt cho mèo rồi."],
+      ["毎日", "まいにち · mainichi", "danh từ / phó từ", "mỗi ngày", "毎日、少しずつ勉強します。", "Mainichi, sukoshi zutsu benkyō shimasu.", "Ngày nào cũng học một chút."],
+      ["新しい", "あたらしい · atarashii", "tính từ", "mới", "猫は新しい箱が大好きです。", "Neko wa atarashii hako ga daisuki desu.", "Mèo khoái cái thùng mới lắm."],
+      ["部屋", "へや · heya", "danh từ", "căn phòng", "部屋を掃除してください。", "Heya o sōji shite kudasai.", "Dọn phòng đi nha."],
+      ["暑い", "あつい · atsui", "tính từ", "nóng (trời)", "今日はとても暑いです。", "Kyō wa totemo atsui desu.", "Bữa nay nóng dữ thần."],
+      ["少し", "すこし · sukoshi", "phó từ", "một chút", "少し待ってください。", "Sukoshi matte kudasai.", "Đợi chút xíu nha."]
+    ]},
+    { "pack": "ja-core", "level": "N4", "rows": [
+      ["大切", "たいせつ · taisetsu", "tính từ (na)", "quan trọng, quý giá", "この猫は私の大切な友達です。", "Kono neko wa watashi no taisetsu na tomodachi desu.", "Con mèo này là bạn quý của tui."],
+      ["間に合う", "まにあう · ma ni au", "động từ", "kịp (giờ)", "走れば電車に間に合う。", "Hashireba densha ni ma ni au.", "Chạy thì còn kịp tàu."],
+      ["興味", "きょうみ · kyōmi", "danh từ", "sự hứng thú, quan tâm", "日本の文化に興味があります。", "Nihon no bunka ni kyōmi ga arimasu.", "Tui có hứng thú với văn hoá Nhật."],
+      ["足りる", "たりる · tariru", "động từ", "đủ", "時間が足りないから、急ごう。", "Jikan ga tarinai kara, isogō.", "Không đủ thời gian đâu, lẹ lên."]
+    ]},
+    { "pack": "zh-hsk", "level": "HSK4", "rows": [
+      ["及时", "jíshí", "tính từ / phó từ", "kịp thời", "下雨了，我及时把衣服收了进来。", "Xià yǔ le, wǒ jíshí bǎ yīfu shōu le jìnlái.", "Mưa tới, tui kịp lấy đồ vô."],
+      ["粗心", "cūxīn", "tính từ", "sơ ý, cẩu thả", "我太粗心了，又写错了字。", "Wǒ tài cūxīn le, yòu xiěcuò le zì.", "Tui sơ ý quá, lại viết sai chữ nữa rồi."],
+      ["提醒", "tíxǐng", "động từ", "nhắc nhở", "猫每天早上提醒我起床。", "Māo měitiān zǎoshang tíxǐng wǒ qǐchuáng.", "Sáng nào mèo cũng nhắc tui dậy."],
+      ["耐心", "nàixīn", "danh từ / tính từ", "kiên nhẫn", "学语言要有耐心。", "Xué yǔyán yào yǒu nàixīn.", "Học ngoại ngữ phải kiên nhẫn."]
+    ]},
+    { "pack": "en-yle", "level": "STARTERS", "rows": [
+      ["banana", "/bəˈnɑːnə/", "n", "quả chuối", "The monkey eats a banana.", "Con khỉ ăn trái chuối."],
+      ["chair", "/tʃeə/", "n", "cái ghế", "The cat is under the chair.", "Con mèo nằm dưới cái ghế."],
+      ["draw", "/drɔː/", "v", "vẽ", "I can draw a big cat.", "Tui vẽ được con mèo bự."],
+      ["tail", "/teɪl/", "n", "cái đuôi", "My cat has a long tail.", "Mèo nhà tui có cái đuôi dài."]
+    ]},
+    { "pack": "en-topic", "level": "SCHOOL", "rows": [
+      ["assignment", "/əˈsaɪnmənt/", "n", "bài tập (được giao)", "I have to finish my assignment by Friday.", "Tui phải làm xong bài tập trước thứ Sáu."],
+      ["graduate", "/ˈɡrædʒueɪt/", "v", "tốt nghiệp", "She will graduate from university next year.", "Năm sau bả tốt nghiệp đại học."],
+      ["scholarship", "/ˈskɒləʃɪp/", "n", "học bổng", "He got a scholarship to study in Japan.", "Ảnh được học bổng qua Nhật học."],
+      ["revise", "/rɪˈvaɪz/", "v", "ôn bài", "I need to revise for the test, not scroll my phone.", "Tui phải ôn bài đi thi, chứ không phải ngồi lướt điện thoại."]
+    ]},
+    { "pack": "zh-topic", "level": "SCHOOL", "rows": [
+      ["毕业", "bìyè", "động từ", "tốt nghiệp", "姐姐明年大学毕业。", "Jiějie míngnián dàxué bìyè.", "Năm sau chị tui tốt nghiệp đại học."],
+      ["迟到", "chídào", "động từ", "đến trễ", "他今天上课又迟到了。", "Tā jīntiān shàngkè yòu chídào le.", "Bữa nay ảnh lại đi học trễ."],
+      ["黑板", "hēibǎn", "danh từ", "bảng đen", "老师在黑板上写字。", "Lǎoshī zài hēibǎn shang xiě zì.", "Cô viết chữ lên bảng."],
+      ["留学", "liúxué", "động từ", "du học", "我想去中国留学。", "Wǒ xiǎng qù Zhōngguó liúxué.", "Tui muốn đi du học Trung Quốc."]
+    ]},
+    { "pack": "ja-topic", "level": "SCHOOL", "rows": [
+      ["卒業", "そつぎょう · sotsugyō", "danh từ / động từ", "tốt nghiệp", "来年、大学を卒業します。", "Rainen, daigaku o sotsugyō shimasu.", "Năm sau tui tốt nghiệp đại học."],
+      ["遅刻", "ちこく · chikoku", "danh từ / động từ", "đi trễ", "寝坊して、学校に遅刻した。", "Nebō shite, gakkō ni chikoku shita.", "Ngủ nướng nên đi học trễ."],
+      ["留学", "りゅうがく · ryūgaku", "danh từ / động từ", "du học", "日本に留学したいです。", "Nihon ni ryūgaku shitai desu.", "Tui muốn đi du học Nhật."],
+      ["黒板", "こくばん · kokuban", "danh từ", "bảng đen", "先生が黒板に字を書きました。", "Sensei ga kokuban ni ji o kakimashita.", "Thầy viết chữ lên bảng."]
+    ]}
+  ],
+  "lines": {
+    "nag_new": ["Chữ mới tới rồi. {sen} tính né tới chừng nào?"],
+    "forgot": ["Mới học hôm qua mà. Quên lẹ dữ."],
+    "idle_tap": ["Chọt tui hoài. Chữ đâu có nằm trên đầu tui."],
+    "done": ["Được. Mai đừng có trốn."]
+  }
+}
