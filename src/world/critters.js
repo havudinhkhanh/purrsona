@@ -10,7 +10,7 @@ export function createCritters(game) {
   const area = () => { const b = Y.bbox(), S = Y.S; return { x0: Math.max(b.x0 + 20, 70), x1: Math.min(b.x1 - 20, S.vw - 90), y0: Math.max(b.y0 - 30, S.vh * 0.3), y1: Math.min(b.y1 - 20, S.vh - 90) }; };
   function add(kind, o = {}) {
     const el = document.createElement("button"); el.className = kind + (o.answer ? "" : " amb"); el.type = "button";
-    el.innerHTML = (kind === "bfly" ? BFLY : BEE) + (o.tag ? `<span class="tag${o.lang === "zh" ? " zh" : ""}">${esc(o.tag)}</span>` : "");
+    el.innerHTML = (kind === "bfly" ? BFLY : BEE) + (o.tag ? `<span class="tag${o.lang && o.lang !== "en" ? " " + o.lang : ""}">${esc(o.tag)}</span>` : "");
     el.setAttribute("aria-label", o.tag ? `Đáp án: ${o.tag}` : kind === "bfly" ? "Bướm" : "Ong");
     const A = area(), x = o.x ?? rand(A.x0, A.x1), y = o.y ?? rand(A.y0, A.y1);
     const c = { kind, el, x, y, tx: x, ty: y, vx: 0, vy: 0, t: Math.random() * 9, ph: Math.random() * 6, ...o };

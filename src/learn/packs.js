@@ -5,20 +5,50 @@ import zhCore from "./packs/zh-core.js";
 import enBiz from "./packs/en-business.js";
 import enScene from "./packs/en-scene.js";
 import zhScene from "./packs/zh-scene.js";
+import jaScene from "./packs/ja-scene.js";
 import enVibe from "./packs/en-vibe.js";
 import zhVibe from "./packs/zh-vibe.js";
 import enDeep from "./packs/en-deep.js";
 import zhDeep from "./packs/zh-deep.js";
+import jaDeep from "./packs/ja-deep.js";
+import enYle from "./packs/en-yle.js";
+import enExam from "./packs/en-exam.js";
+import zhHsk from "./packs/zh-hsk.js";
+import jaCore from "./packs/ja-core.js";
+import enLife from "./packs/en-life.js";
+import zhLife from "./packs/zh-life.js";
+import jaLife from "./packs/ja-life.js";
 
-export const PACKS = [enCore, zhCore, enBiz, enScene, zhScene, enVibe, zhVibe, enDeep, zhDeep];
+export const PACKS = [enYle, enExam, enCore, zhCore, zhHsk, jaCore, enBiz, enLife, zhLife, jaLife, enScene, zhScene, jaScene, enVibe, zhVibe, enDeep, zhDeep, jaDeep];
 export const LANGS = {
   en: { vi: "Tiếng Anh", short: "EN", flag: "Aa", tts: "en-GB", hint: "phiên âm" },
   zh: { vi: "Tiếng Trung", short: "中", flag: "中", tts: "zh-CN", hint: "pinyin" },
+  ja: { vi: "Tiếng Nhật", short: "日", flag: "あ", tts: "ja-JP", hint: "cách đọc" },
 };
+export const CJK = (lang) => lang === "zh" || lang === "ja";
+
+// CẤP THEO KỲ THI: nhãn hiện trên thẻ + bậc thang để tự lên cấp / thi nhảy lớp.
+// Tiếng Anh có 2 nhánh: thiếu nhi (Cambridge YLE) và người lớn (CEFR). Tiếng Trung theo HSK, tiếng Nhật theo JLPT.
+export const LEVEL_TAG = {
+  "en-yle/STARTERS": "Starters", "en-yle/MOVERS": "Movers", "en-yle/FLYERS": "Flyers",
+  "en-exam/A1": "A1", "en-core/A2": "A2", "en-core/B1": "B1", "en-core/B2": "B2", "en-exam/C1": "C1",
+  "zh-core/HSK1": "HSK 1", "zh-core/HSK2": "HSK 2", "zh-core/HSK3": "HSK 3", "zh-hsk/HSK4": "HSK 4", "zh-hsk/HSK5": "HSK 5", "zh-hsk/HSK6": "HSK 6",
+  "ja-core/N5": "N5", "ja-core/N4": "N4", "ja-core/N3": "N3", "ja-core/N2": "N2", "ja-core/N1": "N1",
+  "en-business/BIZ": "Chuyên ngành", "en-life/LIFE": "Đời thường", "zh-life/LIFE": "Đời thường", "ja-life/LIFE": "Đời thường",
+};
+export const LADDERS = {
+  en: [["en-yle/STARTERS", "en-yle/MOVERS", "en-yle/FLYERS"], ["en-exam/A1", "en-core/A2", "en-core/B1", "en-core/B2", "en-exam/C1"]],
+  zh: [["zh-core/HSK1", "zh-core/HSK2", "zh-core/HSK3", "zh-hsk/HSK4", "zh-hsk/HSK5", "zh-hsk/HSK6"]],
+  ja: [["ja-core/N5", "ja-core/N4", "ja-core/N3", "ja-core/N2", "ja-core/N1"]],
+};
+export const START_LEVEL = { en: "en-core/A2", zh: "zh-core/HSK1", ja: "ja-core/N5" };
+/** cấp kế tiếp trong cùng nhánh (null nếu đã cao nhất / không thuộc bậc thang nào) */
+export function nextLevel(key) { for (const L of Object.values(LADDERS)) for (const tr of L) { const i = tr.indexOf(key); if (i >= 0) return tr[i + 1] || null; } return null; }
+export const levelTag = (c) => (c ? LEVEL_TAG[`${c.pack}/${c.level}`] || (c.pack === "trend" ? "chữ nóng" : "") : "");
 
 /** thẻ chuẩn: { id, lang, pack, level, w, ph, pos, vi, ex, exPh, exVi } */
 function card(pack, level, row) {
-  if (pack.lang === "zh") { const [w, ph, pos, vi, ex, exPh, exVi] = row; return { id: `zh:${w}`, lang: "zh", pack: pack.id, level: level.id, w, ph, pos, vi, ex, exPh, exVi }; }
+  if (pack.lang === "zh" || pack.lang === "ja") { const [w, ph, pos, vi, ex, exPh, exVi] = row; return { id: `${pack.lang}:${w}`, lang: pack.lang, pack: pack.id, level: level.id, w, ph, pos, vi, ex, exPh, exVi }; }
   const [w, ph, pos, vi, ex, exVi] = row; return { id: `${pack.lang}:${w}`, lang: pack.lang, pack: pack.id, level: level.id, w, ph, pos, vi, ex, exPh: "", exVi };
 }
 let ALL = null; const MIX = { ref: null, n: -1, v: -1, m: null };      // bộ nhớ đệm khi có từ riêng

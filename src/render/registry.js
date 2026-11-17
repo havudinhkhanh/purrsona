@@ -28,7 +28,8 @@ const RENDERERS = {
 
 export async function loadCatManifest(id) {
   const base = new URL(`../../assets/cats/${id}/`, import.meta.url);
-  const man = await fetch(new URL("cat.json", base)).then((r) => { if (!r.ok) throw new Error("cat.json " + r.status); return r.json(); });
+  const man = await fetch(new URL("cat.json", base), { cache: "no-cache" }).then((r) => { if (!r.ok) throw new Error("cat.json " + r.status); return r.json(); });
+  if (man.name === "na na") man.name = "na";      // bản cũ còn trong bộ nhớ đệm của trình duyệt
   return { man, base };
 }
 
@@ -45,5 +46,5 @@ export async function createCatRenderer(id) {
 
 /** danh sách mèo có sẵn trong gói (thêm mèo mới: thêm id vào assets/cats/index.json) */
 export async function listCats() {
-  return fetch(new URL("../../assets/cats/index.json", import.meta.url)).then((r) => r.json());
+  return fetch(new URL("../../assets/cats/index.json", import.meta.url), { cache: "no-cache" }).then((r) => r.json());
 }

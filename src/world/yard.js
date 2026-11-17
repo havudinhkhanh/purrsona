@@ -157,7 +157,7 @@ export function createYard(root) {
     words.forEach((c, i) => {
       const sl = slots[i % slots.length], [x, y] = P(sl.u, sl.v), seed = [...c.id].reduce((a, ch) => a + ch.charCodeAt(0), 0), kind = seed % 4, sz = S.k * (0.085 + (seed % 5) * 0.006);
       const label = c.w.length > 10 ? c.w.slice(0, 9) + "…" : c.w, fs = clamp(S.k * 1.5, 10, 18);
-      sprite("fl" + i, y, flowerSvg(x, y, kind, sz, seed) + `<text class="hand fl-t${c.lang === "zh" ? " zh" : ""}" x="${x}" y="${y + fs * 0.95}" font-size="${fs}" text-anchor="middle" fill="${INK}">${esc(label)}</text>`);
+      sprite("fl" + i, y, flowerSvg(x, y, kind, sz, seed) + `<text class="hand fl-t${c.lang !== "en" ? " " + c.lang : ""}" x="${x}" y="${y + fs * 0.95}" font-size="${fs}" text-anchor="middle" fill="${INK}">${esc(label)}</text>`);
       api.flowerSpots.push({ x, y: y - 40 * sz, card: c });
     });
     // vài bông hoa dại mờ cho vườn khỏi trống

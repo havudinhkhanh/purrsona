@@ -46,7 +46,7 @@ export const vibeFeat = (id) => (VIBES[id]?.tier === "pro" ? "vibe.pro" : VIBES[
 // đồ trang trí → chữ hiện ra khi mèo chơi / khi chạm
 Object.assign(SCENE, {
   v_torii: { en: ["torii", "shrine", "bow"], zh: ["鸟居", "神社", "鞠躬"] }, v_lantern: { en: ["lantern", "serene"], zh: ["石灯笼", "宁静"] },
-  v_sakura: { en: ["cherry blossom", "petal"], zh: ["樱花", "花瓣"] }, v_koi: { en: ["koi"], zh: ["锦鲤"] }, koi_paw: { en: ["splash", "koi"], zh: ["溅", "锦鲤"] }, koi_fall: { en: ["slip", "soaked"], zh: ["滑倒", "淋湿"] }, v_koinobori: { en: ["koi", "serene"], zh: ["锦鲤", "宁静"] },
+  v_sakura: { en: ["cherry blossom", "petal"], zh: ["樱花", "花瓣"] }, v_koi: { en: ["koi"], zh: ["锦鲤"], ja: ["鯉"] }, koi_paw: { en: ["splash", "koi"], zh: ["溅", "锦鲤"], ja: ["水しぶき", "鯉"] }, koi_fall: { en: ["slip", "soaked"], zh: ["滑倒", "淋湿"], ja: ["滑る", "びしょ濡れ"] }, v_koinobori: { en: ["koi", "serene"], zh: ["锦鲤", "宁静"] },
   v_bamboo: { en: ["bamboo"], zh: ["竹子"] }, v_rock: { en: ["hollow", "upside down"], zh: ["太湖石", "倒"] }, v_lantern2: { en: ["tassel", "auspicious"], zh: ["灯笼", "吉利"] },
   v_moongate: { en: ["moon gate", "fortune", "courtyard"], zh: ["月亮门", "福", "院子"] }, v_jar: { en: ["courtyard", "auspicious"], zh: ["院子", "吉利"] },
   v_lamp: { en: ["lamppost", "nostalgia"], zh: ["路灯", "外滩"] }, v_lamp2: { en: ["lamppost", "glamorous"], zh: ["路灯", "摩登"] }, v_rickshaw: { en: ["rickshaw"], zh: ["黄包车"] }, v_gramo: { en: ["gramophone", "jazz"], zh: ["留声机", "爵士乐"] },

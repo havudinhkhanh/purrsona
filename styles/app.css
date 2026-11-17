@@ -587,3 +587,55 @@ a.ghost{text-decoration:none;color:var(--ink)}
 .bubble{font-size:max(15px,calc(clamp(1.25rem,3.6vmin,1.7rem) * var(--sc,1)));max-width:min(78vw,460px,var(--gw,460px))}
 .seg button{min-height:40px}.pchip{min-height:40px}.wtag .wstar{width:40px}
 .card.poster{max-width:none!important;overflow:visible!important}
+/* 2.4 · BẢNG TRƯỢT: thanh kéo luôn nằm trên (không cuộn mất), vuốt xuống để đóng, cuộn mượt, thanh cuộn mảnh */
+.sheet{display:flex;flex-direction:column;overflow:hidden;padding-top:0;padding-bottom:0;will-change:transform;contain:layout paint;touch-action:pan-y}
+.sheet .grab{flex:none;position:relative;margin:0 auto;width:100%;height:26px;background:none;cursor:grab;touch-action:none}
+.sheet .grab::before{content:"";position:absolute;left:50%;top:9px;width:42px;height:5px;margin-left:-21px;border-radius:3px;background:color-mix(in srgb,var(--ink) 30%,transparent);transition:width .2s,background .2s}
+.sheet .grab:active::before,.sheet.drag .grab::before{width:56px;background:color-mix(in srgb,var(--ink) 55%,transparent)}
+.sheet-body{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--safe-b) + 26px);margin:0 -6px;padding-left:6px;padding-right:6px;scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--ink) 22%,transparent) transparent}
+.sheet-body::-webkit-scrollbar{width:4px}.sheet-body::-webkit-scrollbar-track{background:transparent}
+.sheet-body::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--ink) 22%,transparent);border-radius:4px}
+.sh-head{position:sticky;top:0;z-index:2;background:var(--card);padding-top:2px;margin-top:-2px;padding-bottom:10px;margin-bottom:6px}
+.sheet.drag{transition:none!important}
+.scrim{transition:opacity .22s ease}
+/* lời mèo / chữ cạnh mèo / bướm không bao giờ đè lên bảng đang mở */
+body.sheet-on .talkfx,body.sheet-on .wtag{opacity:0;pointer-events:none;transition:opacity .15s}
+/* thanh cuộn mảnh khắp app */
+*{scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--ink) 22%,transparent) transparent}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--ink) 22%,transparent);border-radius:4px}::-webkit-scrollbar-track{background:transparent}
+.sh-head{touch-action:none}
+.wxseg button{font-size:1rem;padding:5px 9px}.wxseg button[data-wxfix=auto]{font-size:.8125rem}
+/* 2.4 · TIẾNG NHẬT */
+:root{--ja:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP","Hiragino Sans","Noto Sans JP",serif}
+.ja,.w.ja,.pw.ja,.pex.ja,.ex.ja,.fl-t.ja,.tag.ja,.wt b.ja{font-family:var(--ja)!important}
+.card .w.ja{font-size:clamp(2.4rem,7.4vmin,4.4rem)}.card.mini:not(.open) .w.ja{font-size:clamp(1.8rem,6vmin,2.4rem)}
+/* 2.4 · TRÌNH ĐỘ: 3 ngôn ngữ, lộ trình theo kỳ thi, thanh tiến độ, thi nhảy lớp */
+.pick3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.pick3 button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;border:1.4px solid var(--line);border-radius:18px;background:var(--card);font:600 .82rem var(--font)}
+.pick3 button b{font:400 1.8rem/1 var(--hand)}.pick3 button b.zh{font-family:var(--zh)}.pick3 button b.ja{font-family:var(--ja)}
+.pick3 button.on{background:var(--ink);color:var(--paper)}
+.lvls button{position:relative;overflow:hidden;font-size:1.1rem;border-width:1.4px;border-radius:16px;padding:10px 12px 14px}
+.lvls button em{font:800 .62rem var(--font);font-style:normal;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:999px;background:var(--ink);color:var(--paper);margin-bottom:2px}
+.lvls button.on em{background:var(--paper);color:var(--ink)}
+.lvls button i{position:absolute;left:0;bottom:0;height:4px;width:var(--p,0%);background:color-mix(in srgb,var(--ink) 55%,transparent);border-radius:0 3px 3px 0}
+.lvls button.on i{background:var(--paper)}
+.ladder{grid-template-columns:repeat(auto-fill,minmax(112px,1fr))}
+.jumpbtn{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;padding:12px 14px;border-radius:18px;background:var(--ink);color:var(--paper);text-align:left}
+.jumpbtn .ico{width:20px;height:20px;flex:none}.jumpbtn span{display:flex;flex-direction:column;gap:2px;flex:1}.jumpbtn b{font:400 1.25rem var(--hand)}.jumpbtn small{font:500 .74rem var(--font);opacity:.8}
+.jumpbtn em{font:800 .62rem var(--font);font-style:normal;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:var(--paper);color:var(--ink)}
+.pace{font:500 .8rem/1.45 var(--font);color:var(--ink-2);margin:10px 2px 0}
+.jq{text-align:center;padding:10px 0 14px}.jq .w{font:400 clamp(2.4rem,10vw,3.4rem)/1 var(--hand);margin:0}.jq .w.zh{font-family:var(--zh)}.jq .ph{font:500 .85rem var(--font);color:var(--ink-2);margin-top:6px}
+.jopts{display:grid;gap:8px}.jopts button{min-height:48px;padding:10px 14px;border:1.4px solid var(--line);border-radius:14px;background:var(--card);text-align:left;font:400 1.15rem var(--hand)}
+.jopts button.ghost{border-style:dashed;color:var(--ink-2);font-size:1rem}
+.jres{padding:16px;border:1.4px dashed var(--line);border-radius:18px;margin-bottom:12px}.jres.ok{border-style:solid;background:var(--paper-2)}.jres b{font:400 1.6rem var(--hand)}.jres p{font:500 .85rem/1.5 var(--font);color:var(--ink-2);margin:6px 0 0}
+.btn.wide{width:100%;justify-content:center}
+.lifeprop{transition:opacity .3s}.lifeprop.gone{opacity:0}
+.lifeprop.drop-in svg{animation:propdrop .5s cubic-bezier(.3,1.4,.5,1) both}
+@keyframes propdrop{from{transform:translateY(-26px);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.lifeprop.drop-in svg{animation:none}}
+/* 2.4 · sửa sau soát: lớp đồ đời thường phủ cả cảnh; tiếng Trung/Nhật luôn hiện cách đọc trên thẻ nhỏ; nhãn cấp gọn; thanh kéo ẩn trên máy tính */
+.life{position:absolute;inset:0;pointer-events:none}
+.typo[data-lang=ja] .card.mini:not(.open) .ph,.typo[data-lang=zh] .card.mini:not(.open) .ph{display:block;font-size:.78rem;margin-top:2px}
+.lvls small{display:block;line-height:1.35}.lvls small .ico{display:inline-block;vertical-align:-1px}
+.pick3 button span{white-space:nowrap;font-size:clamp(.7rem,3.2vw,.82rem)}
+@media (min-width:760px){.sheet .grab{display:none}.sh-head{touch-action:auto}}

@@ -1,9 +1,9 @@
 // Service worker: tải trước vỏ app, sau đó "mạng trước – lỗi thì dùng bản đã lưu" cho mọi file cùng nguồn.
 // Mỗi lần phát hành: tăng VERSION để máy người dùng lấy bản mới.
-const VERSION = "purrsona-2.3.0";
+const VERSION = "purrsona-2.4.0";
 const SHELL = ["./", "index.html", "styles/app.css", "manifest.webmanifest", "icons/icon.svg", "icons/apple-touch-icon.png", "assets/graphite.png", "src/main.js", "src/game.js", "src/config.js",
-  "src/world/yard.js", "src/world/critters.js", "src/world/weather.js", "src/world/play.js", "src/world/vibe.js", "src/ui/wall.js", "src/ui/hud.js", "src/ui/icons.js", "src/ui/closeup.js", "src/vendor/rough.js",
-  "src/learn/srs.js", "src/learn/packs.js", "src/learn/tts.js", "src/learn/scan.js", "src/learn/trends.js", "src/meta/bridge.js", "src/meta/notify.js", "src/learn/packs/en-core.js", "src/learn/packs/zh-core.js", "src/learn/packs/en-business.js", "src/learn/packs/en-scene.js", "src/learn/packs/zh-scene.js", "src/learn/packs/en-vibe.js", "src/learn/packs/zh-vibe.js", "src/meta/account.js",
+  "src/world/yard.js", "src/world/critters.js", "src/world/weather.js", "src/world/play.js", "src/world/vibe.js", "src/world/life.js", "src/ui/wall.js", "src/ui/hud.js", "src/ui/icons.js", "src/ui/closeup.js", "src/vendor/rough.js",
+  "src/learn/srs.js", "src/learn/packs.js", "src/learn/tts.js", "src/learn/scan.js", "src/learn/trends.js", "src/meta/bridge.js", "src/meta/notify.js", "src/learn/packs/en-core.js", "src/learn/packs/zh-core.js", "src/learn/packs/en-business.js", "src/learn/packs/en-scene.js", "src/learn/packs/zh-scene.js", "src/learn/packs/ja-scene.js", "src/learn/packs/en-vibe.js", "src/learn/packs/zh-vibe.js", "src/learn/packs/en-deep.js", "src/learn/packs/zh-deep.js", "src/learn/packs/ja-deep.js", "src/learn/packs/en-yle.js", "src/learn/packs/en-exam.js", "src/learn/packs/zh-hsk.js", "src/learn/packs/ja-core.js", "src/learn/packs/en-life.js", "src/learn/packs/zh-life.js", "src/learn/packs/ja-life.js", "src/meta/account.js",
   "src/core/store.js", "src/core/util.js", "src/core/sound.js", "src/core/music.js", "src/world/art.js", "src/cat/voice.js", "src/render/clips.js", "src/render/registry.js", "src/render/sprite/sprite-renderer.js", "src/render/vector/morph.js", "src/render/vector/vector-renderer.js",
   "src/cat/brain.js", "src/cat/body.js", "src/cat/bond.js", "src/cat/lines.js", "src/cat/memory.js", "src/cat/personality.js", "src/meta/note.js",
   "assets/fonts/ph-latin-400.woff2", "assets/fonts/ph-vietnamese-400.woff2", "assets/fonts/bvp-latin-400.woff2", "assets/fonts/bvp-vietnamese-400.woff2",
@@ -12,7 +12,7 @@ self.addEventListener("install", (e) => { e.waitUntil(caches.open(VERSION).then(
 self.addEventListener("activate", (e) => { e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== VERSION && k !== "purr-state").map((k) => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener("fetch", (e) => {
   const u = new URL(e.request.url); if (e.request.method !== "GET" || u.origin !== location.origin) return;
-  e.respondWith(fetch(e.request).then((r) => { if (r.ok) { const c = r.clone(); caches.open(VERSION).then((ca) => ca.put(e.request, c)); } return r; }).catch(() => caches.match(e.request).then((m) => m || caches.match("index.html"))));
+  e.respondWith((e.request.mode === "navigate" ? fetch(e.request) : fetch(e.request, { cache: "no-cache" })).then((r) => { if (r.ok) { const c = r.clone(); caches.open(VERSION).then((ca) => ca.put(e.request, c)); } return r; }).catch(() => caches.match(e.request).then((m) => m || caches.match("index.html"))));
 });
 
 // ---------------------------------------------------------------- MÈO NHẮC: soạn thông báo từ "tình hình hôm nay" app đã lưu

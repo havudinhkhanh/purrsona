@@ -1,0 +1,38 @@
+// Tiếng Anh người lớn theo khung CEFR: A1 (bắt đầu, Free) và C1 (nâng cao, Pro). A2–B2 nằm trong en-core.
+export default {
+  id: "en-exam", lang: "en", vi: "Khung CEFR", tier: "free",
+  levels: [
+    { id: "A1", vi: "A1 · bắt đầu", tier: "free", words: [
+      ["breakfast", "/ˈbrekfəst/", "n", "bữa sáng", "I have breakfast at seven.", "Tôi ăn sáng lúc bảy giờ."],
+      ["brother", "/ˈbrʌðə(r)/", "n", "anh/em trai", "My brother has a cat.", "Anh trai tôi có một con mèo."],
+      ["morning", "/ˈmɔːnɪŋ/", "n", "buổi sáng", "Good morning! Did you sleep well?", "Chào buổi sáng! Ngủ ngon không?"],
+      ["bread", "/bred/", "n", "bánh mì", "I eat bread and eggs for breakfast.", "Bữa sáng tôi ăn bánh mì với trứng."],
+      ["sister", "/ˈsɪstə(r)/", "n", "chị/em gái", "My sister lives in Da Nang.", "Chị tôi sống ở Đà Nẵng."],
+      ["door", "/dɔː(r)/", "n", "cửa", "Please close the door.", "Làm ơn đóng cửa lại."],
+      ["money", "/ˈmʌni/", "n", "tiền", "I don't have much money.", "Tôi không có nhiều tiền."],
+      ["open", "/ˈəʊpən/", "v, adj", "mở", "The shop is open until nine.", "Cửa hàng mở tới chín giờ."],
+      ["cold", "/kəʊld/", "adj", "lạnh", "It's cold today. Wear a jacket.", "Hôm nay lạnh. Mặc áo khoác vào."],
+      ["street", "/striːt/", "n", "con đường, phố", "I live on a quiet street.", "Tôi sống trên một con phố yên tĩnh."],
+      ["buy", "/baɪ/", "v", "mua", "I want to buy some bread.", "Tôi muốn mua ít bánh mì."],
+      ["work", "/wɜːk/", "v, n", "làm việc; công việc", "I work in an office.", "Tôi làm việc ở văn phòng."],
+      ["near", "/nɪə(r)/", "prep", "gần", "Is there a bank near here?", "Gần đây có ngân hàng không?"],
+      ["weekend", "/ˌwiːkˈend/", "n", "cuối tuần", "What do you do at the weekend?", "Cuối tuần bạn làm gì?"],
+    ] },
+    { id: "C1", vi: "C1 · nâng cao", tier: "pro", words: [
+      ["fastidious", "/fæˈstɪdiəs/", "adj", "khó tính, cầu kỳ", "Cats are fastidious about their food.", "Mèo rất khó tính chuyện ăn uống."],
+      ["nuance", "/ˈnjuːɑːns/", "n", "sắc thái tinh tế", "Translation loses some nuance.", "Bản dịch mất đi vài sắc thái."],
+      ["ubiquitous", "/juːˈbɪkwɪtəs/", "adj", "có mặt khắp nơi", "Phones are ubiquitous now.", "Điện thoại giờ có mặt ở khắp nơi."],
+      ["pragmatic", "/præɡˈmætɪk/", "adj", "thực tế, thực dụng", "We need a pragmatic solution.", "Chúng ta cần một giải pháp thực tế."],
+      ["alleviate", "/əˈliːvieɪt/", "v", "làm dịu, giảm nhẹ", "A short walk can alleviate stress.", "Đi bộ một chút có thể giảm căng thẳng."],
+      ["ambivalent", "/æmˈbɪvələnt/", "adj", "phân vân, nửa muốn nửa không", "I feel ambivalent about the offer.", "Tôi còn phân vân về lời đề nghị."],
+      ["scrutinize", "/ˈskruːtənaɪz/", "v", "xem xét kỹ", "The auditors scrutinized every invoice.", "Kiểm toán xem xét kỹ từng hoá đơn."],
+      ["astute", "/əˈstjuːt/", "adj", "sắc sảo, tinh tường", "She made an astute comment about the risks.", "Cô ấy nhận xét rất sắc về các rủi ro."],
+      ["conundrum", "/kəˈnʌndrəm/", "n", "bài toán khó, thế khó", "Pricing is always a conundrum.", "Định giá luôn là bài toán khó."],
+      ["lethargic", "/ləˈθɑːdʒɪk/", "adj", "uể oải, lờ đờ", "I feel lethargic after a big lunch.", "Ăn trưa no xong tôi thấy uể oải."],
+      ["mitigate", "/ˈmɪtɪɡeɪt/", "v", "giảm thiểu (rủi ro)", "We hedge to mitigate currency risk.", "Chúng tôi phòng ngừa để giảm rủi ro tỷ giá."],
+      ["tenacious", "/təˈneɪʃəs/", "adj", "bền bỉ, lì", "A tenacious learner never breaks the streak.", "Người học bền bỉ không bao giờ đứt chuỗi."],
+      ["candid", "/ˈkændɪd/", "adj", "thẳng thắn", "Thanks for your candid feedback.", "Cảm ơn góp ý thẳng thắn của bạn."],
+      ["nonchalant", "/ˈnɒnʃələnt/", "adj", "thờ ơ, tỉnh bơ", "The cat looked nonchalant after breaking the vase.", "Làm vỡ bình xong con mèo vẫn tỉnh bơ."],
+    ] },
+  ],
+};

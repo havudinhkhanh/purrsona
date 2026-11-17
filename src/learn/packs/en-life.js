@@ -1,0 +1,32 @@
+// Gói "Đời thường" (tiếng Anh, Free): chữ hiện ra khi mèo bày trò trong nhà – kéo khăn rớt, chôm vớ, xô ly nước…
+export default {
+  id: "en-life", lang: "en", vi: "Đời thường", tier: "free",
+  levels: [
+    { id: "LIFE", vi: "Đời thường (mèo bày gì học nấy)", tier: "free", words: [
+      ["towel", "/ˈtaʊəl/", "n", "khăn tắm", "The cat pulled the towel off the line.", "Con mèo kéo cái khăn rớt khỏi dây phơi."],
+      ["pick up", "/pɪk ˈʌp/", "v", "nhặt lên", "Please pick up the towel.", "Làm ơn nhặt cái khăn lên."],
+      ["toothbrush", "/ˈtuːθbrʌʃ/", "n", "bàn chải đánh răng", "Why is the toothbrush on the floor?", "Sao bàn chải lại nằm dưới sàn?"],
+      ["brush your teeth", "/brʌʃ jɔː tiːθ/", "phrase", "đánh răng", "Brush your teeth before bed.", "Đánh răng trước khi ngủ."],
+      ["cup", "/kʌp/", "n", "cái ly, cái tách", "She pushed the cup to the edge.", "Nó đẩy cái ly ra mép bàn."],
+      ["spill", "/spɪl/", "v", "làm đổ (nước)", "Oops, the water spilled everywhere.", "Ối, nước đổ tùm lum."],
+      ["sock", "/sɒk/", "n", "chiếc vớ", "One sock is missing again.", "Lại mất một chiếc vớ."],
+      ["steal", "/stiːl/", "v", "chôm, ăn trộm", "The cat steals socks at night.", "Con mèo chôm vớ ban đêm."],
+      ["slippers", "/ˈslɪpəz/", "n", "dép đi trong nhà", "The cat sleeps in my slippers.", "Con mèo ngủ trong dép của tôi."],
+      ["box", "/bɒks/", "n", "cái hộp", "If it fits, the cat sits in the box.", "Vừa là mèo ngồi vô hộp."],
+      ["bowl", "/bəʊl/", "n", "cái chén, cái tô", "Her bowl is empty. Again.", "Chén của nó lại trống."],
+      ["starving", "/ˈstɑːvɪŋ/", "adj", "đói meo", "She acts like she's starving.", "Nó làm như sắp chết đói."],
+      ["phone", "/fəʊn/", "n", "điện thoại", "The cat sat on my phone.", "Con mèo ngồi lên điện thoại của tôi."],
+      ["scroll", "/skrəʊl/", "v", "lướt (màn hình)", "Stop scrolling and study.", "Đừng lướt nữa, học đi."],
+      ["newspaper", "/ˈnjuːzpeɪpə(r)/", "n", "tờ báo", "She lies on the newspaper I'm reading.", "Nó nằm lên tờ báo tôi đang đọc."],
+      ["alarm clock", "/əˈlɑːm klɒk/", "n", "đồng hồ báo thức", "The cat knocked the alarm clock off the shelf.", "Con mèo xô đồng hồ báo thức rớt khỏi kệ."],
+      ["wake up", "/weɪk ˈʌp/", "v", "thức dậy", "Wake up, it's time to study.", "Dậy đi, tới giờ học."],
+      ["pillow", "/ˈpɪləʊ/", "n", "cái gối", "The cat kneads my pillow.", "Con mèo nhào cái gối của tôi."],
+      ["blanket", "/ˈblæŋkɪt/", "n", "cái chăn", "She hides under the blanket.", "Nó trốn dưới chăn."],
+      ["keys", "/kiːz/", "n", "chùm chìa khoá", "My keys are under the sofa again.", "Chìa khoá lại nằm dưới gầm sofa."],
+      ["lose", "/luːz/", "v", "làm mất", "I always lose my keys.", "Tôi toàn làm mất chìa khoá."],
+      ["drop", "/drɒp/", "v", "làm rớt", "She dropped my keys behind the sofa.", "Nó làm rớt chìa khoá ra sau sofa."],
+      ["hairball", "/ˈheəbɔːl/", "n", "cục lông (mèo nôn ra)", "There's a hairball on the carpet.", "Có cục lông trên thảm."],
+      ["throw up", "/θrəʊ ˈʌp/", "v", "nôn, ói", "The cat threw up on my shoe.", "Con mèo ói lên giày tôi."],
+    ] },
+  ],
+};

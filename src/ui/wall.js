@@ -3,7 +3,7 @@
 // đố thì bướm bay ra mang đáp án, chạm đúng con là xong. Không có cửa sổ bật lên.
 import { esc, dayKey, pick } from "../core/util.js";
 import { icon } from "./icons.js";
-import { LANGS, cardsOfLevel } from "../learn/packs.js";
+import { LANGS, cardsOfLevel, levelTag } from "../learn/packs.js";
 import { can } from "../config.js";
 
 const WD = ["chủ nhật", "thứ hai", "thứ ba", "thứ tư", "thứ năm", "thứ sáu", "thứ bảy"];
@@ -23,7 +23,7 @@ export function createWall(game, root) {
       <button data-w="menu">${icon("menu")}<span>Thêm</span></button>
     </nav>`;
   const q = (x) => el.querySelector(x), tl = q(".tl");
-  let mode = "ambient", shift = 0, cur = null, series = [], quizT = 0, lastQuiz = Date.now(), shownAt = 0;
+  let blind = null, mode = "ambient", shift = 0, cur = null, series = [], quizT = 0, lastQuiz = Date.now(), shownAt = 0;
 
   // ------------------------------------------------------------------ đồng hồ & số liệu (góc phải)
   function clock() {
@@ -52,7 +52,8 @@ export function createWall(game, root) {
   }
   const hotInfo = (c) => { const h = learn.hotOf(c.id); return h && s.learn.hot?.items?.includes(h) ? h : null; };
   const why = (c) => { const h = hotInfo(c); return h ? `<p class="why"><b>Vì sao nóng</b> ${esc(h.why)}</p>${h.src?.[0] ? `<p class="src"><a href="${esc(h.src[0].u)}" target="_blank" rel="noopener">Đọc tin: ${esc(h.src[0].t)} ↗</a></p>` : ""}` : ""; };
-  const lab = (c) => { const st = learn.stat(c.id); if (hotInfo(c) && (!st || st.box < 4)) return `chữ nóng hôm nay · ${hotInfo(c).tag}`; if (!st || !st.seen) return "từ mới hôm nay"; if (st.box >= 4) return "đã thuộc · nhắc lại cho vui"; if (st.due <= Date.now() && st.right + st.wrong > 0) return "tới lúc ôn"; return "đang học"; };
+  const lab = (c) => { const tg = levelTag(c); return lab0(c) + (tg && !hotInfo(c) ? ` · ${tg}` : ""); };
+  const lab0 = (c) => { const st = learn.stat(c.id); if (hotInfo(c) && (!st || st.box < 4)) return `chữ nóng hôm nay · ${hotInfo(c).tag}`; if (!st || !st.seen) return "từ mới hôm nay"; if (st.box >= 4) return "đã thuộc · nhắc lại cho vui"; if (st.due <= Date.now() && st.right + st.wrong > 0) return "tới lúc ôn"; return "đang học"; };
   // thẻ chữ mặc định là widget nhỏ ở góc (để ngắm mèo); chạm vào thẻ mới mở rộng xem ví dụ, lý do, nguồn
   function write(html, cls = "", big = false) { tl.className = "tl card " + cls + (big ? " big" : " mini"); tl.innerHTML = html; tl.scrollTop = 0; tl.classList.remove("in"); void tl.offsetWidth; tl.classList.add("in"); shownAt = Date.now(); }
   const say = (c, ex = false) => `<button class="ib${ex ? " sm" : ""}" ${ex ? "data-sayex" : "data-say"}="${esc(c.id)}" aria-label="${ex ? "Nghe câu ví dụ" : "Nghe"}">${icon("speaker")}</button>`;
@@ -81,16 +82,18 @@ export function createWall(game, root) {
       <h1 class="pw ${c.lang}" data-say="${esc(c.id)}">${esc(c.w)}</h1>
       <p class="pph">${esc(c.ph || "")}<span>·</span>${esc(c.vi)}</p>
       ${c.ex ? `<p class="pex ${c.lang}" data-sayex="${esc(c.id)}">${esc(c.ex)}</p>${c.exPh ? `<p class="pexph">${esc(c.exPh)}</p>` : ""}<p class="pexvi">${esc(c.exVi || "")}</p>` : ""}
-      <div class="pacts">${say(c)}${star(c)}<button class="ib" data-w="next" aria-label="Chữ khác">${icon("arrow")}</button>${n ? `<button class="pchip" data-w="${t.neu ? "learn" : "review"}">${t.neu ? `${t.neu} từ mới` : `${t.due} từ cần ôn`} · ${t.neu ? "Học" : "Ôn"}</button>` : ""}</div>`, "poster");
+      <div class="pacts">${say(c)}${star(c)}<button class="ib" data-w="next" aria-label="Chữ khác">${icon("arrow")}</button>${n ? `<button class="pchip" data-w="${t.neu ? "learn" : "review"}">${t.neu ? `${t.neu} từ mới` : `${t.due} từ cần ôn`} · ${t.neu ? "Học" : "Ôn"}</button>` : learn.canExtra() ? `<button class="pchip" data-w="extra">Học thêm 3 từ</button>` : ""}</div>`, "poster");
     requestAnimationFrame(() => game.yard?.setReserve?.(tl.getBoundingClientRect().bottom + 6));      // chừa trời cho tranh chữ, vườn lùi xuống
     return true;
   }
+  // hết chữ cấp đang học, cấp kế khoá theo gói: rủ thi nhảy lớp hoặc nâng gói (không nói dối "mai có chữ")
+  function stuck() { const st = learn.stalled(); if (!st) return ""; const tag = levelTag({ pack: st.next.split("/")[0], level: st.next.split("/")[1] }); return `<p class="lead">Hết chữ cấp này. ${esc(tag)} mở với gói ${st.tier === "pro" ? "Pro" : "Plus"}; trong lúc đó ${esc(game.cat.name)} lấy chữ đời thường cho học.</p><div class="acts"><button class="btn pri" data-w="plans">Xem gói</button><button class="btn" data-w="lang">Trình độ</button></div>`; }
   function ambient(force) {
     if (!s.onboarded) return onboard();
     mode = "ambient";
     if (posterOn() && poster(force)) return;
     const c = featured();
-    if (!c) { write(`${top(LANGS[learn.lang].vi)}<h1 class="w">Xong rồi</h1><p class="lead">Hôm nay hết chữ. Mai ${esc(game.cat.name)} đem chữ mới tới.</p>`); cur = null; return; }
+    if (!c) { write(`${top(LANGS[learn.lang].vi)}<h1 class="w">Xong rồi</h1><p class="lead">Hôm nay hết chữ. Mai ${esc(game.cat.name)} đem chữ mới tới.</p>${learn.canExtra() ? `<div class="acts"><button class="btn pri" data-w="extra">${icon("bolt")}Học thêm 3 từ</button></div>` : stuck()}`); cur = null; return; }
     if (!force && cur && cur.id === c.id && tl.dataset.id === c.id) return;
     cur = c; tl.dataset.id = c.id;
     const st = learn.stat(c.id), isNew = !st || !st.seen;
@@ -125,7 +128,7 @@ export function createWall(game, root) {
   }
   function answer(id, b) {
     if (mode !== "quiz" || !cur) return; mode = "result"; clearTimeout(quizT);
-    const c = cur, ok = id === c.id, r = learn.answer(c.id, ok);
+    const c = cur, ok = id === c.id, r = learn.answer(c.id, ok, { blind: blind === c.id }); blind = null;
     tl.querySelectorAll("[data-ans]").forEach((x) => { x.disabled = true; if (x.dataset.ans === c.id) x.classList.add("right"); else if (x.dataset.ans === id) x.classList.add("wrong"); });
     const bf = game.critters.list.find((x) => x.answer && x.id === c.id); if (bf) cr.land(bf, true); if (b && !ok) cr.land(b, false);
     setTimeout(() => cr.clearAnswers(), 1400);
@@ -137,7 +140,7 @@ export function createWall(game, root) {
   }
   function next() {
     if (series.length) { const n = series.shift(); if (n.__new) return showNew(n); return quiz(n); }
-    if (mode === "result" || mode === "quiz") { ambient(true); if (learn.doneToday()) { game.say("done"); game.emit("lesson-done"); askRemind(); } }
+    if (mode === "result" || mode === "quiz") { ambient(true); if (learn.doneToday()) { const fast = (learn.pace() ?? 0) >= 0.75 && learn.canExtra(); game.say(fast ? "pace_fast" : "done"); game.emit("lesson-done"); askRemind(); } }
   }
   /** học xong bài đầu tiên: rủ bật nhắc (hỏi đúng 1 lần) */
   function askRemind() {
@@ -159,6 +162,8 @@ export function createWall(game, root) {
   function showNew(c0) {
     const c = Object.getPrototypeOf(c0); mode = "new"; cur = c; tl.dataset.id = c.id;
     const left = series.filter((x) => x.__new).length;
+    // học nhanh → hỏi "biết chữ này chưa?" trước khi lộ nghĩa: biết thật thì nhảy cóc (ôn thưa hơn)
+    if ((learn.pace() ?? 0) >= 0.75 && !c0.__shown) { write(`${top(`từ mới${left ? ` · còn ${left} từ nữa` : ""} · biết chưa?`, c)}${wordH(c)}<p class="ph">${esc(c.ph || "")}</p><p class="hint">Biết rồi thì đố luôn, đúng là khỏi học chữ này.</p><div class="acts"><button class="btn pri" data-w="know">${icon("bolt")}Biết rồi, đố đi</button><button class="btn" data-w="reveal">Xem nghĩa</button></div>`, "new"); autoSay(c); return; }
     write(`${top(`từ mới${left ? ` · còn ${left} từ nữa` : ""}`, c)}${body(c)}<div class="acts"><button class="btn pri" data-w="seen-next">${icon("check")}Nhớ rồi, đố đi</button><button class="btn text x-mini" data-w="more">Ví dụ</button><button class="btn text x-open" data-w="more">Thu gọn</button></div>`, "new");
     autoSay(c);
     game.sayLine(game.lineOf("newword", { w: c.w }), 3000);
@@ -186,11 +191,14 @@ export function createWall(game, root) {
     const a = b.dataset.w;
     if (a === "seen" && cur) { learn.seen(cur.id); whisper(game.lineOf("newword", { w: cur.w })); setTimeout(() => quiz(cur), 900); return; }
     if (a === "seen-next" && cur) { learn.seen(cur.id); return quiz(cur); }
+    if (a === "know" && cur) { learn.seen(cur.id); blind = cur.id; return quiz(cur); }
+    if (a === "reveal" && cur) { const c = cur, o = Object.assign(Object.create(c), { __new: 1, __shown: 1 }); return showNew(o); }
     if (a === "next") { shift++; if (Math.random() < 0.35) game.jab("ui_next"); return ambient(true); }
     if (a === "quizme" && cur) return quiz(cur);
-    if (a === "skip") { cr.clearAnswers(); series = []; clearTimeout(quizT); game.jab("ui_skip"); return ambient(true); }
+    if (a === "skip") { game.emit("quiz-skip", cur?.id); cr.clearAnswers(); series = []; clearTimeout(quizT); game.jab("ui_skip"); return ambient(true); }
     if (a === "more") { tl.classList.toggle("open"); return; }
     if (a === "learn") return lesson("full");
+    if (a === "extra") { const n = learn.extra(3); if (!n) { whisper("Hết chữ ở cấp này rồi. Vô Trình độ mà nhảy lớp."); return ambient(true); } game.jab("pace_more", {}, true); return lesson("full"); }
     if (a === "remind") { game.notify.enable().then((r) => whisper(r === "ok" ? "Ok. Tối nay tui nhắc." : "Chưa bật được. Vào Thêm › Cài đặt.")); return ambient(true); }
     if (a === "later") { whisper("Ừ. Tự giác nha."); return ambient(true); }
     if (a === "menu" && Math.random() < 0.4) game.jab("ui_menu");

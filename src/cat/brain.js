@@ -159,7 +159,7 @@ export function createBrain(game) {
   const OUTDOOR = new Set(["swing", "slide", "trellis", "dig", "knockpot", "sniff", "sunbathe", "sitpretty", "pondgaze", "scratchtree", "flowerpounce", "chase", "vibe", "koi", "zoomies", "explore", "watch", "perch", "sulk"]);
   const wxMod = (id) => (wx().raining && OUTDOOR.has(id) ? 0 : wx().hot && id === "sunbathe" ? 0 : 1);
   // đồ chơi trong vườn (xích đu, cầu tuột, giàn bầu, đào đất, xô chậu) – world/play.js
-  ACTS.push(...(game.play?.acts({ goUV, down, say, cool, used, T, N }) || []), ...(game.vibe?.acts({ goUV, down, say, cool, used, T, N }) || []));
+  ACTS.push(...(game.play?.acts({ goUV, down, say, cool, used, T, N }) || []), ...(game.vibe?.acts({ goUV, down, say, cool, used, T, N }) || []), ...(game.life?.acts({ goUV, down, say, cool, used, T, N, comeTo }) || []));
   function choose() {
     const kid = game.age.stage === "kitten";
     const scored = ACTS.map((a) => ({ a, s: Math.max(0, a.score()) * qmod(a.id) * wxMod(a.id) * (kid && ["selfplay", "zoomies", "explore", "chase"].includes(a.id) ? 1.6 : 1) * (a.id === st.cur ? 0.35 : 1) * rand(0.75, 1.25) }));

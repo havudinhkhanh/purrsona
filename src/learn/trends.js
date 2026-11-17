@@ -22,7 +22,7 @@ export function applyTrends(game, data) {
   if (L.hot.sig === sig) return false;
   const items = [];
   for (const x of data.words.slice(0, 14)) {
-    if (!x || !x.w || !x.vi || (x.lang !== "en" && x.lang !== "zh")) continue;
+    if (!x || !x.w || !x.vi || !["en", "zh", "ja"].includes(x.lang)) continue;
     const w = cut(x.w, 40), packId = `${x.lang}:${w}`;
     let id = learn.card(packId) && learn.card(packId).pack !== "trend" ? packId : `${x.lang}:hot:${w.toLowerCase()}`;
     if (id !== packId || !learn.card(id)) {

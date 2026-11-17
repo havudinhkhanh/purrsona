@@ -13,15 +13,15 @@ export const PROPS = {
 };
 // việc của mèo → chữ hiện ra (id thẻ trong gói en-scene / zh-scene, hoặc gói khác)
 export const SCENE = {
-  dig: { en: ["dig", "soil"], zh: ["挖", "泥土"] }, snap: { en: ["rose", "snap"], zh: ["玫瑰", "弄断"] },
-  swing: { en: ["swing"], zh: ["秋千", "荡秋千"] }, slide: { en: ["slide", "ladder"], zh: ["滑梯", "梯子"] },
-  trellis: { en: ["climb", "trellis", "gourd", "vine"], zh: ["爬", "瓜架", "葫芦", "藤"] }, pot: { en: ["knock over", "flower pot"], zh: ["打翻", "花盆"] },
-  innocent: { en: ["innocent", "mess"], zh: ["无辜", "乱七八糟"] }, tidy: { en: ["tidy up"], zh: ["收拾"] },
-  scratchtree: { en: ["scratch", "bark", "claw"], zh: ["抓", "树皮", "爪子"] }, rain: { en: ["shelter", "soaked"], zh: ["躲雨", "淋湿"] },
-  puddle: { en: ["puddle"], zh: ["水坑"] }, shade: { en: ["shade", "scorching"], zh: ["树荫"] }, sunbathe: { en: ["sunbathe"], zh: ["晒太阳"] },
-  wind: { en: ["gust", "pounce"], zh: ["刮风", "扑"] }, pounce: { en: ["pounce", "flutter"], zh: ["扑", "蝴蝶"] }, zoomies: { en: ["zoomies"], zh: [] },
-  knead: { en: ["make biscuits"], zh: ["踩奶"] }, nap: { en: ["nap", "loaf"], zh: ["打盹"] }, stretch: { en: ["stretch"], zh: ["伸懒腰"] },
-  groom: { en: ["groom"], zh: ["舔毛"] }, purr: { en: ["purr"], zh: ["打呼噜"] }, pond: { en: ["pond"], zh: ["池塘"] },
+  dig: { en: ["dig", "soil"], zh: ["挖", "泥土"], ja: ["掘る", "土"] }, snap: { en: ["rose", "snap"], zh: ["玫瑰", "弄断"], ja: ["バラ", "折る"] },
+  swing: { en: ["swing"], zh: ["秋千", "荡秋千"], ja: ["ブランコ"] }, slide: { en: ["slide", "ladder"], zh: ["滑梯", "梯子"], ja: ["滑り台", "はしご"] },
+  trellis: { en: ["climb", "trellis", "gourd", "vine"], zh: ["爬", "瓜架", "葫芦", "藤"], ja: ["登る", "ひょうたん", "つる"] }, pot: { en: ["knock over", "flower pot"], zh: ["打翻", "花盆"], ja: ["倒す", "植木鉢"] },
+  innocent: { en: ["innocent", "mess"], zh: ["无辜", "乱七八糟"], ja: ["無実", "散らかす"] }, tidy: { en: ["tidy up"], zh: ["收拾"], ja: ["片付ける"] },
+  scratchtree: { en: ["scratch", "bark", "claw"], zh: ["抓", "树皮", "爪子"], ja: ["引っかく", "爪"] }, rain: { en: ["shelter", "soaked"], zh: ["躲雨", "淋湿"], ja: ["雨宿り", "びしょ濡れ"] },
+  puddle: { en: ["puddle"], zh: ["水坑"], ja: ["水たまり"] }, shade: { en: ["shade", "scorching"], zh: ["树荫"], ja: ["日陰"] }, sunbathe: { en: ["sunbathe"], zh: ["晒太阳"], ja: ["日向ぼっこ"] },
+  wind: { en: ["gust", "pounce"], zh: ["刮风", "扑"], ja: ["突風", "飛びかかる"] }, pounce: { en: ["pounce", "flutter"], zh: ["扑", "蝴蝶"], ja: ["飛びかかる", "蝶々"] }, zoomies: { en: ["zoomies"], zh: [], ja: ["猫の運動会"] },
+  knead: { en: ["make biscuits"], zh: ["踩奶"], ja: ["ふみふみ"] }, nap: { en: ["nap", "loaf"], zh: ["打盹"], ja: ["昼寝", "香箱座り"] }, stretch: { en: ["stretch"], zh: ["伸懒腰"], ja: ["伸び"] },
+  groom: { en: ["groom"], zh: ["舔毛"], ja: ["毛づくろい"] }, purr: { en: ["purr"], zh: ["打呼噜"], ja: ["ゴロゴロ"] }, pond: { en: ["pond"], zh: ["池塘"], ja: ["池", "鯉"] },
 };
 
 export function createPlay(game) {

@@ -69,6 +69,31 @@ const L = {
   wx_cloudy: ["Âm u. Hợp học bài.", "Trời xám. Tui cũng xám."],
   wx_after: ["Tạnh rồi. Ra vườn.", "Hết mưa. Chữ còn không?"],
   // ---- sân chơi & đồ vật
+  // ---- đời thường (mèo bày trò trong nhà) – lẫy, nhắc khéo, kiệm lời
+  life_towel: ["Khăn rớt. Nhặt lên đi {sen}.", "Tui không kéo. Gió kéo.", "Nằm đất êm hơn trên dây."],
+  life_teeth: ["Đánh răng mà chi. Mồm tui còn thơm, có được ăn cá đâu mà đánh.", "Bàn chải hả. Giờ là đồ chơi của tui.", "Răng tui trắng sẵn. Lo học chữ đi {sen}."],
+  life_cup: ["Ly nước. Rơi. Vật lý thôi.", "Nó tự đi ra mép bàn.", "Ướt hết. Không phải tui."],
+  life_sock: ["Một chiếc vớ. Chiếc kia tui để dành.", "Quà nè. Khỏi cảm ơn.", "Vớ ai đây. Tui giữ."],
+  life_slipper: ["Dép của {sen}. Giờ của tui.", "Ấm. Đừng đòi."],
+  life_box: ["Vừa khít. Đừng hỏi.", "Hộp. Nhà mới.", "Thùng giấy hơn nệm xịn."],
+  life_bowl: ["Chén trống. Thấy chưa.", "Đói. Học xong 3 chữ rồi cho tui ăn.", "Chén này buồn lắm."],
+  life_phone: ["Lướt hoài. Tui ngồi lên luôn.", "Màn hình ấm. Của tui.", "Điện thoại nghỉ. Học đi."],
+  life_paper: ["Tin nóng nhất: tui nằm trên đây.", "Đọc báo? Đọc chữ trước."],
+  life_alarm: ["Chuông kêu. Dậy học.", "Tui tắt giùm. Khỏi cảm ơn.", "Nằm nướng hả. Tui thấy."],
+  life_pillow: ["Gối của {sen}. Ấm.", "Nhào bột chút rồi ngủ."],
+  life_keys: ["Chìa khoá? Không thấy. Không biết.", "Gầm ghế. Tui không nói gì hết."],
+  life_umbrella: ["Dù. Trú. Đừng che chung.", "Mưa. Tui có dù, {sen} thì không."],
+  life_picked: ["Ờ, nhặt rồi hả. Siêng bất ngờ.", "Dọn rồi. Lát tui bày lại.", "Cuối cùng cũng động tay."],
+  life_cleaned: ["Dọn rồi hả. Nhớ chữ đi là khỏi dọn.", "Sạch. Tạm tha."],
+  // ---- kiểm tra bất ngờ chữ hôm qua
+  ambush_ask: ["Hôm qua học '{w}'. Nghĩa là gì?", "Kiểm tra bất ngờ: '{w}'.", "'{w}'. Hôm qua đó. Nhớ không?"],
+  ambush_ok: ["Nhớ. Tạm tha.", "Ờ. Không mửa nữa.", "Được. Hôm nay khỏi ói."],
+  ambush_fail: ["Ọe. Quên '{w}' là tui mửa.", "Thấy chưa. Cục lông. Tại {sen}.", "Quên chữ hôm qua. Tui ói cho coi."],
+  // ---- học thích ứng
+  pace_fast: ["Nhanh ghê. Học thêm 3 chữ không?", "Xong rồi? Nghi. Thêm 3 chữ coi.", "Hăng vậy thì bấm Học thêm."],
+  pace_more: ["Ờ. Thêm 3 chữ.", "Tham ghê. Được."],
+  levelup: ["Lên {tag} rồi. Đừng vênh.", "{tag}. Cấp mới, chữ khó hơn.", "Hết chữ cũ. Lên {tag}."],
+  levelup_jump: ["Nhảy lớp hả. Giỏi… tạm.", "Thi qua rồi. Đừng có quên."],
   // ---- vibe khu vườn (đổi vibe / mèo ngồi chơi với đồ trang trí)
   vibe_home: ["Về nhà. Hết làm màu.", "Vườn cũ. Học chữ cũ luôn."],
   vibe_japan: ["Nhật hả. Cúi chào rồi học.", "Thanh tịnh. Trừ cái điện thoại.", "Anh đào rơi. Chữ cũng rơi khỏi đầu {sen}."],

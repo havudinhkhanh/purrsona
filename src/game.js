@@ -20,6 +20,7 @@ import { speak, onSpeakIssue, unlockSpeech } from "./learn/tts.js";
 import { createWeather } from "./world/weather.js";
 import { createPlay } from "./world/play.js";
 import { createVibe } from "./world/vibe.js";
+import { createLife } from "./world/life.js";
 import { noteToday } from "./meta/note.js";
 import { createCloseup } from "./ui/closeup.js";
 import { createWall } from "./ui/wall.js";
@@ -70,7 +71,7 @@ export async function createGame(root) {
   const critters = createCritters(game); game.critters = critters;
   const weather = createWeather(game); game.weather = weather;
   const play = createPlay(game); game.play = play;
-  game.vibe = createVibe(game); yard.redraw();
+  game.vibe = createVibe(game); game.life = createLife(game); yard.redraw();
   // mèo làm gì → chữ của việc đó hiện cạnh mèo (sau 1,5 giây, khi mèo đã bắt đầu làm)
   const ACT_WORD = { scratchtree: "scratchtree", sunbathe: "sunbathe", shadenap: "shade", rainwatch: "puddle", chaseleaf: "wind", flowerpounce: "pounce", chase: "pounce", zoomies: "zoomies", knead: "knead", nap: "nap", groom: "groom", pondgaze: "pond", sleepnear: "nap" };
   game.on("activity", (id) => { const w = ACT_WORD[id]; if (w) setTimeout(() => { if (brain.activity === id) play.sceneWord(w); }, 1800); });
@@ -123,7 +124,7 @@ export async function createGame(root) {
   game.speakCard = (c, ex = false, user = true) => { if (!c) return; if (!s.settings.tts) { if (user) game.wall?.whisper("Đọc to đang tắt. Bật trong Cài đặt."); return; } return speak(ex ? c.ex : c.w, LANGS[c.lang].tts, s.settings.rate || 0.9, !user); };
   // máy không đọc được thì nói thẳng lý do, khỏi bấm hoài không tiếng
   let lastIssue = 0;
-  onSpeakIssue((kind, lang) => { if (Date.now() - lastIssue < 15000) return; lastIssue = Date.now(); const L = lang.startsWith("zh") ? "tiếng Trung" : "tiếng Anh";
+  onSpeakIssue((kind, lang) => { if (Date.now() - lastIssue < 15000) return; lastIssue = Date.now(); const L = lang.startsWith("zh") ? "tiếng Trung" : lang.startsWith("ja") ? "tiếng Nhật" : "tiếng Anh";
     game.wall?.whisper(kind === "none" ? "Trình duyệt này không có giọng đọc. Mở bằng Safari hoặc Chrome nha." : kind === "voice" ? `Máy chưa có giọng ${L}. iPhone: Cài đặt › Trợ năng › Nội dung được đọc › Giọng nói › tải ${L}.` : "Không phát được tiếng. Coi lại âm lượng."); });
   for (const ev of ["click", "touchend"]) addEventListener(ev, unlockSpeech, { capture: true, passive: true });      // gọi lại mỗi lần chạm tới khi mở khoá được
   game.call = () => {
@@ -171,8 +172,11 @@ export async function createGame(root) {
 
   // ------------------------------------------------------------------ vòng lặp khung hình
   let last = 0, tHud = 0, tLight = 0, tNeeds = 0, tMem = 0, tBlink = 4000;
+  let skip = 0;
   function frame(t) {
-    const dt = last ? Math.min(0.05, (t - last) / 1000) : 0; last = t;
+    // menu đang mở che cảnh: chỉ vẽ ~12 khung/giây cho máy rảnh tay, menu trượt mượt
+    if (game.sheetOpen?.() && (skip = (skip + 1) % 5)) { requestAnimationFrame(frame); return; }
+    const dt = last ? Math.min(0.1, (t - last) / 1000) : 0; last = t;
     B.tick(dt);
     catUV = yard.unP(B.x, B.y); s.cat.uv = catUV;
     critters.tick(dt); weather.tick(dt); play.tick(dt); game.vibe?.tick(dt);
@@ -191,6 +195,7 @@ export async function createGame(root) {
   addEventListener("visibilitychange", () => { if (document.hidden) save(s, true); });
   addEventListener("pagehide", () => save(s, true));
   ev.on("bloom", plant);
+  ev.on("levelup", (e) => { const tag = e.tag || e.key?.split("/")[1] || ""; setTimeout(() => game.jab?.(e.jump ? "levelup_jump" : "levelup", { tag }, true), 1200); game.journal?.("levelup", `⬆ Lên ${tag}`); });
   ev.on("hot", (e) => { if (e.fresh) setTimeout(() => { const h = learn.hotToday()[0]; if (h && h.card.lang === learn.lang) game.jab("hot_new", { w: h.card.w }, true); }, 2500); });      // đọc lại lúc nói: người dùng có thể vừa đổi tiếng
 
   game.start = () => {
@@ -303,7 +308,7 @@ function interactions(game, root) {
     if (e.target.closest(".cat-hit")) { vp.setPointerCapture(e.pointerId); petStart(e); return; }
     // chạm hoa → đọc chữ của bông hoa; chạm đồ chơi → mèo ra chơi, chạm đồ đổ → dọn
     const p = scene.toRoom(e.clientX, e.clientY);
-    if (game.play?.tap(p)) return;
+    if (game.life?.tap(p) || game.play?.tap(p)) return;      // đồ bày rớt đè lên chỗ đồ chơi: ưu tiên nhặt đồ
     if (scene.flowerSpots?.length) { let best = null, bd = 34; for (const f of scene.flowerSpots) { const d = Math.hypot(f.x - p.x, f.y - p.y); if (d < bd) { bd = d; best = f; } } if (best) { game.emit("flower", best.card); game.speakCard(best.card, false, true); return; } }
     if (game.vibe?.tap(p)) return;      // đồ trang trí vibe: sau hoa để không che chữ trong luống
     // chạm đúp xuống đất = gọi mèo

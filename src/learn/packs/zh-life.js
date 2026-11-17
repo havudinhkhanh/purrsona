@@ -1,0 +1,32 @@
+// Gói "Đời thường" (tiếng Trung, Free): chữ hiện ra khi mèo bày trò trong nhà. Có chữ vui như 刷手机 ("cọ" điện thoại = lướt).
+export default {
+  id: "zh-life", lang: "zh", vi: "Đời thường", tier: "free",
+  levels: [
+    { id: "LIFE", vi: "Đời thường (mèo bày gì học nấy)", tier: "free", words: [
+      ["毛巾", "máojīn", "danh từ", "khăn tắm", "猫把毛巾从绳子上拉下来了。", "Māo bǎ máojīn cóng shéngzi shang lā xiàlai le.", "Mèo kéo khăn khỏi dây phơi."],
+      ["捡起来", "jiǎn qǐlai", "động từ", "nhặt lên", "快把毛巾捡起来。", "Kuài bǎ máojīn jiǎn qǐlai.", "Mau nhặt cái khăn lên."],
+      ["牙刷", "yáshuā", "danh từ", "bàn chải đánh răng", "牙刷怎么在地上？", "Yáshuā zěnme zài dìshang?", "Sao bàn chải nằm dưới đất?"],
+      ["刷牙", "shuāyá", "động từ", "đánh răng", "睡觉前要刷牙。", "Shuìjiào qián yào shuāyá.", "Trước khi ngủ phải đánh răng."],
+      ["杯子", "bēizi", "danh từ", "cái ly", "它把杯子推到桌子边上。", "Tā bǎ bēizi tuīdào zhuōzi biānshang.", "Nó đẩy cái ly ra mép bàn."],
+      ["洒", "sǎ", "động từ", "đổ, vãi", "水洒了一地。", "Shuǐ sǎle yí dì.", "Nước đổ đầy đất."],
+      ["袜子", "wàzi", "danh từ", "vớ, tất", "又少了一只袜子。", "Yòu shǎole yì zhī wàzi.", "Lại mất một chiếc vớ."],
+      ["偷", "tōu", "động từ", "trộm", "猫晚上偷袜子。", "Māo wǎnshang tōu wàzi.", "Mèo trộm vớ ban đêm."],
+      ["拖鞋", "tuōxié", "danh từ", "dép lê", "猫睡在我的拖鞋里。", "Māo shuì zài wǒ de tuōxié li.", "Mèo ngủ trong dép của tôi."],
+      ["纸箱", "zhǐxiāng", "danh từ", "thùng giấy", "有纸箱，猫就进去。", "Yǒu zhǐxiāng, māo jiù jìnqu.", "Có thùng giấy là mèo chui vào."],
+      ["碗", "wǎn", "danh từ", "cái chén", "它的碗又空了。", "Tā de wǎn yòu kōng le.", "Chén của nó lại trống."],
+      ["饿死了", "è sǐ le", "cụm từ", "đói chết mất", "它一副饿死了的样子。", "Tā yí fù è sǐ le de yàngzi.", "Nó làm bộ như đói chết tới nơi."],
+      ["手机", "shǒujī", "danh từ", "điện thoại", "猫坐在我的手机上。", "Māo zuò zài wǒ de shǒujī shang.", "Mèo ngồi lên điện thoại của tôi."],
+      ["刷手机", "shuā shǒujī", "động từ", "lướt điện thoại", "别刷手机了，学习吧。", "Bié shuā shǒujī le, xuéxí ba.", "Đừng lướt điện thoại nữa, học đi."],
+      ["报纸", "bàozhǐ", "danh từ", "tờ báo", "它躺在我正在看的报纸上。", "Tā tǎng zài wǒ zhèngzài kàn de bàozhǐ shang.", "Nó nằm lên tờ báo tôi đang đọc."],
+      ["闹钟", "nàozhōng", "danh từ", "đồng hồ báo thức", "猫把闹钟碰掉了。", "Māo bǎ nàozhōng pèngdiào le.", "Mèo làm rớt đồng hồ báo thức."],
+      ["赖床", "lài chuáng", "động từ", "nằm nướng", "闹钟响了，他还在赖床。", "Nàozhōng xiǎng le, tā hái zài lài chuáng.", "Chuông reo rồi mà vẫn nằm nướng."],
+      ["枕头", "zhěntou", "danh từ", "cái gối", "猫在踩我的枕头。", "Māo zài cǎi wǒ de zhěntou.", "Mèo đang giẫm cái gối của tôi."],
+      ["毯子", "tǎnzi", "danh từ", "cái chăn", "它躲在毯子下面。", "Tā duǒ zài tǎnzi xiàmiàn.", "Nó trốn dưới chăn."],
+      ["钥匙", "yàoshi", "danh từ", "chìa khoá", "钥匙又在沙发下面。", "Yàoshi yòu zài shāfā xiàmiàn.", "Chìa khoá lại nằm dưới sofa."],
+      ["丢", "diū", "động từ", "làm mất", "我总是丢钥匙。", "Wǒ zǒngshì diū yàoshi.", "Tôi toàn làm mất chìa khoá."],
+      ["雨伞", "yǔsǎn", "danh từ", "cái dù", "猫躲在雨伞下面。", "Māo duǒ zài yǔsǎn xiàmiàn.", "Mèo núp dưới cây dù."],
+      ["毛球", "máoqiú", "danh từ", "cục lông", "地毯上有一个毛球。", "Dìtǎn shang yǒu yí ge máoqiú.", "Trên thảm có một cục lông."],
+      ["吐", "tù", "động từ", "nôn, ói", "猫吐在我的鞋上了。", "Māo tù zài wǒ de xié shang le.", "Mèo ói lên giày tôi."],
+    ] },
+  ],
+};

@@ -15,7 +15,7 @@ export function forms(w) {
 /** mục lục từ: tiếng Anh tra theo chữ thường (kể cả cụm 2 chữ), tiếng Trung tra chuỗi con dài trước */
 export function buildIndex(cards) {
   const en = new Map(), zh = [];
-  for (const c of cards) { if (!c || !c.w) continue; if (c.lang === "zh") zh.push(c); else en.set(c.w.toLowerCase(), c); }
+  for (const c of cards) { if (!c || !c.w) continue; if (c.lang === "zh" || c.lang === "ja") zh.push(c); else en.set(c.w.toLowerCase(), c); }
   zh.sort((a, b) => b.w.length - a.w.length);
   return { en, zh };
 }

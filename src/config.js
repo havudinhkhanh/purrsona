@@ -1,23 +1,23 @@
 // Mọi thứ hay đổi nằm ở đây: tên app, gói giá, quyền theo gói, nhịp chuyển động.
 export const APP = {
   name: "Purrsona",
-  tagline: "Mèo đanh đá dạy chữ · Anh – Trung",
+  tagline: "Mèo đanh đá dạy chữ · Anh – Trung – Nhật",
   saveKey: "purrsona.save.v2",      // v2: bản học chữ (không đọc bản lưu nuôi mèo cũ)
-  version: "2.3.0",
+  version: "2.4.0",
 };
 
 // ------------------------------------------------------------------ GÓI (free / plus / pro)
 // Khi nối thanh toán thật: chỉ cần ghi save.plan = "plus" | "pro" sau khi xác thực. Mọi chỗ khoá đều gọi can().
 export const PLANS = {
-  free: { vi: "Miễn phí", price: "0đ", note: "Học mỗi ngày, cấp cơ bản A2 / HSK 1" },
-  plus: { vi: "Plus", price: "39.000đ/tháng", note: "Mọi cấp độ, nghe & gõ, 20 từ/ngày, đủ chữ nóng mỗi ngày" },
-  pro:  { vi: "Pro", price: "79.000đ/tháng", note: "Gói chuyên ngành, tự nhập từ, mèo AI, kho chữ nóng 30 ngày" },
+  free: { vi: "Miễn phí", price: "0đ", note: "Học mỗi ngày: A1–A2, Starters–Movers, HSK 1, N5" },
+  plus: { vi: "Plus", price: "39.000đ/tháng", note: "Tới B2, Flyers, HSK 3, N3 · nghe & gõ, 20 từ/ngày, đủ chữ nóng" },
+  pro:  { vi: "Pro", price: "79.000đ/tháng", note: "C1, HSK 6, N1, chuyên ngành, tự nhập từ, mèo AI, kho chữ nóng 30 ngày" },
 };
 const RANK = { free: 0, plus: 1, pro: 2 };
 // tính năng → gói tối thiểu
 export const FEATURES = {
-  "level.plus": "plus",        // B1, B2, HSK 2, HSK 3
-  "level.pro": "pro",          // gói chuyên ngành (tài chính – kinh doanh…)
+  "level.plus": "plus",        // B1, B2, Flyers, HSK 2–3, N4–N3
+  "level.pro": "pro",          // C1, HSK 4–6, N2–N1, gói chuyên ngành (tài chính – kinh doanh…)
   "quiz.listen": "plus",       // nghe đọc → chọn từ
   "quiz.type": "plus",         // tự gõ từ / pinyin
   "streak.freeze": "plus",     // 2 lần "đóng băng" chuỗi mỗi tháng

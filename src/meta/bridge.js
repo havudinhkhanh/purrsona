@@ -18,7 +18,7 @@ export function connectBridge(game) {
   // (2) tiện ích Chrome
   // gửi tiện ích: mọi từ đã gặp (cả 2 thứ tiếng) + từ trong sổ – để gạch dưới đúng và không mời lưu lại
   const known = () => { const ids = new Set([...Object.keys(s.learn.cards).filter((id) => s.learn.cards[id].seen), ...s.learn.book.map((b) => b.id)]);
-    const hot = new Set([...learn.hotToday("en"), ...learn.hotToday("zh")].map((h) => h.id)); hot.forEach((id) => ids.add(id));
+    const hot = new Set([...learn.hotToday("en"), ...learn.hotToday("zh"), ...learn.hotToday("ja")].map((h) => h.id)); hot.forEach((id) => ids.add(id));
     return [...ids].slice(0, 5000).map((id) => learn.card(id)).filter(Boolean).map((c) => ({ id: c.id, w: c.w, lang: c.lang, vi: c.vi || "", ph: c.ph || "", s: learn.stat(c.id)?.seen ? 1 : 0, m: (learn.stat(c.id)?.box || 0) >= MASTER ? 1 : 0, h: hot.has(c.id) ? 1 : 0 })); };
   const reply = (type, extra) => window.postMessage({ src: "purrsona-app", type, ...extra }, location.origin);
   window.addEventListener("message", (e) => {
@@ -28,7 +28,7 @@ export function connectBridge(game) {
     if (d.type === "book" && Array.isArray(d.items)) {
       let n = 0, full = false; const done = [];
       for (const it of d.items.slice(0, 200)) {
-        const r = learn.bookmark({ id: it.id && learn.card(it.id) ? it.id : undefined, w: clip(it.w, 40), lang: it.lang === "zh" ? "zh" : "en", vi: clip(it.vi, 80), ctx: clip(it.ctx, 200), url: clip(it.url, 300), src: "ext" }, s.plan);
+        const r = learn.bookmark({ id: it.id && learn.card(it.id) ? it.id : undefined, w: clip(it.w, 40), lang: it.lang === "zh" || it.lang === "ja" ? it.lang : "en", vi: clip(it.vi, 80), ctx: clip(it.ctx, 200), url: clip(it.url, 300), src: "ext" }, s.plan);
         if (r.full) { full = true; break; } if (r.ok) { done.push(it.key); if (!r.dup) n++; }
       }
       save(s); reply("ack", { keys: done, full, words: known() });
