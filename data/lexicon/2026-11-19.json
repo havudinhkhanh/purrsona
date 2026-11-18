@@ -1,0 +1,58 @@
+{
+  "d": "2026-11-19",
+  "note": "Vẫn ưu tiên tiếng Nhật (N5 mới 29/80 chữ, N4 22), bơm Movers và HSK 5 đang mỏng, xoay vòng sang chủ đề Du lịch (14 chữ, mỏng nhất) cho cả 3 thứ tiếng.",
+  "add": [
+    { "pack": "ja-core", "level": "N5", "rows": [
+      ["帰る", "かえる · kaeru", "động từ", "về (nhà)", "猫が待っているから、早く帰る。", "Neko ga matte iru kara, hayaku kaeru.", "Mèo đang chờ nên về sớm thôi."],
+      ["書く", "かく · kaku", "động từ", "viết", "毎日、日記を書く。", "Mainichi, nikki o kaku.", "Ngày nào cũng viết nhật ký."],
+      ["読む", "よむ · yomu", "động từ", "đọc", "寝る前に本を読む。", "Neru mae ni hon o yomu.", "Trước khi ngủ thì đọc sách."],
+      ["重い", "おもい · omoi", "tính từ", "nặng (cân nặng)", "うちの猫は見た目より重い。", "Uchi no neko wa mitame yori omoi.", "Mèo nhà tui nặng hơn nhìn bề ngoài."],
+      ["時計", "とけい · tokei", "danh từ", "đồng hồ", "時計を見て、びっくりした。", "Tokei o mite, bikkuri shita.", "Nhìn đồng hồ mà giật mình."],
+      ["夜", "よる · yoru", "danh từ", "buổi tối, ban đêm", "猫は夜になると元気です。", "Neko wa yoru ni naru to genki desu.", "Tối xuống là mèo khoẻ re."],
+      ["歩く", "あるく · aruku", "động từ", "đi bộ", "毎朝、駅まで歩く。", "Maiasa, eki made aruku.", "Sáng nào cũng đi bộ ra ga."],
+      ["冷たい", "つめたい · tsumetai", "tính từ", "lạnh (khi chạm, uống)", "冷たい水を一杯ください。", "Tsumetai mizu o ippai kudasai.", "Cho tui một ly nước lạnh."]
+    ]},
+    { "pack": "ja-core", "level": "N4", "rows": [
+      ["慣れる", "なれる · nareru", "động từ", "quen (với)", "日本の生活に慣れるまで、少し時間がかかる。", "Nihon no seikatsu ni nareru made, sukoshi jikan ga kakaru.", "Quen với cuộc sống bên Nhật cũng mất chút thời gian."],
+      ["運ぶ", "はこぶ · hakobu", "động từ", "khiêng, chở, mang đi", "この箱を二階まで運ぶのを手伝って。", "Kono hako o nikai made hakobu no o tetsudatte.", "Phụ tui khiêng cái thùng này lên lầu hai với."],
+      ["届ける", "とどける · todokeru", "động từ", "đem tới, giao tới", "忘れ物を友達の家に届ける。", "Wasuremono o tomodachi no ie ni todokeru.", "Đem đồ bỏ quên tới nhà bạn trả."],
+      ["乗り換える", "のりかえる · norikaeru", "động từ", "đổi tàu/xe", "次の駅でバスに乗り換える。", "Tsugi no eki de basu ni norikaeru.", "Tới ga sau thì đổi qua xe buýt."]
+    ]},
+    { "pack": "en-yle", "level": "MOVERS", "rows": [
+      ["kitten", "/ˈkɪt.ən/", "n", "mèo con", "The kitten is sleeping in my shoe.", "Con mèo con ngủ luôn trong chiếc giày của tui."],
+      ["fur", "/fɜːr/", "n", "bộ lông (thú)", "My cat's fur is very soft.", "Lông mèo nhà tui mềm lắm."],
+      ["pancake", "/ˈpæn.keɪk/", "n", "bánh kếp", "Mum makes pancakes on Sunday morning.", "Sáng Chủ nhật mẹ làm bánh kếp."],
+      ["puppy", "/ˈpʌp.i/", "n", "chó con", "The puppy is chasing my cat again.", "Con chó con lại rượt mèo nhà tui nữa rồi."]
+    ]},
+    { "pack": "zh-hsk", "level": "HSK5", "rows": [
+      ["克服", "kèfú", "động từ", "vượt qua, khắc phục", "他终于克服了怕水的毛病。", "Tā zhōngyú kèfú le pà shuǐ de máobìng.", "Cuối cùng ảnh cũng vượt qua được cái tật sợ nước."],
+      ["吃亏", "chīkuī", "động từ", "chịu thiệt", "别怕吃亏，先把事情做好。", "Bié pà chīkuī, xiān bǎ shìqing zuò hǎo.", "Đừng sợ thiệt, làm cho xong việc trước đã."],
+      ["退步", "tuìbù", "động từ", "thụt lùi, sa sút", "一个月不练，口语就退步了。", "Yí ge yuè bú liàn, kǒuyǔ jiù tuìbù le.", "Một tháng không luyện là khẩu ngữ tụt liền."],
+      ["业余", "yèyú", "tính từ", "ngoài giờ làm, nghiệp dư", "我业余时间喜欢跟猫一起看书。", "Wǒ yèyú shíjiān xǐhuan gēn māo yìqǐ kàn shū.", "Ngoài giờ làm tui thích ngồi đọc sách với mèo."]
+    ]},
+    { "pack": "en-topic", "level": "TRAVEL", "rows": [
+      ["accommodation", "/əˌkɒm.əˈdeɪ.ʃən/", "n", "chỗ ở (khi đi xa)", "We booked cheap accommodation near the beach.", "Tụi mình đặt chỗ ở rẻ rẻ gần biển."],
+      ["landmark", "/ˈlænd.mɑːk/", "n", "địa danh nổi tiếng", "Ben Thanh Market is a famous landmark in Saigon.", "Chợ Bến Thành là địa danh nổi tiếng ở Sài Gòn."],
+      ["layover", "/ˈleɪˌəʊ.vər/", "n", "chặng quá cảnh, chờ nối chuyến", "We have a three-hour layover in Bangkok.", "Tụi mình quá cảnh ba tiếng ở Bangkok."],
+      ["travel insurance", "/ˈtræv.əl ɪnˈʃɔː.rəns/", "n", "bảo hiểm du lịch", "Don't forget to buy travel insurance before the trip.", "Nhớ mua bảo hiểm du lịch trước chuyến đi nha."]
+    ]},
+    { "pack": "zh-topic", "level": "TRAVEL", "rows": [
+      ["签证", "qiānzhèng", "danh từ", "thị thực, visa", "去日本要先办签证。", "Qù Rìběn yào xiān bàn qiānzhèng.", "Đi Nhật thì phải làm visa trước."],
+      ["住宿", "zhùsù", "danh từ / động từ", "chỗ ở, lưu trú", "这家民宿的住宿费包括早餐。", "Zhè jiā mínsù de zhùsù fèi bāokuò zǎocān.", "Tiền phòng homestay này có bao bữa sáng."],
+      ["行程", "xíngchéng", "danh từ", "lịch trình", "这次的行程太紧了，没时间休息。", "Zhè cì de xíngchéng tài jǐn le, méi shíjiān xiūxi.", "Lịch trình chuyến này dày quá, hổng có thời gian nghỉ."],
+      ["托运", "tuōyùn", "động từ", "ký gửi (hành lý)", "这个箱子太大，得托运。", "Zhège xiāngzi tài dà, děi tuōyùn.", "Cái vali này bự quá, phải ký gửi thôi."]
+    ]},
+    { "pack": "ja-topic", "level": "TRAVEL", "rows": [
+      ["宿泊", "しゅくはく · shukuhaku", "danh từ", "lưu trú, nghỉ lại", "このホテルは宿泊料が安い。", "Kono hoteru wa shukuhakuryō ga yasui.", "Khách sạn này tiền phòng rẻ."],
+      ["改札", "かいさつ · kaisatsu", "danh từ", "cửa soát vé (ga tàu)", "改札の前で三時に会おう。", "Kaisatsu no mae de sanji ni aō.", "Ba giờ gặp nhau trước cửa soát vé nha."],
+      ["日帰り", "ひがえり · higaeri", "danh từ", "đi về trong ngày", "週末は箱根へ日帰り旅行に行く。", "Shūmatsu wa Hakone e higaeri ryokō ni iku.", "Cuối tuần đi Hakone về trong ngày."],
+      ["免税", "めんぜい · menzei", "danh từ", "miễn thuế", "パスポートを見せると免税になります。", "Pasupōto o miseru to menzei ni narimasu.", "Đưa hộ chiếu ra là được miễn thuế."]
+    ]}
+  ],
+  "lines": {
+    "nag_new": ["Chữ mới nằm đó cả buổi rồi. {sen} tính để nó mốc hả?"],
+    "lex_new": ["Thêm {n} chữ. Lướt điện thoại được thì lướt qua đây được."],
+    "ambush_fail": ["Hôm qua học, nay quên. Tui ghi sổ rồi đó."],
+    "life_keys": ["Chìa khoá cũng quên, chữ cũng quên. Đều tay ghê."]
+  }
+}
