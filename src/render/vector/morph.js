@@ -36,6 +36,19 @@ function align(a, b) {
   const o = new Float32Array(n * 2); for (let i = 0; i < n; i++) { const j = ((i + best) % n) * 2; o[2 * i] = b[j]; o[2 * i + 1] = b[j + 1]; } return o;
 }
 
+// chia lại viền theo ĐỘ DÀI (điểm cách đều ~3 đơn vị) – viền từ video dày chỗ cong, thưa chỗ thẳng → khớp lệch, tai / chân co lại khi nắn
+export const arcRes = (p, sp = 3) => { const n = p.length / 2, L = [0]; for (let i = 0; i < n; i++) { const j = (i + 1) % n; L.push(L[i] + Math.hypot(p[2 * j] - p[2 * i], p[2 * j + 1] - p[2 * i + 1])); }
+  const tot = L[n], m = Math.max(12, Math.round(tot / sp)), o = new Float32Array(m * 2); let k = 0;
+  for (let i = 0; i < m; i++) { const d = (i * tot) / m; while (L[k + 1] < d) k++; const j = (k + 1) % n, u = (d - L[k]) / (L[k + 1] - L[k] || 1); o[2 * i] = p[2 * k] + (p[2 * j] - p[2 * k]) * u; o[2 * i + 1] = p[2 * k + 1] + (p[2 * j + 1] - p[2 * k + 1]) * u; }
+  return o; };
+// lỗ nhỏ / mảnh như sợi chỉ (khe sáng trên vòng cổ, kẽ lông) chỉ lóe 1–2 khung → bỏ, khỏi thành "tia điện" xoẹt qua cổ
+export const keepPoly = (q) => { if (q.t !== 1) return true; let L = 0; const P = q.p, n = P.length / 2; for (let i = 0; i < n; i++) { const j = (i + 1) % n; L += Math.hypot(P[2 * j] - P[2 * i], P[2 * j + 1] - P[2 * i + 1]); } return q.ar >= 80 && (2 * q.ar) / (L || 1) >= 3; };
+// mắt: [x, y] hoặc [x, y, x2, y2, độ hiện mắt xa] (mắt xa chỉ thấy khi mèo nhìn chéo ¾) – nắn 2 dáng: mắt xa hiện / ẩn dần theo u
+export const eyeMix = (a, b, u) => { if (!(a && b)) return u < 0.5 ? a : b; const o = [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u];
+  if (a.length > 2 && b.length > 2) o.push(a[2] + (b[2] - a[2]) * u, a[3] + (b[3] - a[3]) * u, (a[4] ?? 1) + ((b[4] ?? 1) - (a[4] ?? 1)) * u);
+  else if (a.length > 2 || b.length > 2) { const s = a.length > 2 ? a : b; o.push(s[2] + o[0] - s[0], s[3] + o[1] - s[1], (s[4] ?? 1) * (a.length > 2 ? 1 - u : u)); }
+  return o; };
+
 // ghép điểm theo DTW (dời điểm tự do dọc 2 viền, giữ thứ tự) → đuôi khớp đuôi, chân khớp chân
 function dtw(a, b) {
   const n = a.n, A = a.p; let bx = 0, by = 0; for (let i = 0; i < n; i++) { bx += b[2 * i]; by += b[2 * i + 1]; } bx = bx / n - a.cx; by = by / n - a.cy;
@@ -71,7 +84,7 @@ export function mapOf(A, B, fast) {
   B.polys.forEach((b, j) => { if (!usedB.has(j)) pairs.push({ b: b.p, cx: b.cx, cy: b.cy, t: b.t, in: 1 }); });
   let big = null; for (const q of pairs) if (q.t === 0 && q.b && q.a && (!big || q.a.length > big.a.length)) big = q;
   let cost = 9; if (big) { let d = 0; const n = big.a.length / 2; for (let i = 0; i < n; i++) d += Math.hypot(big.a[2 * i] - big.b[2 * i], big.a[2 * i + 1] - big.b[2 * i + 1]); cost = d / n / 100; }
-  const m = { pairs, eA: A.eye, eB: B.eye, cost }; if (key) MC.set(key, m); return m;
+  const m = { pairs, eA: A.eye, eB: B.eye, pA: A.pe, pB: B.pe, cost }; if (key) MC.set(key, m); return m;
 }
 
 /** Dáng trung gian ở mức u theo 1 bản khớp có sẵn. keep = giữ nguyên cỡ lỗ (mắt) suốt quá trình */
@@ -83,8 +96,7 @@ export function morphMap(m, u, keep) {
     if (q.t === 1 && hk < 0.999) { const pq = mk(1, o); if (hk < 0.06) continue; for (let i = 0; i < o.length; i += 2) { o[i] = pq.cx + (o[i] - pq.cx) * hk; o[i + 1] = pq.cy + (o[i + 1] - pq.cy) * hk; } }
     polys.push(mk(q.t, o));
   }
-  const eye = m.eA && m.eB ? [m.eA[0] + (m.eB[0] - m.eA[0]) * u, m.eA[1] + (m.eB[1] - m.eA[1]) * u] : u < 0.5 ? m.eA : m.eB;
-  return { id: null, polys, eye, eyeK: m.eA && m.eB ? 1 : Math.abs(u - 0.5) * 2 };
+  return { id: null, polys, eye: eyeMix(m.eA, m.eB, u), eyeK: m.eA && m.eB ? 1 : Math.abs(u - 0.5) * 2, pe: u < 0.5 ? m.pA || m.pB : m.pB || m.pA };
 }
 
 export function morph(A, B, u, keep, fast) {

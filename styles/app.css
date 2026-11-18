@@ -887,3 +887,8 @@ body.sheet-on .dock{opacity:0;pointer-events:none}
 .ttile:active{transform:scale(.98)}
 .tbanner{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0 0;padding:10px 12px;border-radius:14px;border:1.4px dashed var(--line);font-size:.875rem}
 .tbanner .btn{flex:none}
+
+/* ===== mắt mèo video (vẽ lại mỗi khung): tròng · đồng tử dọc · chấm sáng; chớp = mí che ===== */
+.cat-svg .pe .pi{fill:var(--eye,#F3F0E8);transition:fill .08s}.cat-svg .pe .pp{fill:#0b0b0c}.cat-svg .pe .ph{fill:rgba(255,255,255,.85)}
+.cat-svg.blink .pe .pi,.cat-svg.slowblink .pe .pi{fill:var(--fur,#1d1d1f)}.cat-svg.blink .pe :is(.pp,.ph),.cat-svg.slowblink .pe :is(.pp,.ph){opacity:0}
+.cat-svg.slowblink .pe .pi{transition:fill .32s ease-in-out}
