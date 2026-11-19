@@ -1,0 +1,250 @@
+{
+ "d": "2026-11-20",
+ "words": [
+  {
+   "lang": "en",
+   "w": "IPO",
+   "ph": "/ˌaɪ piː ˈəʊ/",
+   "pos": "n (viết tắt của initial public offering)",
+   "level": "B2",
+   "tag": "kinh tế",
+   "vi": "lần đầu chào bán cổ phiếu ra công chúng (lên sàn)",
+   "ex": "The startup plans an IPO next year to raise money for new factories.",
+   "exVi": "Công ty khởi nghiệp tính lên sàn năm sau để gom tiền xây nhà máy mới.",
+   "why": "Anthropic chào bán cổ phiếu, dự kiến lên sàn Nasdaq ngày 19/11, gom tới 64,4 tỉ USD.",
+   "src": [
+    {
+     "t": "The Next Web",
+     "u": "https://thenextweb.com/news/anthropic-ipo-terms-1-4-trillion-valuation"
+    }
+   ]
+  },
+  {
+   "lang": "en",
+   "w": "roadshow",
+   "ph": "/ˈrəʊdʃəʊ/",
+   "pos": "n",
+   "level": "C1",
+   "tag": "kinh tế",
+   "vi": "đợt đi chào cổ phiếu: công ty gặp nhà đầu tư trước khi lên sàn",
+   "ex": "During the roadshow, the CEO met dozens of big investors in a week.",
+   "exVi": "Trong đợt roadshow, sếp công ty gặp cả chục nhà đầu tư lớn chỉ trong một tuần.",
+   "why": "Anthropic mở roadshow chào cổ phiếu, kèm mức định giá hạ còn khoảng 1.400 tỉ USD trước ngày lên sàn.",
+   "src": [
+    {
+     "t": "Reuters (TimesLIVE)",
+     "u": "https://www.timeslive.co.za/news/business/2026-11-10-anthropic-lowers-ipo-valuation-target-to-102-trillion/"
+    }
+   ]
+  },
+  {
+   "lang": "en",
+   "w": "stockpile",
+   "ph": "/ˈstɒkpaɪl/",
+   "pos": "n, v",
+   "level": "C1",
+   "tag": "thế giới",
+   "vi": "kho dự trữ (vũ khí, hàng hoá); tích trữ",
+   "ex": "Many families stockpile rice and water before a big storm.",
+   "exVi": "Nhiều nhà tích trữ gạo với nước trước khi bão lớn vô.",
+   "why": "Mỹ, Trung, Nga họp ba bên ở Thâm Quyến, bàn chuyện kho vũ khí hạt nhân khi hiệp ước New START đã hết hạn.",
+   "src": [
+    {
+     "t": "Al Jazeera",
+     "u": "https://www.aljazeera.com/news/2026/11/14/trump-xi-and-putin-to-hold-first-three-way-summit-in-china"
+    }
+   ]
+  },
+  {
+   "lang": "en",
+   "w": "emerging market",
+   "ph": "/ɪˈmɜːdʒɪŋ ˈmɑːkɪt/",
+   "pos": "n",
+   "level": "B2",
+   "tag": "kinh tế",
+   "vi": "thị trường mới nổi (nền kinh tế đang lớn nhanh)",
+   "ex": "Foreign funds are moving more money into emerging markets this year.",
+   "exVi": "Năm nay quỹ ngoại đang dồn thêm tiền vô các thị trường mới nổi.",
+   "why": "Chứng khoán Việt Nam tròn 30 năm, vừa được FTSE Russell nâng lên thị trường mới nổi thứ cấp.",
+   "src": [
+    {
+     "t": "BNEWS",
+     "u": "https://bnews.vn/diem-tin-kinh-te-viet-nam-noi-bat-ngay-19-11-2026/445049.html"
+    }
+   ]
+  },
+  {
+   "lang": "en",
+   "w": "social housing",
+   "ph": "/ˌsəʊʃl ˈhaʊzɪŋ/",
+   "pos": "n",
+   "level": "B1",
+   "tag": "xã hội",
+   "vi": "nhà ở xã hội (nhà giá rẻ cho người thu nhập thấp)",
+   "ex": "Young workers hope social housing will finally let them own a flat.",
+   "exVi": "Tụi trẻ đi làm mong nhà ở xã hội giúp tụi nó cuối cùng cũng có được căn hộ.",
+   "why": "Nhiều nơi dồn dập khởi công dự án và mở \"luồng xanh\" thủ tục cho nhà ở xã hội.",
+   "src": [
+    {
+     "t": "BNEWS",
+     "u": "https://bnews.vn/diem-tin-kinh-te-viet-nam-noi-bat-ngay-19-11-2026/445049.html"
+    }
+   ]
+  },
+  {
+   "lang": "en",
+   "w": "huss",
+   "ph": "/hʌs/",
+   "pos": "thán từ, v, tiếng lóng",
+   "level": "slang",
+   "tag": "mạng xã hội",
+   "vi": "tiếng thở phì mạnh khi gắng sức; (hussing) chạy hết tốc lực",
+   "ex": "While they were out partying, I was hussing laps around the track.",
+   "exVi": "Tụi nó đi quẩy thì tui đang chạy hết sức từng vòng sân.",
+   "why": "Meme \"Huss, Huss, Huss\" từ video một nhân vật Roblox vừa dẫn bóng vừa thở phì đang lan khắp TikTok.",
+   "src": [
+    {
+     "t": "Know Your Meme",
+     "u": "https://knowyourmeme.com/editorials/guides/what-does-huss-mean-the-viral-slang-term-and-in-this-town-everybody-goes-out-partying-memes-explained"
+    }
+   ]
+  },
+  {
+   "lang": "zh",
+   "w": "智能体",
+   "ph": "zhìnéngtǐ",
+   "pos": "danh từ",
+   "level": "HSK5",
+   "tag": "công nghệ",
+   "vi": "tác tử AI (AI agent): AI tự lên kế hoạch, dùng công cụ để làm việc",
+   "ex": "我让智能体帮我订了机票和酒店。",
+   "exPh": "Wǒ ràng zhìnéngtǐ bāng wǒ dìngle jīpiào hé jiǔdiàn.",
+   "exVi": "Tui nhờ AI agent đặt giùm vé máy bay với khách sạn.",
+   "why": "Lọt Top 10 thuật ngữ khoa học phổ thông 2026 của Trung Quốc; báo cáo chính phủ lần đầu kêu gọi phát triển.",
+   "src": [
+    {
+     "t": "Trung Quốc Tân Văn",
+     "u": "https://www.chinanews.com.cn/cul/2026/11-19/10734498.shtml"
+    }
+   ]
+  },
+  {
+   "lang": "zh",
+   "w": "词元",
+   "ph": "cíyuán",
+   "pos": "danh từ",
+   "level": "HSK6",
+   "tag": "công nghệ",
+   "vi": "token: đơn vị chữ nhỏ nhất mà mô hình AI xử lý và tính tiền",
+   "ex": "这个模型按词元收费，问题越长越贵。",
+   "exPh": "Zhège móxíng àn cíyuán shōufèi, wèntí yuè cháng yuè guì.",
+   "exVi": "Mô hình này tính tiền theo token, hỏi càng dài càng mắc.",
+   "why": "Lọt Top 10 thuật ngữ khoa học 2026; Trung Quốc chọn làm tên chuẩn cho chữ \"token\" trong AI.",
+   "src": [
+    {
+     "t": "Trung Quốc Tân Văn",
+     "u": "https://www.chinanews.com.cn/cul/2026/11-19/10734498.shtml"
+    },
+    {
+     "t": "Tân Lãng Tài Chính",
+     "u": "https://finance.sina.com.cn/jjxw/2026-11-10/doc-iniyepfn6250646.shtml"
+    }
+   ]
+  },
+  {
+   "lang": "zh",
+   "w": "脑机接口",
+   "ph": "nǎojī jiēkǒu",
+   "pos": "danh từ",
+   "level": "HSK6",
+   "tag": "công nghệ",
+   "vi": "giao diện não – máy (nối tín hiệu não thẳng với thiết bị)",
+   "ex": "有了脑机接口，病人只靠想法就能打字。",
+   "exPh": "Yǒule nǎojī jiēkǒu, bìngrén zhǐ kào xiǎngfǎ jiù néng dǎzì.",
+   "exVi": "Có giao diện não – máy, bệnh nhân chỉ cần nghĩ là gõ được chữ.",
+   "why": "Lọt Top 10 thuật ngữ khoa học 2026, được Trung Quốc xếp vào nhóm ngành công nghiệp tương lai.",
+   "src": [
+    {
+     "t": "Trung Quốc Tân Văn",
+     "u": "https://www.chinanews.com.cn/cul/2026/11-19/10734498.shtml"
+    }
+   ]
+  },
+  {
+   "lang": "zh",
+   "w": "降温",
+   "ph": "jiàngwēn",
+   "pos": "động từ",
+   "level": "HSK4",
+   "tag": "xã hội",
+   "vi": "giảm nhiệt độ, trở lạnh; (nghĩa bóng) hạ nhiệt",
+   "ex": "明天要降温了，出门记得多穿点。",
+   "exPh": "Míngtiān yào jiàngwēn le, chūmén jìde duō chuān diǎn.",
+   "exVi": "Mai trời trở lạnh đó, ra đường nhớ mặc thêm đồ nha.",
+   "why": "Trung Quốc phát cảnh báo rét, nhiều nơi giảm 8–10°C; miền Bắc Việt Nam cũng lạnh hẳn mấy hôm nay.",
+   "src": [
+    {
+     "t": "Quang Minh (Guangming)",
+     "u": "https://m.gmw.cn/2026-11/17/content_1304586919.htm"
+    }
+   ]
+  },
+  {
+   "lang": "ja",
+   "w": "積雪",
+   "ph": "せきせつ · sekisetsu",
+   "pos": "danh từ",
+   "level": "N1",
+   "tag": "xã hội",
+   "vi": "tuyết phủ, tuyết đọng lại trên mặt đất",
+   "ex": "今朝は町なかでも積雪があって、電車が遅れた。",
+   "exPh": "Kesa wa machinaka demo sekisetsu ga atte, densha ga okureta.",
+   "exVi": "Sáng nay tuyết đọng cả trong phố, tàu điện bị trễ.",
+   "why": "Không khí lạnh tràn về, NHK liên tục báo tuyết có thể đọng cả vùng đồng bằng từ tối 20/11.",
+   "src": [
+    {
+     "t": "NHK",
+     "u": "https://news.web.nhk/newsweb/na/nd-20261119de78563"
+    }
+   ]
+  },
+  {
+   "lang": "ja",
+   "w": "フィジカルAI",
+   "ph": "フィジカルエーアイ · fijikaru ēai",
+   "pos": "danh từ",
+   "level": "N3",
+   "tag": "công nghệ",
+   "vi": "AI vật lý: AI gắn vào robot, máy móc để hành động ngoài đời thật",
+   "ex": "工場ではフィジカルAIを積んだロボットが箱を運んでいる。",
+   "exPh": "Kōjō de wa fijikaru ēai o tsunda robotto ga hako o hakonde iru.",
+   "exVi": "Trong xưởng, robot gắn AI vật lý đang khuân thùng hàng.",
+   "why": "Lọt 30 đề cử 流行語大賞 2026, khi AI bước từ màn hình ra robot và xe tự lái.",
+   "src": [
+    {
+     "t": "KAI-YOU",
+     "u": "https://kai-you.net/article/97070"
+    }
+   ]
+  },
+  {
+   "lang": "ja",
+   "w": "声の権利",
+   "ph": "こえのけんり · koe no kenri",
+   "pos": "cụm danh từ",
+   "level": "N2",
+   "tag": "công nghệ",
+   "vi": "quyền đối với giọng nói (không cho người khác hay AI nhái giọng tuỳ tiện)",
+   "ex": "AIで勝手に声をまねされないように、声の権利を守るルールが必要だ。",
+   "exPh": "Ēai de katte ni koe o manesarenai yō ni, koe no kenri o mamoru rūru ga hitsuyō da.",
+   "exVi": "Cần có luật bảo vệ quyền giọng nói để khỏi bị AI nhái giọng tuỳ tiện.",
+   "why": "Lọt 30 đề cử 流行語大賞 2026, giữa lúc AI nhái giọng người thật ngày càng dễ.",
+   "src": [
+    {
+     "t": "KAI-YOU",
+     "u": "https://kai-you.net/article/97070"
+    }
+   ]
+  }
+ ]
+}
