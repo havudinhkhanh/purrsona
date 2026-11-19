@@ -1,0 +1,61 @@
+{
+  "d": "2026-11-20",
+  "note": "Vẫn ưu tiên tiếng Nhật (N5 mới 37/80, N4 26), bơm HSK 6 và Flyers đang mỏng nhất lộ trình, xoay vòng sang chủ đề Ăn uống (14 chữ, mỏng nhất) cho cả 3 thứ tiếng.",
+  "add": [
+    { "pack": "ja-core", "level": "N5", "rows": [
+      ["短い", "みじかい · mijikai", "tính từ", "ngắn", "猫のしっぽは短い。", "Neko no shippo wa mijikai.", "Đuôi con mèo ngắn ngủn."],
+      ["近い", "ちかい · chikai", "tính từ", "gần", "駅は家から近いです。", "Eki wa ie kara chikai desu.", "Ga gần nhà lắm."],
+      ["聞く", "きく · kiku", "động từ", "nghe; hỏi", "電車で音楽を聞く。", "Densha de ongaku o kiku.", "Ngồi tàu thì nghe nhạc."],
+      ["待つ", "まつ · matsu", "động từ", "chờ, đợi", "駅の前で友達を待つ。", "Eki no mae de tomodachi o matsu.", "Đứng trước ga chờ bạn."],
+      ["開ける", "あける · akeru", "động từ", "mở (cửa, hộp…)", "うちの猫は自分でドアを開ける。", "Uchi no neko wa jibun de doa o akeru.", "Mèo nhà tui tự mở cửa luôn."],
+      ["花", "はな · hana", "danh từ", "hoa", "猫が花のにおいをかいでいます。", "Neko ga hana no nioi o kaide imasu.", "Con mèo đang hít hít mùi hoa."],
+      ["犬", "いぬ · inu", "danh từ", "con chó", "となりの犬はとても大きい。", "Tonari no inu wa totemo ōkii.", "Con chó nhà bên to dữ lắm."],
+      ["午後", "ごご · gogo", "danh từ", "buổi chiều", "午後から雨が降ります。", "Gogo kara ame ga furimasu.", "Từ chiều là mưa đó."]
+    ]},
+    { "pack": "ja-core", "level": "N4", "rows": [
+      ["説明", "せつめい · setsumei", "danh từ", "sự giải thích", "先生の説明はとても分かりやすい。", "Sensei no setsumei wa totemo wakariyasui.", "Thầy giải thích dễ hiểu dữ lắm."],
+      ["約束", "やくそく · yakusoku", "danh từ", "lời hứa; cuộc hẹn", "毎日十分勉強するって約束したよね。", "Mainichi juppun benkyō suru tte yakusoku shita yo ne.", "Hứa ngày nào cũng học mười phút rồi mà ha."],
+      ["調べる", "しらべる · shiraberu", "động từ", "tra, tìm hiểu", "分からない言葉は辞書で調べる。", "Wakaranai kotoba wa jisho de shiraberu.", "Chữ nào không biết thì tra từ điển."],
+      ["比べる", "くらべる · kuraberu", "động từ", "so sánh", "二つの店の値段を比べる。", "Futatsu no mise no nedan o kuraberu.", "So giá hai tiệm coi sao."]
+    ]},
+    { "pack": "zh-hsk", "level": "HSK6", "rows": [
+      ["懒惰", "lǎnduò", "tính từ", "lười biếng", "懒惰的猫一整天都躺在沙发上。", "Lǎnduò de māo yì zhěng tiān dōu tǎng zài shāfā shang.", "Con mèo lười nằm lì trên sofa cả ngày."],
+      ["坚持不懈", "jiānchí bú xiè", "thành ngữ", "kiên trì không bỏ cuộc", "学语言要坚持不懈，每天学一点。", "Xué yǔyán yào jiānchí bú xiè, měitiān xué yìdiǎn.", "Học ngoại ngữ phải bền bỉ, mỗi ngày một chút."],
+      ["当务之急", "dāng wù zhī jí", "thành ngữ", "việc cấp bách nhất", "现在的当务之急是把作业写完。", "Xiànzài de dāng wù zhī jí shì bǎ zuòyè xiě wán.", "Giờ việc gấp nhất là làm xong bài tập."],
+      ["惦记", "diànjì", "động từ", "canh cánh, nhớ mong", "出差的时候，我一直惦记着家里的猫。", "Chūchāi de shíhou, wǒ yìzhí diànjì zhe jiā li de māo.", "Đi công tác mà cứ canh cánh con mèo ở nhà."]
+    ]},
+    { "pack": "en-yle", "level": "FLYERS", "rows": [
+      ["dictionary", "/ˈdɪkʃənri/", "n", "từ điển", "I look up new words in my dictionary.", "Tui tra chữ mới trong cuốn từ điển."],
+      ["desert", "/ˈdezət/", "n", "sa mạc", "It is very hot and dry in the desert.", "Trong sa mạc nóng với khô dữ lắm."],
+      ["planet", "/ˈplænɪt/", "n", "hành tinh", "Mars is the red planet.", "Sao Hỏa là hành tinh màu đỏ."],
+      ["glue", "/ɡluː/", "n", "keo dán, hồ dán", "The cat got glue on its paw.", "Con mèo dính keo vô chân rồi."]
+    ]},
+    { "pack": "en-topic", "level": "FOOD", "rows": [
+      ["dessert", "/dɪˈzɜːt/", "n", "món tráng miệng", "Let's share a dessert after dinner.", "Ăn tối xong chia nhau món tráng miệng nha."],
+      ["flavour", "/ˈfleɪvə(r)/", "n", "hương vị", "Which ice cream flavour do you want?", "Bạn muốn kem vị gì?"],
+      ["portion", "/ˈpɔːʃn/", "n", "phần ăn, khẩu phần", "The portions here are huge.", "Phần ăn ở đây bự dữ thần."],
+      ["ingredient", "/ɪnˈɡriːdiənt/", "n", "thành phần (món ăn)", "Fish sauce is the secret ingredient.", "Nước mắm là thành phần bí mật đó."],
+      ["tip", "/tɪp/", "n", "tiền boa", "We left a small tip for the waiter.", "Tụi mình để lại chút tiền boa cho anh phục vụ."]
+    ]},
+    { "pack": "zh-topic", "level": "FOOD", "rows": [
+      ["盘子", "pánzi", "danh từ", "cái đĩa", "猫把盘子里的鱼吃光了。", "Māo bǎ pánzi li de yú chī guāng le.", "Mèo ăn sạch con cá trong đĩa rồi."],
+      ["味道", "wèidào", "danh từ", "mùi vị", "这碗汤的味道有点儿淡。", "Zhè wǎn tāng de wèidào yǒudiǎnr dàn.", "Chén canh này vị hơi nhạt."],
+      ["甜点", "tiándiǎn", "danh từ", "món tráng miệng", "吃完饭再来一份甜点吧。", "Chī wán fàn zài lái yí fèn tiándiǎn ba.", "Ăn xong kêu thêm phần tráng miệng nha."],
+      ["酱油", "jiàngyóu", "danh từ", "nước tương, xì dầu", "饺子蘸一点儿酱油更好吃。", "Jiǎozi zhàn yìdiǎnr jiàngyóu gèng hǎochī.", "Sủi cảo chấm chút xì dầu ngon hơn."],
+      ["食材", "shícái", "danh từ", "thực phẩm tươi để nấu", "这家店的食材都很新鲜。", "Zhè jiā diàn de shícái dōu hěn xīnxiān.", "Đồ nấu ở quán này tươi hết trơn."]
+    ]},
+    { "pack": "ja-topic", "level": "FOOD", "rows": [
+      ["食べ放題", "たべほうだい · tabehōdai", "danh từ", "ăn thả ga (buffet)", "食べ放題に行くと、いつも食べすぎる。", "Tabehōdai ni iku to, itsumo tabesugiru.", "Đi buffet là lần nào cũng ăn quá đà."],
+      ["味", "あじ · aji", "danh từ", "vị", "このラーメンは味が濃い。", "Kono rāmen wa aji ga koi.", "Tô ramen này vị đậm quá."],
+      ["おかわり", "okawari", "danh từ", "xin thêm (cơm, món)", "ご飯のおかわりは無料です。", "Gohan no okawari wa muryō desu.", "Thêm cơm thì miễn phí nha."],
+      ["醤油", "しょうゆ · shōyu", "danh từ", "nước tương", "刺身に醤油を少しつける。", "Sashimi ni shōyu o sukoshi tsukeru.", "Chấm sashimi với chút nước tương."],
+      ["材料", "ざいりょう · zairyō", "danh từ", "vật liệu, đồ để nấu", "カレーの材料を買ってきた。", "Karē no zairyō o katte kita.", "Mua đồ nấu cà ri về rồi nè."]
+    ]}
+  ],
+  "lines": {
+    "nag_new": ["Chữ mới chờ từ sáng. {sen} lướt điện thoại xong chưa?"],
+    "forgot": ["Quên nữa rồi. Ôn lại đi, đừng né."],
+    "idle_tap": ["Gõ tui hoài. Gõ vô bài học kìa."],
+    "done": ["Xong rồi đó. Mai đừng có trốn."]
+  }
+}
