@@ -1,0 +1,88 @@
+{
+  "d": "2026-11-21",
+  "note": "Vẫn ưu tiên tiếng Nhật (N5 mới 45/80, N4 30), bơm C1 đang mỏng nhất lộ trình (14) và HSK 4, xoay vòng sang chủ đề Gia đình (14 chữ, mỏng nhất) cho cả 3 thứ tiếng.",
+  "add": [
+    {
+      "pack": "ja-core",
+      "level": "N5",
+      "rows": [
+        ["古い", "ふるい · furui", "tính từ", "cũ", "この古いソファは猫のお気に入りです。", "Kono furui sofa wa neko no okiniiri desu.", "Cái sofa cũ này là chỗ ruột của con mèo."],
+        ["長い", "ながい · nagai", "tính từ", "dài", "今日の授業はとても長い。", "Kyō no jugyō wa totemo nagai.", "Buổi học hôm nay dài dằng dặc."],
+        ["名前", "なまえ · namae", "danh từ", "tên", "猫の名前は何ですか。", "Neko no namae wa nan desu ka.", "Con mèo tên gì vậy?"],
+        ["晩ご飯", "ばんごはん · bangohan", "danh từ", "bữa tối", "晩ご飯は七時に食べます。", "Bangohan wa shichiji ni tabemasu.", "Bảy giờ mới ăn cơm tối."],
+        ["走る", "はしる · hashiru", "động từ", "chạy", "猫は夜になると廊下を走る。", "Neko wa yoru ni naru to rōka o hashiru.", "Tối tới là con mèo chạy rầm rầm ngoài hành lang."],
+        ["若い", "わかい · wakai", "tính từ", "trẻ", "あの若い先生はとても優しい。", "Ano wakai sensei wa totemo yasashii.", "Cô giáo trẻ đó hiền lắm."],
+        ["弟", "おとうと · otōto", "danh từ", "em trai", "弟はゲームばかりしています。", "Otōto wa gēmu bakari shite imasu.", "Thằng em suốt ngày chơi game."],
+        ["広い", "ひろい · hiroi", "tính từ", "rộng", "新しい部屋は前より広い。", "Atarashii heya wa mae yori hiroi.", "Phòng mới rộng hơn phòng cũ."]
+      ]
+    },
+    {
+      "pack": "ja-core",
+      "level": "N4",
+      "rows": [
+        ["壊れる", "こわれる · kowareru", "động từ", "bị hỏng, bị vỡ", "猫が落としたコップが壊れた。", "Neko ga otoshita koppu ga kowareta.", "Cái ly mèo làm rớt bể luôn rồi."],
+        ["捨てる", "すてる · suteru", "động từ", "vứt, bỏ", "古い雑誌を全部捨てました。", "Furui zasshi o zenbu sutemashita.", "Tui vứt hết đống tạp chí cũ rồi."],
+        ["起こす", "おこす · okosu", "động từ", "đánh thức", "明日の朝六時に起こしてください。", "Ashita no asa rokuji ni okoshite kudasai.", "Sáng mai sáu giờ kêu tui dậy nha."],
+        ["心配", "しんぱい · shinpai", "danh từ / tính từ đuôi na", "lo lắng", "試験のことが心配で眠れない。", "Shiken no koto ga shinpai de nemurenai.", "Lo thi quá nên ngủ không được."]
+      ]
+    },
+    {
+      "pack": "en-exam",
+      "level": "C1",
+      "rows": [
+        ["albeit", "/ɔːlˈbiːɪt/", "conj", "mặc dù, dù là", "The plan worked, albeit more slowly than we hoped.", "Kế hoạch cũng chạy, dù chậm hơn tụi mình mong."],
+        ["inherent", "/ɪnˈhɪərənt/", "adj", "vốn có, cố hữu", "Every investment carries some inherent risk.", "Khoản đầu tư nào cũng có rủi ro sẵn trong đó."],
+        ["compelling", "/kəmˈpelɪŋ/", "adj", "thuyết phục, cuốn hút", "She made a compelling case for working from home.", "Chị ấy đưa ra lý lẽ rất thuyết phục cho việc làm ở nhà."],
+        ["discrepancy", "/dɪˈskrepənsi/", "n", "sự chênh lệch, không khớp", "There's a discrepancy between the invoice and the receipt.", "Hoá đơn với biên nhận không khớp nhau."]
+      ]
+    },
+    {
+      "pack": "zh-hsk",
+      "level": "HSK4",
+      "rows": [
+        ["整理", "zhěnglǐ", "động từ", "sắp xếp, dọn gọn", "周末我要整理一下房间。", "Zhōumò wǒ yào zhěnglǐ yíxià fángjiān.", "Cuối tuần tui phải dọn lại phòng chút."],
+        ["准时", "zhǔnshí", "tính từ", "đúng giờ", "他每天都准时上班。", "Tā měitiān dōu zhǔnshí shàngbān.", "Ngày nào ổng cũng đi làm đúng giờ."],
+        ["抱歉", "bàoqiàn", "động từ", "xin lỗi, áy náy", "很抱歉，我来晚了。", "Hěn bàoqiàn, wǒ lái wǎn le.", "Xin lỗi nha, tui tới trễ."],
+        ["偶尔", "ǒu'ěr", "phó từ", "thỉnh thoảng", "我偶尔会给猫买小鱼干。", "Wǒ ǒu'ěr huì gěi māo mǎi xiǎo yúgān.", "Thỉnh thoảng tui mua cá khô cho mèo."]
+      ]
+    },
+    {
+      "pack": "en-topic",
+      "level": "FAMILY",
+      "rows": [
+        ["spouse", "/spaʊs/", "n", "vợ/chồng (người phối ngẫu)", "You can bring your spouse to the company party.", "Tiệc công ty được dẫn vợ hoặc chồng theo."],
+        ["in-laws", "/ˈɪn lɔːz/", "n", "nhà chồng / nhà vợ", "We visit my in-laws every Tet holiday.", "Tết nào tụi tui cũng về thăm bên nhà chồng."],
+        ["upbringing", "/ˈʌpbrɪŋɪŋ/", "n", "sự nuôi dạy", "She had a strict upbringing in a big family.", "Cô ấy được nuôi dạy rất nghiêm trong một gia đình đông người."],
+        ["household chores", "/ˈhaʊshəʊld tʃɔːz/", "n", "việc nhà", "We split the household chores, but the cat does nothing.", "Cả nhà chia nhau làm việc nhà, riêng con mèo thì ngồi chơi."],
+        ["twin", "/twɪn/", "n", "anh/chị/em sinh đôi", "My twin brother and I look exactly alike.", "Tui với thằng em sinh đôi giống nhau như đúc."]
+      ]
+    },
+    {
+      "pack": "zh-topic",
+      "level": "FAMILY",
+      "rows": [
+        ["夫妻", "fūqī", "danh từ", "vợ chồng", "这对夫妻结婚二十年了。", "Zhè duì fūqī jiéhūn èrshí nián le.", "Cặp vợ chồng này cưới nhau hai mươi năm rồi."],
+        ["家务", "jiāwù", "danh từ", "việc nhà", "周末我们一起做家务。", "Zhōumò wǒmen yìqǐ zuò jiāwù.", "Cuối tuần cả nhà cùng làm việc nhà."],
+        ["孙子", "sūnzi", "danh từ", "cháu nội (trai)", "奶奶最疼她的小孙子。", "Nǎinai zuì téng tā de xiǎo sūnzi.", "Bà nội cưng thằng cháu út nhất."],
+        ["长辈", "zhǎngbèi", "danh từ", "bậc bề trên, người lớn trong nhà", "过年的时候要给长辈拜年。", "Guònián de shíhou yào gěi zhǎngbèi bàinián.", "Tết thì phải đi chúc Tết người lớn trong nhà."],
+        ["双胞胎", "shuāngbāotāi", "danh từ", "sinh đôi", "邻居家生了一对双胞胎。", "Línjū jiā shēng le yí duì shuāngbāotāi.", "Nhà hàng xóm mới sinh một cặp song sinh."]
+      ]
+    },
+    {
+      "pack": "ja-topic",
+      "level": "FAMILY",
+      "rows": [
+        ["夫婦", "ふうふ · fūfu", "danh từ", "vợ chồng", "隣の夫婦はいつも仲がいい。", "Tonari no fūfu wa itsumo naka ga ii.", "Cặp vợ chồng nhà bên lúc nào cũng hoà thuận."],
+        ["家事", "かじ · kaji", "danh từ", "việc nhà", "週末は家族で家事を分けます。", "Shūmatsu wa kazoku de kaji o wakemasu.", "Cuối tuần cả nhà chia nhau làm việc nhà."],
+        ["孫", "まご · mago", "danh từ", "cháu (của ông bà)", "祖母は孫に会うのを楽しみにしている。", "Sobo wa mago ni au no o tanoshimi ni shite iru.", "Bà mong gặp cháu lắm."],
+        ["双子", "ふたご · futago", "danh từ", "sinh đôi", "あの双子は声までそっくりだ。", "Ano futago wa koe made sokkuri da.", "Cặp sinh đôi đó giống nhau tới cả giọng."],
+        ["実家", "じっか · jikka", "danh từ", "nhà bố mẹ (quê nhà)", "お正月は実家に帰ります。", "Oshōgatsu wa jikka ni kaerimasu.", "Tết tui về nhà ba mẹ."]
+      ]
+    }
+  ],
+  "lines": {
+    "nag_new": ["Chữ mới nằm đó từ trưa. {sen} định để nó mốc luôn hả?"],
+    "ambush_fail": ["Vừa học hôm qua mà. Lướt điện thoại ít thôi."],
+    "done": ["Ừ, xong. Mai nhớ quay lại, đừng giả bộ quên."]
+  }
+}
