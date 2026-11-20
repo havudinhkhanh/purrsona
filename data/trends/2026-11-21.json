@@ -1,0 +1,117 @@
+{
+ "d": "2026-11-21",
+ "words": [
+  { "lang": "en", "w": "subpoena", "ph": "/səˈpiːnə/", "pos": "n, v", "level": "C1", "tag": "công nghệ",
+   "vi": "trát đòi (bắt ra làm chứng hoặc nộp tài liệu); gửi trát đòi",
+   "ex": "The court sent a subpoena ordering the manager to give evidence next week.",
+   "exVi": "Toà gửi trát đòi, bắt ông quản lý tuần sau phải ra làm chứng.",
+   "why": "Bộ trưởng Tư pháp bang California gửi trát đòi Nvidia giải trình chuyện chip AI có lọt sang Trung Quốc không.",
+   "src": [
+    { "t": "Tech Startups", "u": "https://techstartups.com/2026/11/20/top-tech-news-roundup-for-today-november-20-2026-anthropic-stock-slides-gta-vi-hits-3-79-billion-nvidia-faces-subpoena-more/" },
+    { "t": "Just Security", "u": "https://www.justsecurity.org/165471/early-edition-november-20-2026/" }
+   ] },
+  { "lang": "en", "w": "plunge", "ph": "/plʌndʒ/", "pos": "v, n", "level": "B2", "tag": "kinh tế",
+   "vi": "lao dốc, rớt mạnh (giá, cổ phiếu); cú rớt mạnh",
+   "ex": "Shares of the airline plunged after it cut its profit forecast.",
+   "exVi": "Cổ phiếu hãng bay rớt cái rụp sau khi hãng hạ dự báo lợi nhuận.",
+   "why": "Cổ phiếu Anthropic rớt khoảng 13,5% ở phiên thứ hai sau khi lên sàn, tụt về sát giá IPO 83 USD.",
+   "src": [
+    { "t": "Tech Startups", "u": "https://techstartups.com/2026/11/20/top-tech-news-roundup-for-today-november-20-2026-anthropic-stock-slides-gta-vi-hits-3-79-billion-nvidia-faces-subpoena-more/" }
+   ] },
+  { "lang": "en", "w": "bipartisan", "ph": "/ˌbaɪpɑːtɪˈzæn/", "pos": "adj", "level": "C1", "tag": "thế giới",
+   "vi": "(được) cả hai đảng ủng hộ, lưỡng đảng",
+   "ex": "The road safety bill had bipartisan support and passed without much debate.",
+   "exVi": "Dự luật an toàn giao thông được cả hai đảng ủng hộ nên qua cái vèo, khỏi cãi nhiều.",
+   "why": "Thượng viện Mỹ vừa thông qua dự luật rút ngắn cấp phép dự án năng lượng với phiếu của cả hai đảng, 62–33.",
+   "src": [
+    { "t": "BNEWS", "u": "https://bnews.vn/diem-tin-kinh-te-the-gioi-noi-bat-ngay-20-11-2026/445181.html" }
+   ] },
+  { "lang": "en", "w": "overheat", "ph": "/ˌəʊvəˈhiːt/", "pos": "v", "level": "B2", "tag": "kinh tế",
+   "vi": "quá nóng (máy móc); (kinh tế) tăng nóng quá mức, dễ đẩy giá lên",
+   "ex": "If everyone borrows and spends at once, the economy can overheat.",
+   "exVi": "Ai cũng vay rồi xài cùng lúc thì kinh tế dễ bị tăng nóng lắm.",
+   "why": "Một quan chức Fed cảnh báo làn sóng rót tiền vào AI có thể làm kinh tế Mỹ tăng nóng.",
+   "src": [
+    { "t": "BNEWS", "u": "https://bnews.vn/diem-tin-kinh-te-the-gioi-noi-bat-ngay-20-11-2026/445181.html" }
+   ] },
+  { "lang": "en", "w": "vulnerability", "ph": "/ˌvʌlnərəˈbɪləti/", "pos": "n", "level": "C1", "tag": "công nghệ",
+   "vi": "lỗ hổng (bảo mật); điểm yếu dễ bị tấn công",
+   "ex": "Update your phone today, because the new version fixes a serious vulnerability.",
+   "exVi": "Cập nhật điện thoại liền hôm nay đi, bản mới vá một lỗ hổng nghiêm trọng đó.",
+   "why": "NGINX, phần mềm máy chủ web rất phổ biến, vừa bị phát hiện 5 lỗ hổng bảo mật nghiêm trọng.",
+   "src": [
+    { "t": "Tech Startups", "u": "https://techstartups.com/2026/11/20/top-tech-news-roundup-for-today-november-20-2026-anthropic-stock-slides-gta-vi-hits-3-79-billion-nvidia-faces-subpoena-more/" }
+   ] },
+  { "lang": "en", "w": "brah", "ph": "/brɑː/", "pos": "n, tiếng lóng", "level": "slang", "tag": "mạng xã hội",
+   "vi": "ông bạn, bồ (cách gọi bạn thân, giống \"bro\")",
+   "ex": "What's up, brah? I haven't seen you since summer!",
+   "exVi": "Sao rồi ông? Từ hè tới giờ mới gặp lại đó!",
+   "why": "Meme nhân vật hoạt hình cứ thản nhiên bước vào cảnh gay cấn hỏi \"What's up brah?\" đang lan khắp mạng.",
+   "src": [
+    { "t": "NapoleonCat", "u": "https://napoleoncat.com/blog/trending-memes/" }
+   ] },
+  { "lang": "zh", "w": "算力网", "ph": "suànlì wǎng", "pos": "danh từ", "level": "HSK6", "tag": "công nghệ",
+   "vi": "mạng năng lực tính toán: nối sức máy tính nhiều nơi, chia dùng theo nhu cầu như lưới điện",
+   "ex": "有了算力网，小公司也能像用电一样按需租用算力。",
+   "exPh": "Yǒule suànlì wǎng, xiǎo gōngsī yě néng xiàng yòng diàn yíyàng àn xū zūyòng suànlì.",
+   "exVi": "Có mạng tính toán rồi, công ty nhỏ cũng thuê sức máy theo nhu cầu được, y như xài điện.",
+   "why": "Lọt danh sách từ khoá nghiên cứu tiên phong 2026 mà Uỷ ban thuật ngữ khoa học Trung Quốc vừa công bố.",
+   "src": [
+    { "t": "Trung Quốc Tân Văn", "u": "https://www.chinanews.com.cn/gn/2026/11-20/10735566.shtml" }
+   ] },
+  { "lang": "zh", "w": "短剧", "ph": "duǎnjù", "pos": "danh từ", "level": "HSK5", "tag": "giải trí",
+   "vi": "phim ngắn (phim dọc mỗi tập vài phút, xem trên điện thoại)",
+   "ex": "她每天睡前都要刷几集短剧，一看就停不下来。",
+   "exPh": "Tā měitiān shuì qián dōu yào shuā jǐ jí duǎnjù, yí kàn jiù tíng bú xiàlái.",
+   "exVi": "Tối nào trước khi ngủ bả cũng lướt vài tập phim ngắn, coi là dừng hổng được.",
+   "why": "\"短剧+\" lọt danh sách từ khoá năm 2026 nhóm nghệ thuật truyền hình – nghe nhìn trên mạng.",
+   "src": [
+    { "t": "Trung Quốc Tân Văn", "u": "https://www.chinanews.com.cn/gn/2026/11-20/10735566.shtml" }
+   ] },
+  { "lang": "zh", "w": "团播", "ph": "tuánbō", "pos": "danh từ", "level": "slang", "tag": "mạng xã hội",
+   "vi": "livestream nhóm: nhiều host cùng nhảy, hát, tương tác trong một phòng live",
+   "ex": "这个团播直播间里，五个主播轮流跳舞唱歌。",
+   "exPh": "Zhège tuánbō zhíbōjiān lǐ, wǔ gè zhǔbō lúnliú tiàowǔ chànggē.",
+   "exVi": "Trong phòng live nhóm này, năm host thay phiên nhau nhảy với hát.",
+   "why": "Lọt danh sách từ khoá năm 2026 về nghe nhìn trên mạng, khi kiểu live nhóm nở rộ trên Douyin.",
+   "src": [
+    { "t": "Trung Quốc Tân Văn", "u": "https://www.chinanews.com.cn/gn/2026/11-20/10735566.shtml" }
+   ] },
+  { "lang": "zh", "w": "热失控", "ph": "rè shīkòng", "pos": "danh từ", "level": "HSK6", "tag": "công nghệ",
+   "vi": "mất kiểm soát nhiệt (pin nóng lên dây chuyền, dễ cháy nổ)",
+   "ex": "电池一旦热失控，几秒钟就可能起火。",
+   "exPh": "Diànchí yídàn rè shīkòng, jǐ miǎozhōng jiù kěnéng qǐhuǒ.",
+   "exVi": "Pin mà mất kiểm soát nhiệt là chỉ vài giây có thể bốc cháy.",
+   "why": "Tin công nghệ Trung Quốc tuần này bàn nhiều về an toàn pin và vật liệu chống cháy cho pin.",
+   "src": [
+    { "t": "Tân Lãng (Sina)", "u": "https://k.sina.com.cn/article_7857201856_1d45362c001908vmi4.html" }
+   ] },
+  { "lang": "ja", "w": "冷え込み", "ph": "ひえこみ · hiekomi", "pos": "danh từ", "level": "N2", "tag": "xã hội",
+   "vi": "trời trở lạnh, cái lạnh tê (nhất là sáng sớm, ban đêm)",
+   "ex": "朝晩の冷え込みが厳しいので、上着を忘れないでね。",
+   "exPh": "Asaban no hiekomi ga kibishii node, uwagi o wasurenaide ne.",
+   "exVi": "Sáng với tối lạnh dữ lắm, nhớ đừng quên áo khoác nha.",
+   "why": "Không khí lạnh tràn về, NHK nhắc trời lạnh kéo dài tới Chủ nhật, cẩn thận giữ sức khoẻ và đường đóng băng.",
+   "src": [
+    { "t": "NHK", "u": "https://news.web.nhk/newsweb/na/nd-20261120de79279" }
+   ] },
+  { "lang": "ja", "w": "情報漏えい", "ph": "じょうほうろうえい · jōhō rōei", "pos": "danh từ", "level": "N1", "tag": "công nghệ",
+   "vi": "rò rỉ thông tin, lộ dữ liệu",
+   "ex": "情報漏えいを防ぐため、パスワードを定期的に変えましょう。",
+   "exPh": "Jōhō rōei o fusegu tame, pasuwādo o teikiteki ni kaemashō.",
+   "exVi": "Để khỏi bị lộ thông tin, mình nên đổi mật khẩu định kỳ nha.",
+   "why": "Một trang bán con dấu online ở Osaka bị truy cập trái phép, có thể lộ thông tin thẻ của khoảng 8.200 khách.",
+   "src": [
+    { "t": "NHK", "u": "https://news.web.nhk/newsweb/na/nd-20261120de79394" }
+   ] },
+  { "lang": "ja", "w": "ホビ垢", "ph": "ホビあか · hobi aka", "pos": "danh từ, tiếng lóng", "level": "slang", "tag": "mạng xã hội",
+   "vi": "acc sở thích: tài khoản mạng xã hội phụ, chỉ để đu idol, chơi hobby",
+   "ex": "推し活の投稿はホビ垢だけにして、本垢には載せない。",
+   "exPh": "Oshikatsu no tōkō wa hobi aka dake ni shite, hon'aka ni wa nosenai.",
+   "exVi": "Mấy bài đu idol tui chỉ đăng bên acc sở thích, hổng đăng lên acc chính.",
+   "why": "Lọt 30 đề cử 流行語大賞 2026, khi nhiều người tách riêng acc sở thích khỏi acc chính.",
+   "src": [
+    { "t": "Oricon", "u": "https://www.oricon.co.jp/news/2490887/full/" }
+   ] }
+ ]
+}

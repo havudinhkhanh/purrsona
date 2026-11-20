@@ -1,250 +1,117 @@
 {
- "d": "2026-11-20",
+ "d": "2026-11-21",
  "words": [
-  {
-   "lang": "en",
-   "w": "IPO",
-   "ph": "/ˌaɪ piː ˈəʊ/",
-   "pos": "n (viết tắt của initial public offering)",
-   "level": "B2",
-   "tag": "kinh tế",
-   "vi": "lần đầu chào bán cổ phiếu ra công chúng (lên sàn)",
-   "ex": "The startup plans an IPO next year to raise money for new factories.",
-   "exVi": "Công ty khởi nghiệp tính lên sàn năm sau để gom tiền xây nhà máy mới.",
-   "why": "Anthropic chào bán cổ phiếu, dự kiến lên sàn Nasdaq ngày 19/11, gom tới 64,4 tỉ USD.",
+  { "lang": "en", "w": "subpoena", "ph": "/səˈpiːnə/", "pos": "n, v", "level": "C1", "tag": "công nghệ",
+   "vi": "trát đòi (bắt ra làm chứng hoặc nộp tài liệu); gửi trát đòi",
+   "ex": "The court sent a subpoena ordering the manager to give evidence next week.",
+   "exVi": "Toà gửi trát đòi, bắt ông quản lý tuần sau phải ra làm chứng.",
+   "why": "Bộ trưởng Tư pháp bang California gửi trát đòi Nvidia giải trình chuyện chip AI có lọt sang Trung Quốc không.",
    "src": [
-    {
-     "t": "The Next Web",
-     "u": "https://thenextweb.com/news/anthropic-ipo-terms-1-4-trillion-valuation"
-    }
-   ]
-  },
-  {
-   "lang": "en",
-   "w": "roadshow",
-   "ph": "/ˈrəʊdʃəʊ/",
-   "pos": "n",
-   "level": "C1",
-   "tag": "kinh tế",
-   "vi": "đợt đi chào cổ phiếu: công ty gặp nhà đầu tư trước khi lên sàn",
-   "ex": "During the roadshow, the CEO met dozens of big investors in a week.",
-   "exVi": "Trong đợt roadshow, sếp công ty gặp cả chục nhà đầu tư lớn chỉ trong một tuần.",
-   "why": "Anthropic mở roadshow chào cổ phiếu, kèm mức định giá hạ còn khoảng 1.400 tỉ USD trước ngày lên sàn.",
+    { "t": "Tech Startups", "u": "https://techstartups.com/2026/11/20/top-tech-news-roundup-for-today-november-20-2026-anthropic-stock-slides-gta-vi-hits-3-79-billion-nvidia-faces-subpoena-more/" },
+    { "t": "Just Security", "u": "https://www.justsecurity.org/165471/early-edition-november-20-2026/" }
+   ] },
+  { "lang": "en", "w": "plunge", "ph": "/plʌndʒ/", "pos": "v, n", "level": "B2", "tag": "kinh tế",
+   "vi": "lao dốc, rớt mạnh (giá, cổ phiếu); cú rớt mạnh",
+   "ex": "Shares of the airline plunged after it cut its profit forecast.",
+   "exVi": "Cổ phiếu hãng bay rớt cái rụp sau khi hãng hạ dự báo lợi nhuận.",
+   "why": "Cổ phiếu Anthropic rớt khoảng 13,5% ở phiên thứ hai sau khi lên sàn, tụt về sát giá IPO 83 USD.",
    "src": [
-    {
-     "t": "Reuters (TimesLIVE)",
-     "u": "https://www.timeslive.co.za/news/business/2026-11-10-anthropic-lowers-ipo-valuation-target-to-102-trillion/"
-    }
-   ]
-  },
-  {
-   "lang": "en",
-   "w": "stockpile",
-   "ph": "/ˈstɒkpaɪl/",
-   "pos": "n, v",
-   "level": "C1",
-   "tag": "thế giới",
-   "vi": "kho dự trữ (vũ khí, hàng hoá); tích trữ",
-   "ex": "Many families stockpile rice and water before a big storm.",
-   "exVi": "Nhiều nhà tích trữ gạo với nước trước khi bão lớn vô.",
-   "why": "Mỹ, Trung, Nga họp ba bên ở Thâm Quyến, bàn chuyện kho vũ khí hạt nhân khi hiệp ước New START đã hết hạn.",
+    { "t": "Tech Startups", "u": "https://techstartups.com/2026/11/20/top-tech-news-roundup-for-today-november-20-2026-anthropic-stock-slides-gta-vi-hits-3-79-billion-nvidia-faces-subpoena-more/" }
+   ] },
+  { "lang": "en", "w": "bipartisan", "ph": "/ˌbaɪpɑːtɪˈzæn/", "pos": "adj", "level": "C1", "tag": "thế giới",
+   "vi": "(được) cả hai đảng ủng hộ, lưỡng đảng",
+   "ex": "The road safety bill had bipartisan support and passed without much debate.",
+   "exVi": "Dự luật an toàn giao thông được cả hai đảng ủng hộ nên qua cái vèo, khỏi cãi nhiều.",
+   "why": "Thượng viện Mỹ vừa thông qua dự luật rút ngắn cấp phép dự án năng lượng với phiếu của cả hai đảng, 62–33.",
    "src": [
-    {
-     "t": "Al Jazeera",
-     "u": "https://www.aljazeera.com/news/2026/11/14/trump-xi-and-putin-to-hold-first-three-way-summit-in-china"
-    }
-   ]
-  },
-  {
-   "lang": "en",
-   "w": "emerging market",
-   "ph": "/ɪˈmɜːdʒɪŋ ˈmɑːkɪt/",
-   "pos": "n",
-   "level": "B2",
-   "tag": "kinh tế",
-   "vi": "thị trường mới nổi (nền kinh tế đang lớn nhanh)",
-   "ex": "Foreign funds are moving more money into emerging markets this year.",
-   "exVi": "Năm nay quỹ ngoại đang dồn thêm tiền vô các thị trường mới nổi.",
-   "why": "Chứng khoán Việt Nam tròn 30 năm, vừa được FTSE Russell nâng lên thị trường mới nổi thứ cấp.",
+    { "t": "BNEWS", "u": "https://bnews.vn/diem-tin-kinh-te-the-gioi-noi-bat-ngay-20-11-2026/445181.html" }
+   ] },
+  { "lang": "en", "w": "overheat", "ph": "/ˌəʊvəˈhiːt/", "pos": "v", "level": "B2", "tag": "kinh tế",
+   "vi": "quá nóng (máy móc); (kinh tế) tăng nóng quá mức, dễ đẩy giá lên",
+   "ex": "If everyone borrows and spends at once, the economy can overheat.",
+   "exVi": "Ai cũng vay rồi xài cùng lúc thì kinh tế dễ bị tăng nóng lắm.",
+   "why": "Một quan chức Fed cảnh báo làn sóng rót tiền vào AI có thể làm kinh tế Mỹ tăng nóng.",
    "src": [
-    {
-     "t": "BNEWS",
-     "u": "https://bnews.vn/diem-tin-kinh-te-viet-nam-noi-bat-ngay-19-11-2026/445049.html"
-    }
-   ]
-  },
-  {
-   "lang": "en",
-   "w": "social housing",
-   "ph": "/ˌsəʊʃl ˈhaʊzɪŋ/",
-   "pos": "n",
-   "level": "B1",
-   "tag": "xã hội",
-   "vi": "nhà ở xã hội (nhà giá rẻ cho người thu nhập thấp)",
-   "ex": "Young workers hope social housing will finally let them own a flat.",
-   "exVi": "Tụi trẻ đi làm mong nhà ở xã hội giúp tụi nó cuối cùng cũng có được căn hộ.",
-   "why": "Nhiều nơi dồn dập khởi công dự án và mở \"luồng xanh\" thủ tục cho nhà ở xã hội.",
+    { "t": "BNEWS", "u": "https://bnews.vn/diem-tin-kinh-te-the-gioi-noi-bat-ngay-20-11-2026/445181.html" }
+   ] },
+  { "lang": "en", "w": "vulnerability", "ph": "/ˌvʌlnərəˈbɪləti/", "pos": "n", "level": "C1", "tag": "công nghệ",
+   "vi": "lỗ hổng (bảo mật); điểm yếu dễ bị tấn công",
+   "ex": "Update your phone today, because the new version fixes a serious vulnerability.",
+   "exVi": "Cập nhật điện thoại liền hôm nay đi, bản mới vá một lỗ hổng nghiêm trọng đó.",
+   "why": "NGINX, phần mềm máy chủ web rất phổ biến, vừa bị phát hiện 5 lỗ hổng bảo mật nghiêm trọng.",
    "src": [
-    {
-     "t": "BNEWS",
-     "u": "https://bnews.vn/diem-tin-kinh-te-viet-nam-noi-bat-ngay-19-11-2026/445049.html"
-    }
-   ]
-  },
-  {
-   "lang": "en",
-   "w": "huss",
-   "ph": "/hʌs/",
-   "pos": "thán từ, v, tiếng lóng",
-   "level": "slang",
-   "tag": "mạng xã hội",
-   "vi": "tiếng thở phì mạnh khi gắng sức; (hussing) chạy hết tốc lực",
-   "ex": "While they were out partying, I was hussing laps around the track.",
-   "exVi": "Tụi nó đi quẩy thì tui đang chạy hết sức từng vòng sân.",
-   "why": "Meme \"Huss, Huss, Huss\" từ video một nhân vật Roblox vừa dẫn bóng vừa thở phì đang lan khắp TikTok.",
+    { "t": "Tech Startups", "u": "https://techstartups.com/2026/11/20/top-tech-news-roundup-for-today-november-20-2026-anthropic-stock-slides-gta-vi-hits-3-79-billion-nvidia-faces-subpoena-more/" }
+   ] },
+  { "lang": "en", "w": "brah", "ph": "/brɑː/", "pos": "n, tiếng lóng", "level": "slang", "tag": "mạng xã hội",
+   "vi": "ông bạn, bồ (cách gọi bạn thân, giống \"bro\")",
+   "ex": "What's up, brah? I haven't seen you since summer!",
+   "exVi": "Sao rồi ông? Từ hè tới giờ mới gặp lại đó!",
+   "why": "Meme nhân vật hoạt hình cứ thản nhiên bước vào cảnh gay cấn hỏi \"What's up brah?\" đang lan khắp mạng.",
    "src": [
-    {
-     "t": "Know Your Meme",
-     "u": "https://knowyourmeme.com/editorials/guides/what-does-huss-mean-the-viral-slang-term-and-in-this-town-everybody-goes-out-partying-memes-explained"
-    }
-   ]
-  },
-  {
-   "lang": "zh",
-   "w": "智能体",
-   "ph": "zhìnéngtǐ",
-   "pos": "danh từ",
-   "level": "HSK5",
-   "tag": "công nghệ",
-   "vi": "tác tử AI (AI agent): AI tự lên kế hoạch, dùng công cụ để làm việc",
-   "ex": "我让智能体帮我订了机票和酒店。",
-   "exPh": "Wǒ ràng zhìnéngtǐ bāng wǒ dìngle jīpiào hé jiǔdiàn.",
-   "exVi": "Tui nhờ AI agent đặt giùm vé máy bay với khách sạn.",
-   "why": "Lọt Top 10 thuật ngữ khoa học phổ thông 2026 của Trung Quốc; báo cáo chính phủ lần đầu kêu gọi phát triển.",
+    { "t": "NapoleonCat", "u": "https://napoleoncat.com/blog/trending-memes/" }
+   ] },
+  { "lang": "zh", "w": "算力网", "ph": "suànlì wǎng", "pos": "danh từ", "level": "HSK6", "tag": "công nghệ",
+   "vi": "mạng năng lực tính toán: nối sức máy tính nhiều nơi, chia dùng theo nhu cầu như lưới điện",
+   "ex": "有了算力网，小公司也能像用电一样按需租用算力。",
+   "exPh": "Yǒule suànlì wǎng, xiǎo gōngsī yě néng xiàng yòng diàn yíyàng àn xū zūyòng suànlì.",
+   "exVi": "Có mạng tính toán rồi, công ty nhỏ cũng thuê sức máy theo nhu cầu được, y như xài điện.",
+   "why": "Lọt danh sách từ khoá nghiên cứu tiên phong 2026 mà Uỷ ban thuật ngữ khoa học Trung Quốc vừa công bố.",
    "src": [
-    {
-     "t": "Trung Quốc Tân Văn",
-     "u": "https://www.chinanews.com.cn/cul/2026/11-19/10734498.shtml"
-    }
-   ]
-  },
-  {
-   "lang": "zh",
-   "w": "词元",
-   "ph": "cíyuán",
-   "pos": "danh từ",
-   "level": "HSK6",
-   "tag": "công nghệ",
-   "vi": "token: đơn vị chữ nhỏ nhất mà mô hình AI xử lý và tính tiền",
-   "ex": "这个模型按词元收费，问题越长越贵。",
-   "exPh": "Zhège móxíng àn cíyuán shōufèi, wèntí yuè cháng yuè guì.",
-   "exVi": "Mô hình này tính tiền theo token, hỏi càng dài càng mắc.",
-   "why": "Lọt Top 10 thuật ngữ khoa học 2026; Trung Quốc chọn làm tên chuẩn cho chữ \"token\" trong AI.",
+    { "t": "Trung Quốc Tân Văn", "u": "https://www.chinanews.com.cn/gn/2026/11-20/10735566.shtml" }
+   ] },
+  { "lang": "zh", "w": "短剧", "ph": "duǎnjù", "pos": "danh từ", "level": "HSK5", "tag": "giải trí",
+   "vi": "phim ngắn (phim dọc mỗi tập vài phút, xem trên điện thoại)",
+   "ex": "她每天睡前都要刷几集短剧，一看就停不下来。",
+   "exPh": "Tā měitiān shuì qián dōu yào shuā jǐ jí duǎnjù, yí kàn jiù tíng bú xiàlái.",
+   "exVi": "Tối nào trước khi ngủ bả cũng lướt vài tập phim ngắn, coi là dừng hổng được.",
+   "why": "\"短剧+\" lọt danh sách từ khoá năm 2026 nhóm nghệ thuật truyền hình – nghe nhìn trên mạng.",
    "src": [
-    {
-     "t": "Trung Quốc Tân Văn",
-     "u": "https://www.chinanews.com.cn/cul/2026/11-19/10734498.shtml"
-    },
-    {
-     "t": "Tân Lãng Tài Chính",
-     "u": "https://finance.sina.com.cn/jjxw/2026-11-10/doc-iniyepfn6250646.shtml"
-    }
-   ]
-  },
-  {
-   "lang": "zh",
-   "w": "脑机接口",
-   "ph": "nǎojī jiēkǒu",
-   "pos": "danh từ",
-   "level": "HSK6",
-   "tag": "công nghệ",
-   "vi": "giao diện não – máy (nối tín hiệu não thẳng với thiết bị)",
-   "ex": "有了脑机接口，病人只靠想法就能打字。",
-   "exPh": "Yǒule nǎojī jiēkǒu, bìngrén zhǐ kào xiǎngfǎ jiù néng dǎzì.",
-   "exVi": "Có giao diện não – máy, bệnh nhân chỉ cần nghĩ là gõ được chữ.",
-   "why": "Lọt Top 10 thuật ngữ khoa học 2026, được Trung Quốc xếp vào nhóm ngành công nghiệp tương lai.",
+    { "t": "Trung Quốc Tân Văn", "u": "https://www.chinanews.com.cn/gn/2026/11-20/10735566.shtml" }
+   ] },
+  { "lang": "zh", "w": "团播", "ph": "tuánbō", "pos": "danh từ", "level": "slang", "tag": "mạng xã hội",
+   "vi": "livestream nhóm: nhiều host cùng nhảy, hát, tương tác trong một phòng live",
+   "ex": "这个团播直播间里，五个主播轮流跳舞唱歌。",
+   "exPh": "Zhège tuánbō zhíbōjiān lǐ, wǔ gè zhǔbō lúnliú tiàowǔ chànggē.",
+   "exVi": "Trong phòng live nhóm này, năm host thay phiên nhau nhảy với hát.",
+   "why": "Lọt danh sách từ khoá năm 2026 về nghe nhìn trên mạng, khi kiểu live nhóm nở rộ trên Douyin.",
    "src": [
-    {
-     "t": "Trung Quốc Tân Văn",
-     "u": "https://www.chinanews.com.cn/cul/2026/11-19/10734498.shtml"
-    }
-   ]
-  },
-  {
-   "lang": "zh",
-   "w": "降温",
-   "ph": "jiàngwēn",
-   "pos": "động từ",
-   "level": "HSK4",
-   "tag": "xã hội",
-   "vi": "giảm nhiệt độ, trở lạnh; (nghĩa bóng) hạ nhiệt",
-   "ex": "明天要降温了，出门记得多穿点。",
-   "exPh": "Míngtiān yào jiàngwēn le, chūmén jìde duō chuān diǎn.",
-   "exVi": "Mai trời trở lạnh đó, ra đường nhớ mặc thêm đồ nha.",
-   "why": "Trung Quốc phát cảnh báo rét, nhiều nơi giảm 8–10°C; miền Bắc Việt Nam cũng lạnh hẳn mấy hôm nay.",
+    { "t": "Trung Quốc Tân Văn", "u": "https://www.chinanews.com.cn/gn/2026/11-20/10735566.shtml" }
+   ] },
+  { "lang": "zh", "w": "热失控", "ph": "rè shīkòng", "pos": "danh từ", "level": "HSK6", "tag": "công nghệ",
+   "vi": "mất kiểm soát nhiệt (pin nóng lên dây chuyền, dễ cháy nổ)",
+   "ex": "电池一旦热失控，几秒钟就可能起火。",
+   "exPh": "Diànchí yídàn rè shīkòng, jǐ miǎozhōng jiù kěnéng qǐhuǒ.",
+   "exVi": "Pin mà mất kiểm soát nhiệt là chỉ vài giây có thể bốc cháy.",
+   "why": "Tin công nghệ Trung Quốc tuần này bàn nhiều về an toàn pin và vật liệu chống cháy cho pin.",
    "src": [
-    {
-     "t": "Quang Minh (Guangming)",
-     "u": "https://m.gmw.cn/2026-11/17/content_1304586919.htm"
-    }
-   ]
-  },
-  {
-   "lang": "ja",
-   "w": "積雪",
-   "ph": "せきせつ · sekisetsu",
-   "pos": "danh từ",
-   "level": "N1",
-   "tag": "xã hội",
-   "vi": "tuyết phủ, tuyết đọng lại trên mặt đất",
-   "ex": "今朝は町なかでも積雪があって、電車が遅れた。",
-   "exPh": "Kesa wa machinaka demo sekisetsu ga atte, densha ga okureta.",
-   "exVi": "Sáng nay tuyết đọng cả trong phố, tàu điện bị trễ.",
-   "why": "Không khí lạnh tràn về, NHK liên tục báo tuyết có thể đọng cả vùng đồng bằng từ tối 20/11.",
+    { "t": "Tân Lãng (Sina)", "u": "https://k.sina.com.cn/article_7857201856_1d45362c001908vmi4.html" }
+   ] },
+  { "lang": "ja", "w": "冷え込み", "ph": "ひえこみ · hiekomi", "pos": "danh từ", "level": "N2", "tag": "xã hội",
+   "vi": "trời trở lạnh, cái lạnh tê (nhất là sáng sớm, ban đêm)",
+   "ex": "朝晩の冷え込みが厳しいので、上着を忘れないでね。",
+   "exPh": "Asaban no hiekomi ga kibishii node, uwagi o wasurenaide ne.",
+   "exVi": "Sáng với tối lạnh dữ lắm, nhớ đừng quên áo khoác nha.",
+   "why": "Không khí lạnh tràn về, NHK nhắc trời lạnh kéo dài tới Chủ nhật, cẩn thận giữ sức khoẻ và đường đóng băng.",
    "src": [
-    {
-     "t": "NHK",
-     "u": "https://news.web.nhk/newsweb/na/nd-20261119de78563"
-    }
-   ]
-  },
-  {
-   "lang": "ja",
-   "w": "フィジカルAI",
-   "ph": "フィジカルエーアイ · fijikaru ēai",
-   "pos": "danh từ",
-   "level": "N3",
-   "tag": "công nghệ",
-   "vi": "AI vật lý: AI gắn vào robot, máy móc để hành động ngoài đời thật",
-   "ex": "工場ではフィジカルAIを積んだロボットが箱を運んでいる。",
-   "exPh": "Kōjō de wa fijikaru ēai o tsunda robotto ga hako o hakonde iru.",
-   "exVi": "Trong xưởng, robot gắn AI vật lý đang khuân thùng hàng.",
-   "why": "Lọt 30 đề cử 流行語大賞 2026, khi AI bước từ màn hình ra robot và xe tự lái.",
+    { "t": "NHK", "u": "https://news.web.nhk/newsweb/na/nd-20261120de79279" }
+   ] },
+  { "lang": "ja", "w": "情報漏えい", "ph": "じょうほうろうえい · jōhō rōei", "pos": "danh từ", "level": "N1", "tag": "công nghệ",
+   "vi": "rò rỉ thông tin, lộ dữ liệu",
+   "ex": "情報漏えいを防ぐため、パスワードを定期的に変えましょう。",
+   "exPh": "Jōhō rōei o fusegu tame, pasuwādo o teikiteki ni kaemashō.",
+   "exVi": "Để khỏi bị lộ thông tin, mình nên đổi mật khẩu định kỳ nha.",
+   "why": "Một trang bán con dấu online ở Osaka bị truy cập trái phép, có thể lộ thông tin thẻ của khoảng 8.200 khách.",
    "src": [
-    {
-     "t": "KAI-YOU",
-     "u": "https://kai-you.net/article/97070"
-    }
-   ]
-  },
-  {
-   "lang": "ja",
-   "w": "声の権利",
-   "ph": "こえのけんり · koe no kenri",
-   "pos": "cụm danh từ",
-   "level": "N2",
-   "tag": "công nghệ",
-   "vi": "quyền đối với giọng nói (không cho người khác hay AI nhái giọng tuỳ tiện)",
-   "ex": "AIで勝手に声をまねされないように、声の権利を守るルールが必要だ。",
-   "exPh": "Ēai de katte ni koe o manesarenai yō ni, koe no kenri o mamoru rūru ga hitsuyō da.",
-   "exVi": "Cần có luật bảo vệ quyền giọng nói để khỏi bị AI nhái giọng tuỳ tiện.",
-   "why": "Lọt 30 đề cử 流行語大賞 2026, giữa lúc AI nhái giọng người thật ngày càng dễ.",
+    { "t": "NHK", "u": "https://news.web.nhk/newsweb/na/nd-20261120de79394" }
+   ] },
+  { "lang": "ja", "w": "ホビ垢", "ph": "ホビあか · hobi aka", "pos": "danh từ, tiếng lóng", "level": "slang", "tag": "mạng xã hội",
+   "vi": "acc sở thích: tài khoản mạng xã hội phụ, chỉ để đu idol, chơi hobby",
+   "ex": "推し活の投稿はホビ垢だけにして、本垢には載せない。",
+   "exPh": "Oshikatsu no tōkō wa hobi aka dake ni shite, hon'aka ni wa nosenai.",
+   "exVi": "Mấy bài đu idol tui chỉ đăng bên acc sở thích, hổng đăng lên acc chính.",
+   "why": "Lọt 30 đề cử 流行語大賞 2026, khi nhiều người tách riêng acc sở thích khỏi acc chính.",
    "src": [
-    {
-     "t": "KAI-YOU",
-     "u": "https://kai-you.net/article/97070"
-    }
-   ]
-  }
+    { "t": "Oricon", "u": "https://www.oricon.co.jp/news/2490887/full/" }
+   ] }
  ]
 }
