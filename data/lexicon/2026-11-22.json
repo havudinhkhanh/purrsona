@@ -1,0 +1,384 @@
+{
+ "d": "2026-11-22",
+ "note": "Vẫn ưu tiên tiếng Nhật (N5 53/80, N4 34, N3 mới 12), bơm Starters và HSK 5 đang mỏng trong lộ trình, xoay vòng sang chủ đề Mua sắm (14 chữ, mỏng nhất) cho cả 3 thứ tiếng.",
+ "add": [
+  {
+   "pack": "ja-core",
+   "level": "N5",
+   "rows": [
+    [
+     "雪",
+     "ゆき · yuki",
+     "danh từ",
+     "tuyết",
+     "雪の日は、猫がこたつから出ない。",
+     "Yuki no hi wa, neko ga kotatsu kara denai.",
+     "Ngày có tuyết, con mèo không chịu chui ra khỏi kotatsu."
+    ],
+    [
+     "肉",
+     "にく · niku",
+     "danh từ",
+     "thịt",
+     "晩ご飯は肉と野菜です。",
+     "Bangohan wa niku to yasai desu.",
+     "Cơm tối có thịt với rau."
+    ],
+    [
+     "洗う",
+     "あらう · arau",
+     "động từ",
+     "rửa, giặt",
+     "ご飯の前に手を洗う。",
+     "Gohan no mae ni te o arau.",
+     "Rửa tay trước khi ăn cơm."
+    ],
+    [
+     "忙しい",
+     "いそがしい · isogashii",
+     "tính từ",
+     "bận",
+     "今週はとても忙しいです。",
+     "Konshū wa totemo isogashii desu.",
+     "Tuần này bận dữ lắm."
+    ],
+    [
+     "掃除",
+     "そうじ · sōji",
+     "danh từ / động từ (する)",
+     "dọn dẹp, quét dọn",
+     "日曜日に部屋を掃除します。",
+     "Nichiyōbi ni heya o sōji shimasu.",
+     "Chủ nhật tui dọn phòng."
+    ],
+    [
+     "遊ぶ",
+     "あそぶ · asobu",
+     "động từ",
+     "chơi",
+     "猫と庭で遊ぶのが好きです。",
+     "Neko to niwa de asobu no ga suki desu.",
+     "Tui thích chơi với mèo ngoài vườn."
+    ],
+    [
+     "暗い",
+     "くらい · kurai",
+     "tính từ",
+     "tối",
+     "この部屋は暗いですね。",
+     "Kono heya wa kurai desu ne.",
+     "Phòng này tối ghê ha."
+    ],
+    [
+     "会う",
+     "あう · au",
+     "động từ",
+     "gặp",
+     "明日、駅で友達に会う。",
+     "Ashita, eki de tomodachi ni au.",
+     "Mai tui gặp bạn ở ga."
+    ]
+   ]
+  },
+  {
+   "pack": "ja-core",
+   "level": "N4",
+   "rows": [
+    [
+     "予習",
+     "よしゅう · yoshū",
+     "danh từ / động từ (する)",
+     "học trước, soạn bài trước",
+     "明日の授業の予習をしました。",
+     "Ashita no jugyō no yoshū o shimashita.",
+     "Tui học trước bài cho buổi học mai rồi."
+    ],
+    [
+     "迎える",
+     "むかえる · mukaeru",
+     "động từ",
+     "đón, nghênh đón",
+     "猫が玄関で私を迎えてくれる。",
+     "Neko ga genkan de watashi o mukaete kureru.",
+     "Con mèo ra tận cửa đón tui."
+    ],
+    [
+     "頑張る",
+     "がんばる · ganbaru",
+     "động từ",
+     "cố gắng, ráng",
+     "試験まであと一週間、頑張ります。",
+     "Shiken made ato isshūkan, ganbarimasu.",
+     "Còn một tuần nữa là thi, ráng thôi."
+    ],
+    [
+     "喜ぶ",
+     "よろこぶ · yorokobu",
+     "động từ",
+     "vui mừng, mừng rỡ",
+     "魚をあげると、猫はすぐ喜ぶ。",
+     "Sakana o ageru to, neko wa sugu yorokobu.",
+     "Cho cá là con mèo mừng liền."
+    ]
+   ]
+  },
+  {
+   "pack": "ja-core",
+   "level": "N3",
+   "rows": [
+    [
+     "散らかる",
+     "ちらかる · chirakaru",
+     "động từ",
+     "bừa bộn, lộn xộn",
+     "机の上が散らかっている。",
+     "Tsukue no ue ga chirakatte iru.",
+     "Trên bàn bừa bộn hết trơn."
+    ],
+    [
+     "延期",
+     "えんき · enki",
+     "danh từ / động từ (する)",
+     "hoãn, dời lại",
+     "雨で試合が延期になった。",
+     "Ame de shiai ga enki ni natta.",
+     "Mưa nên trận đấu bị dời lại."
+    ],
+    [
+     "提出",
+     "ていしゅつ · teishutsu",
+     "danh từ / động từ (する)",
+     "nộp (bài, hồ sơ)",
+     "レポートを金曜日までに提出してください。",
+     "Repōto o kin'yōbi made ni teishutsu shite kudasai.",
+     "Nộp báo cáo trước thứ Sáu nha."
+    ],
+    [
+     "夢中",
+     "むちゅう · muchū",
+     "tính từ đuôi na",
+     "mải mê, say mê",
+     "弟はゲームに夢中で、返事もしない。",
+     "Otōto wa gēmu ni muchū de, henji mo shinai.",
+     "Thằng em mải chơi game, kêu cũng không thèm trả lời."
+    ]
+   ]
+  },
+  {
+   "pack": "en-yle",
+   "level": "STARTERS",
+   "rows": [
+    [
+     "egg",
+     "/eɡ/",
+     "n",
+     "quả trứng",
+     "I have an egg for breakfast.",
+     "Sáng tui ăn một quả trứng."
+    ],
+    [
+     "duck",
+     "/dʌk/",
+     "n",
+     "con vịt",
+     "The cat is watching a duck in the pond.",
+     "Con mèo đang ngó con vịt dưới ao."
+    ],
+    [
+     "bed",
+     "/bed/",
+     "n",
+     "cái giường",
+     "My cat sleeps on my bed.",
+     "Con mèo ngủ trên giường tui."
+    ],
+    [
+     "milk",
+     "/mɪlk/",
+     "n",
+     "sữa",
+     "She drinks a glass of milk.",
+     "Cô bé uống một ly sữa."
+    ]
+   ]
+  },
+  {
+   "pack": "zh-hsk",
+   "level": "HSK5",
+   "rows": [
+    [
+     "耽误",
+     "dānwu",
+     "động từ",
+     "làm lỡ, làm chậm trễ",
+     "别玩手机了，会耽误学习的。",
+     "Bié wán shǒujī le, huì dānwu xuéxí de.",
+     "Đừng lướt điện thoại nữa, lỡ việc học đó."
+    ],
+    [
+     "反复",
+     "fǎnfù",
+     "phó từ / động từ",
+     "lặp đi lặp lại",
+     "这个词我反复练习了很多次。",
+     "Zhège cí wǒ fǎnfù liànxí le hěn duō cì.",
+     "Chữ này tui luyện đi luyện lại nhiều lần rồi."
+    ],
+    [
+     "集中",
+     "jízhōng",
+     "động từ",
+     "tập trung",
+     "上课的时候要集中注意力。",
+     "Shàngkè de shíhou yào jízhōng zhùyìlì.",
+     "Lúc học trên lớp phải tập trung."
+    ],
+    [
+     "舍不得",
+     "shěbude",
+     "động từ",
+     "không nỡ, tiếc",
+     "猫舍不得离开温暖的被子。",
+     "Māo shěbude líkāi wēnnuǎn de bèizi.",
+     "Con mèo không nỡ rời cái mền ấm."
+    ]
+   ]
+  },
+  {
+   "pack": "en-topic",
+   "level": "SHOP",
+   "rows": [
+    [
+     "checkout",
+     "/ˈtʃekaʊt/",
+     "n",
+     "quầy tính tiền; bước thanh toán",
+     "There was a long queue at the checkout.",
+     "Quầy tính tiền xếp hàng dài thòng."
+    ],
+    [
+     "voucher",
+     "/ˈvaʊtʃə(r)/",
+     "n",
+     "phiếu mua hàng, phiếu giảm giá",
+     "I used a voucher and saved ten percent.",
+     "Tui xài phiếu giảm giá, đỡ được mười phần trăm."
+    ],
+    [
+     "warranty",
+     "/ˈwɒrənti/",
+     "n",
+     "bảo hành",
+     "This phone comes with a two-year warranty.",
+     "Điện thoại này bảo hành hai năm."
+    ],
+    [
+     "loyalty card",
+     "/ˈlɔɪəlti kɑːd/",
+     "n",
+     "thẻ thành viên, thẻ tích điểm",
+     "Do you have a loyalty card with us?",
+     "Bạn có thẻ thành viên bên mình không?"
+    ]
+   ]
+  },
+  {
+   "pack": "zh-topic",
+   "level": "SHOP",
+   "rows": [
+    [
+     "收银台",
+     "shōuyíntái",
+     "danh từ",
+     "quầy thu ngân",
+     "收银台前排了很长的队。",
+     "Shōuyíntái qián pái le hěn cháng de duì.",
+     "Trước quầy thu ngân xếp hàng dài thòng."
+    ],
+    [
+     "优惠券",
+     "yōuhuìquàn",
+     "danh từ",
+     "phiếu giảm giá, coupon",
+     "用了优惠券，便宜了二十块。",
+     "Yòng le yōuhuìquàn, piányi le èrshí kuài.",
+     "Xài phiếu giảm giá, rẻ được hai chục tệ."
+    ],
+    [
+     "保修",
+     "bǎoxiū",
+     "động từ",
+     "bảo hành",
+     "这台电脑保修两年。",
+     "Zhè tái diànnǎo bǎoxiū liǎng nián.",
+     "Máy tính này bảo hành hai năm."
+    ],
+    [
+     "会员卡",
+     "huìyuánkǎ",
+     "danh từ",
+     "thẻ thành viên",
+     "您有我们店的会员卡吗？",
+     "Nín yǒu wǒmen diàn de huìyuánkǎ ma?",
+     "Anh/chị có thẻ thành viên của tiệm mình không?"
+    ]
+   ]
+  },
+  {
+   "pack": "ja-topic",
+   "level": "SHOP",
+   "rows": [
+    [
+     "レジ",
+     "reji",
+     "danh từ",
+     "quầy tính tiền",
+     "レジの前に長い列ができている。",
+     "Reji no mae ni nagai retsu ga dekite iru.",
+     "Trước quầy tính tiền xếp hàng dài."
+    ],
+    [
+     "クーポン",
+     "kūpon",
+     "danh từ",
+     "phiếu giảm giá, coupon",
+     "クーポンを使って、百円安くなった。",
+     "Kūpon o tsukatte, hyaku-en yasuku natta.",
+     "Xài coupon nên rẻ được trăm yên."
+    ],
+    [
+     "保証",
+     "ほしょう · hoshō",
+     "danh từ",
+     "bảo hành, bảo đảm",
+     "このパソコンは二年間の保証が付いています。",
+     "Kono pasokon wa ninenkan no hoshō ga tsuite imasu.",
+     "Máy tính này có bảo hành hai năm."
+    ],
+    [
+     "ポイントカード",
+     "pointo kādo",
+     "danh từ",
+     "thẻ tích điểm",
+     "ポイントカードはお持ちですか。",
+     "Pointo kādo wa omochi desu ka.",
+     "Anh/chị có thẻ tích điểm không ạ?"
+    ]
+   ]
+  }
+ ],
+ "lines": {
+  "nag_new": [
+   "Chữ mới nằm chờ. {sen} nằm lướt."
+  ],
+  "idle_tap": [
+   "Chọt tui hoài. Chữ thì không thèm chọt."
+  ],
+  "life_phone": [
+   "Lướt xong chưa. Tui đợi nãy giờ."
+  ],
+  "done": [
+   "Xong rồi. Đừng đòi khen, tui đi ngủ."
+  ]
+ }
+}
