@@ -1,0 +1,72 @@
+{
+  "d": "2026-11-23",
+  "note": "Thứ hai: bơm chữ sâu và đời thường cho cả 3 thứ tiếng, tiếp N5 (61/80) vì tiếng Nhật vẫn ưu tiên, xoay vòng sang chủ đề Công sở (14 chữ, mỏng nhất).",
+  "add": [
+    { "pack": "ja-core", "level": "N5", "rows": [
+      ["白い", "しろい · shiroi", "tính từ", "trắng", "白い猫が窓の外にいる。", "Shiroi neko ga mado no soto ni iru.", "Có con mèo trắng ở ngoài cửa sổ."],
+      ["椅子", "いす · isu", "danh từ", "cái ghế", "猫が私の椅子で寝ている。", "Neko ga watashi no isu de nete iru.", "Con mèo đang ngủ trên ghế của mình."],
+      ["上手", "じょうず · jōzu", "tính từ (な)", "giỏi, khéo", "姉は料理が上手です。", "Ane wa ryōri ga jōzu desu.", "Chị mình nấu ăn giỏi lắm."],
+      ["寒い", "さむい · samui", "tính từ", "lạnh (trời)", "今朝はとても寒いです。", "Kesa wa totemo samui desu.", "Sáng nay lạnh dữ thần."]
+    ]},
+    { "pack": "en-topic", "level": "WORK", "rows": [
+      ["agenda", "/əˈdʒendə/", "n", "chương trình họp, các mục cần bàn", "Can you send me the agenda before the meeting?", "Gửi mình chương trình họp trước khi họp được hông?"],
+      ["workload", "/ˈwɜːkləʊd/", "n", "khối lượng công việc", "My workload is heavy this week, so no long lunch.", "Tuần này việc ngập đầu, khỏi ăn trưa thong thả luôn."],
+      ["presentation", "/ˌpreznˈteɪʃn/", "n", "bài thuyết trình", "I have to give a presentation to the client tomorrow.", "Mai mình phải thuyết trình cho khách hàng."],
+      ["resign", "/rɪˈzaɪn/", "v", "nghỉ việc, xin thôi việc", "He resigned after five years at the company.", "Ảnh nghỉ việc sau năm năm làm ở công ty."]
+    ]},
+    { "pack": "zh-topic", "level": "WORK", "rows": [
+      ["会议室", "huìyìshì", "danh từ", "phòng họp", "会议室已经有人了。", "Huìyìshì yǐjīng yǒu rén le.", "Phòng họp có người xài rồi."],
+      ["出差", "chūchāi", "động từ", "đi công tác", "下周我要去上海出差。", "Xià zhōu wǒ yào qù Shànghǎi chūchāi.", "Tuần sau mình đi công tác Thượng Hải."],
+      ["打卡", "dǎkǎ", "động từ", "chấm công", "早上九点前要打卡。", "Zǎoshang jiǔ diǎn qián yào dǎkǎ.", "Sáng phải chấm công trước chín giờ."],
+      ["工作量", "gōngzuòliàng", "danh từ", "khối lượng công việc", "这个月的工作量太大了。", "Zhège yuè de gōngzuòliàng tài dà le.", "Tháng này việc nhiều quá trời."]
+    ]},
+    { "pack": "ja-topic", "level": "WORK", "rows": [
+      ["出張", "しゅっちょう · shucchō", "danh từ", "chuyến công tác", "来週、大阪に出張します。", "Raishū, Ōsaka ni shucchō shimasu.", "Tuần sau mình đi công tác Osaka."],
+      ["会議室", "かいぎしつ · kaigishitsu", "danh từ", "phòng họp", "会議室を予約しました。", "Kaigishitsu o yoyaku shimashita.", "Mình đặt phòng họp rồi nha."],
+      ["打ち合わせ", "うちあわせ · uchiawase", "danh từ", "buổi họp bàn, trao đổi công việc", "午後二時から打ち合わせがあります。", "Gogo niji kara uchiawase ga arimasu.", "Hai giờ chiều có buổi họp bàn."],
+      ["有給休暇", "ゆうきゅうきゅうか · yūkyū kyūka", "danh từ", "nghỉ phép có lương", "有給休暇を取って、旅行に行きます。", "Yūkyū kyūka o totte, ryokō ni ikimasu.", "Mình xin nghỉ phép có lương để đi du lịch."]
+    ]},
+    { "pack": "en-deep", "level": "DEEP1", "rows": [
+      ["reverie", "/ˈrevəri/", "n", "sự mơ màng, thả hồn", "She sat by the window, lost in reverie.", "Cô ấy ngồi bên cửa sổ, thả hồn đi đâu mất."],
+      ["wanderlust", "/ˈwɒndəlʌst/", "n", "nỗi khao khát xê dịch", "Every spring, my wanderlust comes back.", "Mùa xuân nào cũng ngứa chân muốn đi đâu đó."],
+      ["halcyon", "/ˈhælsiən/", "adj", "êm đềm, tươi đẹp (của thời đã qua)", "Those were the halcyon days of our summer.", "Đó là những ngày hè êm đềm nhất của tụi mình."],
+      ["tranquil", "/ˈtræŋkwɪl/", "adj", "yên ả, thanh bình", "The garden is tranquil when the cat falls asleep.", "Con mèo ngủ rồi thì khu vườn yên ả hẳn."]
+    ]},
+    { "pack": "zh-deep", "level": "DEEP1", "rows": [
+      ["随遇而安", "suí yù ér ān", "thành ngữ", "gặp đâu yên đó, tuỳ duyên mà an", "搬到新城市以后，他学会了随遇而安。", "Bān dào xīn chéngshì yǐhòu, tā xuéhuì le suí yù ér ān.", "Dọn tới thành phố mới, ảnh học được cách gặp đâu yên đó."],
+      ["岁月静好", "suìyuè jìng hǎo", "thành ngữ", "năm tháng bình yên", "一杯茶，一只猫，岁月静好。", "Yì bēi chá, yì zhī māo, suìyuè jìng hǎo.", "Một tách trà, một con mèo, năm tháng bình yên."],
+      ["怦然心动", "pēngrán xīndòng", "thành ngữ", "tim chợt rung động", "第一次见到她，我就怦然心动。", "Dì yī cì jiàndào tā, wǒ jiù pēngrán xīndòng.", "Lần đầu gặp cô ấy là tim mình rung rinh liền."],
+      ["人间值得", "rénjiān zhíde", "cụm từ", "đời này đáng sống", "看到晚霞的时候，我觉得人间值得。", "Kàndào wǎnxiá de shíhou, wǒ juéde rénjiān zhíde.", "Lúc ngắm ráng chiều, mình thấy đời này đáng sống ghê."]
+    ]},
+    { "pack": "ja-deep", "level": "DEEP1", "rows": [
+      ["ぬくもり", "ぬくもり · nukumori", "danh từ", "hơi ấm (của người, của vật)", "手紙からぬくもりが伝わる。", "Tegami kara nukumori ga tsutawaru.", "Đọc lá thư mà thấy ấm lòng."],
+      ["面影", "おもかげ · omokage", "danh từ", "hình bóng, dáng dấp (người, chuyện cũ) còn đọng lại", "この町には昔の面影が残っている。", "Kono machi ni wa mukashi no omokage ga nokotte iru.", "Thị trấn này vẫn còn giữ dáng dấp ngày xưa."],
+      ["風情", "ふぜい · fuzei", "danh từ", "nét duyên, phong vị (của cảnh vật)", "雨の京都も風情がある。", "Ame no Kyōto mo fuzei ga aru.", "Kyoto trong mưa cũng có nét duyên riêng."],
+      ["和み", "なごみ · nagomi", "danh từ", "cảm giác êm dịu, thư thái", "猫の寝顔は毎日の和みだ。", "Neko no negao wa mainichi no nagomi da.", "Mặt con mèo lúc ngủ là liều thư giãn mỗi ngày."]
+    ]},
+    { "pack": "en-life", "level": "LIFE", "rows": [
+      ["washing machine", "/ˈwɒʃɪŋ məˌʃiːn/", "n", "máy giặt", "The cat watches the washing machine spin for an hour.", "Con mèo ngồi coi máy giặt quay cả tiếng đồng hồ."],
+      ["vacuum", "/ˈvækjuːm/", "v", "hút bụi", "I vacuum the sofa every Sunday because of cat hair.", "Chủ nhật nào mình cũng hút bụi ghế sofa vì lông mèo."],
+      ["remote control", "/rɪˌməʊt kənˈtrəʊl/", "n", "cái điều khiển (tivi, máy lạnh)", "Where is the remote control? Check under the cat.", "Cái điều khiển đâu rồi? Coi thử dưới con mèo đó."],
+      ["trash can", "/ˈtræʃ kæn/", "n", "thùng rác", "Close the trash can, or the cat will dig in it.", "Đậy thùng rác lại đi, không là con mèo bới tung lên đó."]
+    ]},
+    { "pack": "zh-life", "level": "LIFE", "rows": [
+      ["遥控器", "yáokòngqì", "danh từ", "cái điều khiển (tivi, máy lạnh)", "遥控器又被猫压在下面了。", "Yáokòngqì yòu bèi māo yā zài xiàmian le.", "Cái điều khiển lại bị con mèo nằm đè lên rồi."],
+      ["垃圾桶", "lājītǒng", "danh từ", "thùng rác", "垃圾桶满了，快去倒一下。", "Lājītǒng mǎn le, kuài qù dào yíxià.", "Thùng rác đầy rồi, đi đổ lẹ đi."],
+      ["洗衣服", "xǐ yīfu", "động từ", "giặt đồ", "周末我一般在家洗衣服。", "Zhōumò wǒ yìbān zài jiā xǐ yīfu.", "Cuối tuần mình hay ở nhà giặt đồ."],
+      ["吸尘器", "xīchénqì", "danh từ", "máy hút bụi", "一开吸尘器，猫就跑了。", "Yì kāi xīchénqì, māo jiù pǎo le.", "Vừa bật máy hút bụi là con mèo chạy mất tiêu."]
+    ]},
+    { "pack": "ja-life", "level": "LIFE", "rows": [
+      ["リモコン", "rimokon", "danh từ", "cái điều khiển (tivi, máy lạnh)", "リモコンが猫の下にあった。", "Rimokon ga neko no shita ni atta.", "Cái điều khiển nằm dưới con mèo nè."],
+      ["ゴミ箱", "ごみばこ · gomibako", "danh từ", "thùng rác", "ゴミ箱のふたを閉めてね。", "Gomibako no futa o shimete ne.", "Nhớ đậy nắp thùng rác nha."],
+      ["洗濯", "せんたく · sentaku", "danh từ / động từ (する)", "giặt giũ", "今日は天気がいいから、洗濯しよう。", "Kyō wa tenki ga ii kara, sentaku shiyō.", "Hôm nay trời đẹp, giặt đồ thôi."],
+      ["掃除機", "そうじき · sōjiki", "danh từ", "máy hút bụi", "掃除機の音で猫が逃げた。", "Sōjiki no oto de neko ga nigeta.", "Nghe tiếng máy hút bụi là con mèo chạy mất."]
+    ]}
+  ],
+  "lines": {
+    "nag_new": ["Chữ mới nằm đó cả buổi. {sen} tính để nó mốc luôn hả?"],
+    "life_cleaned": ["Dọn xong rồi hả. Tui bày lại liền cho {sen} có việc làm."],
+    "life_phone": ["Lướt tiếp đi. Chữ hôm nay chắc tự bò vô đầu."],
+    "done": ["Xong. Hôm nay tạm tha, khỏi bị tui cào."]
+  }
+}
