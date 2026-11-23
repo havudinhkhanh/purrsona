@@ -1,0 +1,350 @@
+{
+ "d": "2026-11-24",
+ "note": "Tiếp N5 (65/80) vì tiếng Nhật vẫn ưu tiên, bơm N2, HSK 6 và Movers đang mỏng nhất lộ trình, xoay vòng sang chủ đề Sức khoẻ (14 chữ, mỏng nhất) cho cả 3 thứ tiếng.",
+ "add": [
+  {
+   "pack": "ja-core",
+   "level": "N5",
+   "rows": [
+    [
+     "黒い",
+     "くろい · kuroi",
+     "tính từ",
+     "đen",
+     "黒い猫がいすの上で寝ています。",
+     "Kuroi neko ga isu no ue de nete imasu.",
+     "Con mèo đen đang ngủ trên ghế."
+    ],
+    [
+     "赤い",
+     "あかい · akai",
+     "tính từ",
+     "đỏ",
+     "赤いりんごを三つ買いました。",
+     "Akai ringo o mittsu kaimashita.",
+     "Tui mua ba trái táo đỏ."
+    ],
+    [
+     "駅",
+     "えき · eki",
+     "danh từ",
+     "nhà ga",
+     "駅まで歩いて十分です。",
+     "Eki made aruite juppun desu.",
+     "Đi bộ tới ga mất mười phút."
+    ],
+    [
+     "歌う",
+     "うたう · utau",
+     "động từ",
+     "hát",
+     "猫が鳴くと、わたしも歌う。",
+     "Neko ga naku to, watashi mo utau.",
+     "Mèo kêu là tui hát theo."
+    ],
+    [
+     "泳ぐ",
+     "およぐ · oyogu",
+     "động từ",
+     "bơi",
+     "夏は海で泳ぐのが好きです。",
+     "Natsu wa umi de oyogu no ga suki desu.",
+     "Mùa hè tui thích đi bơi ở biển."
+    ],
+    [
+     "帽子",
+     "ぼうし · bōshi",
+     "danh từ",
+     "cái mũ, cái nón",
+     "外は暑いから、帽子をかぶってください。",
+     "Soto wa atsui kara, bōshi o kabutte kudasai.",
+     "Ngoài trời nóng, đội nón vô nha."
+    ]
+   ]
+  },
+  {
+   "pack": "ja-core",
+   "level": "N2",
+   "rows": [
+    [
+     "言い訳",
+     "いいわけ · iiwake",
+     "danh từ / động từ",
+     "lời bào chữa, viện cớ",
+     "言い訳はいいから、早く単語を覚えて。",
+     "Iiwake wa ii kara, hayaku tango o oboete.",
+     "Khỏi viện cớ, lo học chữ lẹ đi."
+    ],
+    [
+     "中途半端",
+     "ちゅうとはんぱ · chūto hanpa",
+     "tính từ đuôi na",
+     "dở dang, nửa vời",
+     "中途半端にやめるのはもったいない。",
+     "Chūto hanpa ni yameru no wa mottainai.",
+     "Bỏ ngang nửa chừng thì uổng lắm."
+    ],
+    [
+     "居眠り",
+     "いねむり · inemuri",
+     "danh từ / động từ",
+     "ngủ gật",
+     "会議中に居眠りしてしまった。",
+     "Kaigi-chū ni inemuri shite shimatta.",
+     "Lỡ ngủ gật giữa buổi họp."
+    ],
+    [
+     "渋々",
+     "しぶしぶ · shibushibu",
+     "trạng từ",
+     "miễn cưỡng, bất đắc dĩ",
+     "彼は渋々宿題を始めた。",
+     "Kare wa shibushibu shukudai o hajimeta.",
+     "Ảnh miễn cưỡng ngồi vô làm bài tập."
+    ]
+   ]
+  },
+  {
+   "pack": "zh-hsk",
+   "level": "HSK6",
+   "rows": [
+    [
+     "疲惫",
+     "píbèi",
+     "tính từ",
+     "mệt rã rời",
+     "加完班回家，我疲惫得一句话都不想说。",
+     "Jiā wán bān huí jiā, wǒ píbèi de yí jù huà dōu bù xiǎng shuō.",
+     "Tăng ca xong về nhà, tui mệt rã rời, chẳng muốn nói câu nào."
+    ],
+    [
+     "沮丧",
+     "jǔsàng",
+     "tính từ",
+     "chán nản, nản lòng",
+     "考试没过，他很沮丧。",
+     "Kǎoshì méi guò, tā hěn jǔsàng.",
+     "Thi rớt, ảnh chán nản lắm."
+    ],
+    [
+     "惬意",
+     "qièyì",
+     "tính từ",
+     "khoan khoái, dễ chịu",
+     "猫躺在阳光下，看起来非常惬意。",
+     "Māo tǎng zài yángguāng xià, kàn qǐlái fēicháng qièyì.",
+     "Con mèo nằm phơi nắng, nhìn sướng dễ sợ."
+    ],
+    [
+     "啰唆",
+     "luōsuo",
+     "tính từ",
+     "lải nhải, dài dòng",
+     "别啰唆了，快去背单词！",
+     "Bié luōsuo le, kuài qù bèi dāncí!",
+     "Đừng lải nhải nữa, đi học từ lẹ đi!"
+    ]
+   ]
+  },
+  {
+   "pack": "en-yle",
+   "level": "MOVERS",
+   "rows": [
+    [
+     "roof",
+     "/ruːf/",
+     "n",
+     "mái nhà",
+     "The cat is on the roof again!",
+     "Con mèo lại leo lên mái nhà nữa rồi!"
+    ],
+    [
+     "cave",
+     "/keɪv/",
+     "n",
+     "hang động",
+     "The bats live in a dark cave.",
+     "Mấy con dơi sống trong một cái hang tối thui."
+    ],
+    [
+     "loud",
+     "/laʊd/",
+     "adj",
+     "to, ồn",
+     "The music is too loud, I can't sleep.",
+     "Nhạc mở to quá, tui ngủ không được."
+    ],
+    [
+     "clever",
+     "/ˈklevə(r)/",
+     "adj",
+     "thông minh, khéo",
+     "The clever cat opened the fridge.",
+     "Con mèo lanh quá, tự mở được tủ lạnh luôn."
+    ]
+   ]
+  },
+  {
+   "pack": "en-topic",
+   "level": "HEALTH",
+   "rows": [
+    [
+     "symptom",
+     "/ˈsɪmptəm/",
+     "n",
+     "triệu chứng",
+     "Tell the doctor about all your symptoms.",
+     "Kể hết triệu chứng cho bác sĩ nghe nha."
+    ],
+    [
+     "prescription",
+     "/prɪˈskrɪpʃn/",
+     "n",
+     "đơn thuốc",
+     "You need a prescription for this medicine.",
+     "Thuốc này phải có toa bác sĩ mới mua được."
+    ],
+    [
+     "sneeze",
+     "/sniːz/",
+     "v",
+     "hắt hơi, hắt xì",
+     "Every time the cat comes close, I sneeze.",
+     "Hễ con mèo lại gần là tui hắt xì."
+    ],
+    [
+     "dizzy",
+     "/ˈdɪzi/",
+     "adj",
+     "chóng mặt",
+     "I felt dizzy after standing up too fast.",
+     "Đứng dậy nhanh quá nên tui thấy chóng mặt."
+    ],
+    [
+     "check-up",
+     "/ˈtʃek ʌp/",
+     "n",
+     "khám sức khoẻ định kỳ",
+     "I have a check-up at the clinic next Monday.",
+     "Thứ hai tuần sau tui đi khám sức khoẻ ở phòng khám."
+    ]
+   ]
+  },
+  {
+   "pack": "zh-topic",
+   "level": "HEALTH",
+   "rows": [
+    [
+     "症状",
+     "zhèngzhuàng",
+     "danh từ",
+     "triệu chứng",
+     "你有什么症状？发烧吗？",
+     "Nǐ yǒu shénme zhèngzhuàng? Fāshāo ma?",
+     "Bạn có triệu chứng gì? Có sốt không?"
+    ],
+    [
+     "打喷嚏",
+     "dǎ pēntì",
+     "động từ",
+     "hắt hơi, hắt xì",
+     "我一靠近猫就打喷嚏。",
+     "Wǒ yí kàojìn māo jiù dǎ pēntì.",
+     "Tui lại gần mèo là hắt xì liền."
+    ],
+    [
+     "头晕",
+     "tóuyūn",
+     "tính từ",
+     "chóng mặt",
+     "我站起来太快，有点儿头晕。",
+     "Wǒ zhàn qǐlái tài kuài, yǒudiǎnr tóuyūn.",
+     "Tui đứng dậy nhanh quá, hơi chóng mặt."
+    ],
+    [
+     "体检",
+     "tǐjiǎn",
+     "danh từ",
+     "khám sức khoẻ",
+     "公司每年安排一次体检。",
+     "Gōngsī měi nián ānpái yí cì tǐjiǎn.",
+     "Năm nào công ty cũng cho đi khám sức khoẻ một lần."
+    ],
+    [
+     "打针",
+     "dǎzhēn",
+     "động từ",
+     "tiêm, chích",
+     "小孩子都怕打针。",
+     "Xiǎo háizi dōu pà dǎzhēn.",
+     "Con nít đứa nào cũng sợ bị chích."
+    ]
+   ]
+  },
+  {
+   "pack": "ja-topic",
+   "level": "HEALTH",
+   "rows": [
+    [
+     "症状",
+     "しょうじょう · shōjō",
+     "danh từ",
+     "triệu chứng",
+     "どんな症状がありますか。",
+     "Donna shōjō ga arimasu ka.",
+     "Bạn có triệu chứng gì?"
+    ],
+    [
+     "くしゃみ",
+     "くしゃみ · kushami",
+     "danh từ",
+     "cái hắt hơi",
+     "猫のそばにいると、くしゃみが止まらない。",
+     "Neko no soba ni iru to, kushami ga tomaranai.",
+     "Cứ ở gần mèo là hắt xì không ngừng."
+    ],
+    [
+     "めまい",
+     "めまい · memai",
+     "danh từ",
+     "chứng chóng mặt",
+     "朝起きたら、めまいがした。",
+     "Asa okitara, memai ga shita.",
+     "Sáng ngủ dậy thấy chóng mặt."
+    ],
+    [
+     "健康診断",
+     "けんこうしんだん · kenkō shindan",
+     "danh từ",
+     "khám sức khoẻ định kỳ",
+     "来週、会社の健康診断があります。",
+     "Raishū, kaisha no kenkō shindan ga arimasu.",
+     "Tuần sau công ty có đợt khám sức khoẻ."
+    ],
+    [
+     "注射",
+     "ちゅうしゃ · chūsha",
+     "danh từ",
+     "tiêm, chích",
+     "子どもは注射が嫌いです。",
+     "Kodomo wa chūsha ga kirai desu.",
+     "Con nít ghét bị chích."
+    ]
+   ]
+  }
+ ],
+ "lines": {
+  "nag_new": [
+   "Chữ mới chờ từ sáng. {sen} lướt xong chưa?"
+  ],
+  "idle_tap": [
+   "Chọc tui thì siêng. Chọc chữ thì không."
+  ],
+  "ambush_fail": [
+   "Hôm qua lướt điện thoại tới khuya chứ gì. Quên là phải."
+  ],
+  "done": [
+   "Xong rồi đó. Đừng tưởng tui khen."
+  ]
+ }
+}
