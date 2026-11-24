@@ -1,0 +1,62 @@
+{
+  "d": "2026-11-25",
+  "note": "Tiếp N5 (71/80) để chạm mốc 80 vì tiếng Nhật vẫn ưu tiên, bơm N1, Flyers, A1 đang mỏng nhất lộ trình, xoay vòng sang chủ đề Giao thông (14 chữ, mỏng nhất) cho cả 3 thứ tiếng.",
+  "add": [
+    { "pack": "ja-core", "level": "N5", "rows": [
+      ["青い", "あおい · aoi", "tính từ", "xanh dương", "今日は空が青いね。", "Kyō wa sora ga aoi ne.", "Bữa nay trời xanh ghê ha."],
+      ["靴", "くつ · kutsu", "danh từ", "giày", "猫が私の靴の中で寝ている。", "Neko ga watashi no kutsu no naka de nete iru.", "Con mèo đang ngủ trong chiếc giày của tui."],
+      ["財布", "さいふ · saifu", "danh từ", "cái ví", "財布を家に忘れた。", "Saifu o ie ni wasureta.", "Tui để quên cái ví ở nhà rồi."],
+      ["難しい", "むずかしい · muzukashii", "tính từ", "khó", "この漢字はちょっと難しい。", "Kono kanji wa chotto muzukashii.", "Chữ Hán này hơi khó."],
+      ["速い", "はやい · hayai", "tính từ", "nhanh (tốc độ)", "この電車はとても速いです。", "Kono densha wa totemo hayai desu.", "Chiếc tàu này chạy nhanh lắm."],
+      ["面白い", "おもしろい · omoshiroi", "tính từ", "thú vị, hay, buồn cười", "この本はとても面白いです。", "Kono hon wa totemo omoshiroi desu.", "Cuốn sách này hay lắm."],
+      ["覚える", "おぼえる · oboeru", "động từ", "nhớ, học thuộc", "毎日五つの言葉を覚える。", "Mainichi itsutsu no kotoba o oboeru.", "Mỗi ngày tui học thuộc năm chữ."],
+      ["座る", "すわる · suwaru", "động từ", "ngồi", "猫はいつも私の席に座る。", "Neko wa itsumo watashi no seki ni suwaru.", "Con mèo lúc nào cũng ngồi chỗ của tui."],
+      ["教える", "おしえる · oshieru", "động từ", "dạy, chỉ (đường, cách làm)", "毎日、猫が私に日本語を教える。", "Mainichi, neko ga watashi ni nihongo o oshieru.", "Ngày nào con mèo cũng dạy tui tiếng Nhật."]
+    ]},
+    { "pack": "ja-core", "level": "N1", "rows": [
+      ["頑な", "かたくな · katakuna", "tính từ đuôi na", "cố chấp, một mực", "猫は頑なにお風呂を拒んだ。", "Neko wa katakuna ni ofuro o kobanda.", "Con mèo một mực không chịu tắm."],
+      ["怠る", "おこたる · okotaru", "động từ", "lơ là, sao nhãng", "復習を怠ると、すぐ忘れてしまう。", "Fukushū o okotaru to, sugu wasurete shimau.", "Lơ là ôn bài là quên liền."],
+      ["疎か", "おろそか · orosoka", "tính từ đuôi na", "qua loa, bỏ bê", "スマホばかり見て、勉強が疎かになった。", "Sumaho bakari mite, benkyō ga orosoka ni natta.", "Cứ lướt điện thoại hoài nên việc học bị bỏ bê."],
+      ["執着", "しゅうちゃく · shūchaku", "danh từ / động từ", "chấp niệm, bám riết không buông tha", "うちの猫は段ボール箱に執着している。", "Uchi no neko wa danbōru-bako ni shūchaku shite iru.", "Con mèo nhà tui mê cái thùng các-tông như bị ám."]
+    ]},
+    { "pack": "en-yle", "level": "FLYERS", "rows": [
+      ["calendar", "/ˈkæl.ən.dər/", "n", "lịch (treo tường, để bàn)", "I wrote your birthday on the calendar.", "Tui ghi sinh nhật bồ lên lịch rồi đó."],
+      ["biscuit", "/ˈbɪs.kɪt/", "n", "bánh quy", "The cat knocked my biscuit off the table.", "Con mèo hất cái bánh quy của tui rớt khỏi bàn."],
+      ["bracelet", "/ˈbreɪ.slət/", "n", "vòng tay", "She wears a silver bracelet every day.", "Ngày nào nhỏ cũng đeo cái vòng tay bạc."],
+      ["competition", "/ˌkɒm.pəˈtɪʃ.ən/", "n", "cuộc thi", "Our class won the drawing competition.", "Lớp tụi mình thắng cuộc thi vẽ."]
+    ]},
+    { "pack": "en-exam", "level": "A1", "rows": [
+      ["shower", "/ˈʃaʊ.ər/", "n", "vòi sen; tắm vòi sen", "I take a shower every morning.", "Sáng nào tui cũng tắm vòi sen."],
+      ["dinner", "/ˈdɪn.ər/", "n", "bữa tối", "We have dinner at seven.", "Tụi mình ăn tối lúc bảy giờ."],
+      ["afternoon", "/ˌɑːf.təˈnuːn/", "n", "buổi chiều", "Let's study this afternoon.", "Chiều nay mình học nha."],
+      ["drink", "/drɪŋk/", "v", "uống", "The cat likes to drink from my glass.", "Con mèo thích uống nước trong ly của tui."]
+    ]},
+    { "pack": "en-topic", "level": "TRANSPORT", "rows": [
+      ["seat belt", "/ˈsiːt ˌbelt/", "n", "dây an toàn", "Put on your seat belt before we go.", "Thắt dây an toàn vô rồi mình chạy nha."],
+      ["platform", "/ˈplæt.fɔːm/", "n", "sân ga", "The train leaves from platform 3.", "Tàu chạy ở sân ga số 3."],
+      ["speed limit", "/ˈspiːd ˌlɪm.ɪt/", "n", "tốc độ tối đa cho phép", "The speed limit here is 40 km/h.", "Đoạn này chỉ được chạy tối đa 40 cây số giờ."],
+      ["one-way street", "/ˌwʌn.weɪ ˈstriːt/", "n", "đường một chiều", "You can't turn left here, it's a one-way street.", "Không quẹo trái được đâu, đường một chiều đó."],
+      ["driving licence", "/ˈdraɪ.vɪŋ ˌlaɪ.səns/", "n", "bằng lái xe", "He finally got his driving licence.", "Cuối cùng ổng cũng có bằng lái."]
+    ]},
+    { "pack": "zh-topic", "level": "TRANSPORT", "rows": [
+      ["安全带", "ānquándài", "danh từ", "dây an toàn", "上车先系好安全带。", "Shàng chē xiān jì hǎo ānquándài.", "Lên xe thắt dây an toàn trước đã."],
+      ["站台", "zhàntái", "danh từ", "sân ga", "火车停在三号站台。", "Huǒchē tíng zài sān hào zhàntái.", "Tàu dừng ở sân ga số 3."],
+      ["限速", "xiànsù", "động từ / danh từ", "giới hạn tốc độ", "这条路限速四十公里。", "Zhè tiáo lù xiànsù sìshí gōnglǐ.", "Đường này chỉ được chạy tối đa 40 cây số giờ."],
+      ["单行道", "dānxíngdào", "danh từ", "đường một chiều", "这是单行道，不能掉头。", "Zhè shì dānxíngdào, bù néng diàotóu.", "Đây là đường một chiều, không quay đầu được đâu."],
+      ["驾照", "jiàzhào", "danh từ", "bằng lái xe", "我哥哥上个月拿到了驾照。", "Wǒ gēge shàng ge yuè ná dào le jiàzhào.", "Anh tui tháng trước mới lấy được bằng lái."]
+    ]},
+    { "pack": "ja-topic", "level": "TRANSPORT", "rows": [
+      ["シートベルト", "shīto beruto", "danh từ", "dây an toàn", "車に乗ったらシートベルトをしてね。", "Kuruma ni nottara shīto beruto o shite ne.", "Lên xe rồi thì thắt dây an toàn nha."],
+      ["ホーム", "hōmu", "danh từ", "sân ga", "次の電車は二番ホームから出ます。", "Tsugi no densha wa ni-ban hōmu kara demasu.", "Chuyến tàu kế tiếp chạy từ sân ga số 2."],
+      ["制限速度", "せいげんそくど · seigen sokudo", "danh từ", "tốc độ tối đa cho phép", "この道の制限速度は四十キロです。", "Kono michi no seigen sokudo wa yonjukkiro desu.", "Đường này chỉ được chạy tối đa 40 cây số giờ."],
+      ["一方通行", "いっぽうつうこう · ippō tsūkō", "danh từ", "đường một chiều", "ここは一方通行だから、右に曲がれないよ。", "Koko wa ippō tsūkō da kara, migi ni magarenai yo.", "Đây là đường một chiều nên không quẹo phải được đâu."],
+      ["運転免許", "うんてんめんきょ · unten menkyo", "danh từ", "bằng lái xe", "兄は先月、運転免許を取った。", "Ani wa sengetsu, unten menkyo o totta.", "Anh tui tháng trước mới lấy bằng lái."]
+    ]}
+  ],
+  "lines": {
+    "forgot": ["Hôm qua {sen} gật gù chữ này lắm mà. Giờ quên sạch rồi hả?"],
+    "jab_idle": ["Ngồi lướt tiếp đi, chữ tự bò vô sổ chắc."],
+    "pause_back": ["Ủa, còn nhớ đường về đây hả {sen}?"],
+    "lex_new": ["Tui mới tha chữ mới về. Học đi, đừng để tui nhắc lần hai."]
+  }
+}
