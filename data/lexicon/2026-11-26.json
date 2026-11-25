@@ -1,0 +1,69 @@
+{
+  "d": "2026-11-26",
+  "note": "N5 đã chạm 80 nên chuyển sang bơm N3, C1, HSK 4 đang mỏng trong lộ trình, xoay vòng sang hai chủ đề mỏng nhất là Cảm xúc và Công nghệ (14 chữ) cho cả 3 thứ tiếng.",
+  "add": [
+    { "pack": "en-topic", "level": "FEEL", "rows": [
+      ["frustrated", "/frʌˈstreɪ.tɪd/", "adj", "bực bội, ức chế (vì không làm được)", "I get frustrated when the Wi-Fi keeps dropping.", "Wi-Fi rớt hoài làm tui bực mình ghê."],
+      ["anxious", "/ˈæŋk.ʃəs/", "adj", "lo lắng, bồn chồn", "She felt anxious before the interview.", "Trước buổi phỏng vấn nhỏ bồn chồn quá trời."],
+      ["relieved", "/rɪˈliːvd/", "adj", "nhẹ nhõm", "I was relieved to find my keys under the sofa.", "Tìm thấy chìa khoá dưới ghế sofa, tui nhẹ cả người."],
+      ["homesick", "/ˈhəʊm.sɪk/", "adj", "nhớ nhà", "He gets homesick every Tet.", "Tết nào ổng cũng nhớ nhà."],
+      ["overwhelmed", "/ˌəʊ.vəˈwelmd/", "adj", "choáng ngợp, quá tải", "I feel overwhelmed with all this homework.", "Bài tập nhiều quá, tui ngộp luôn."]
+    ]},
+    { "pack": "zh-topic", "level": "FEEL", "rows": [
+      ["激动", "jīdòng", "tính từ", "xúc động, phấn khích", "听到这个好消息，她激动得哭了。", "Tīngdào zhège hǎo xiāoxi, tā jīdòng de kū le.", "Nghe tin vui, nhỏ xúc động tới phát khóc."],
+      ["想家", "xiǎng jiā", "động từ", "nhớ nhà", "第一次出国留学，我很想家。", "Dì yī cì chūguó liúxué, wǒ hěn xiǎng jiā.", "Lần đầu đi du học, tui nhớ nhà dữ lắm."],
+      ["后悔", "hòuhuǐ", "động từ", "hối hận", "我后悔昨天没有早点睡。", "Wǒ hòuhuǐ zuótiān méiyǒu zǎo diǎn shuì.", "Tui hối hận vì hôm qua không ngủ sớm."],
+      ["羡慕", "xiànmù", "động từ", "ganh tị (thèm được như), ngưỡng mộ", "我很羡慕猫，每天只需要睡觉。", "Wǒ hěn xiànmù māo, měitiān zhǐ xūyào shuìjiào.", "Tui ganh tị với con mèo ghê, ngày nào cũng chỉ cần ngủ."],
+      ["烦恼", "fánnǎo", "danh từ / tính từ", "phiền muộn, buồn phiền", "别为小事烦恼了。", "Bié wèi xiǎoshì fánnǎo le.", "Đừng buồn phiền vì chuyện nhỏ nữa."]
+    ]},
+    { "pack": "ja-topic", "level": "FEEL", "rows": [
+      ["不安", "ふあん · fuan", "danh từ / tính từ đuôi na", "bất an, lo lắng", "試験の前はいつも不安になる。", "Shiken no mae wa itsumo fuan ni naru.", "Trước kỳ thi lúc nào tui cũng thấy bất an."],
+      ["イライラ", "iraira", "trạng từ / động từ (する)", "bực bội, sốt ruột", "電車が遅れてイライラした。", "Densha ga okurete iraira shita.", "Tàu trễ làm tui bực bội."],
+      ["ほっとする", "ほっとする · hotto suru", "động từ", "thở phào nhẹ nhõm", "財布が見つかって、ほっとした。", "Saifu ga mitsukatte, hotto shita.", "Tìm được cái ví, tui thở phào."],
+      ["悔しい", "くやしい · kuyashii", "tính từ", "tức tối, cay cú (vì thua, hụt)", "一点差で負けて、本当に悔しい。", "Itten-sa de makete, hontō ni kuyashii.", "Thua có một điểm, cay thiệt chớ."],
+      ["感動", "かんどう · kandō", "danh từ / động từ (する)", "cảm động, xúc động", "その映画を見て感動した。", "Sono eiga o mite kandō shita.", "Coi phim đó xong tui cảm động ghê."]
+    ]},
+    { "pack": "en-topic", "level": "TECH", "rows": [
+      ["upload", "/ʌpˈləʊd/", "v", "tải lên", "Upload your photos before the link expires.", "Up hình lên trước khi link hết hạn nha."],
+      ["screenshot", "/ˈskriːn.ʃɒt/", "n", "ảnh chụp màn hình", "Send me a screenshot of the error.", "Chụp màn hình cái lỗi gửi tui coi."],
+      ["browser", "/ˈbraʊ.zər/", "n", "trình duyệt", "Try opening the page in another browser.", "Thử mở trang bằng trình duyệt khác coi."],
+      ["storage", "/ˈstɔː.rɪdʒ/", "n", "bộ nhớ, dung lượng lưu trữ", "My phone is out of storage because of cat videos.", "Điện thoại tui hết bộ nhớ vì toàn video mèo."]
+    ]},
+    { "pack": "zh-topic", "level": "TECH", "rows": [
+      ["上传", "shàngchuán", "động từ", "tải lên", "请把照片上传到群里。", "Qǐng bǎ zhàopiàn shàngchuán dào qún lǐ.", "Up hình lên nhóm giùm nha."],
+      ["截图", "jiétú", "động từ / danh từ", "chụp màn hình; ảnh chụp màn hình", "你把错误信息截图发给我。", "Nǐ bǎ cuòwù xìnxī jiétú fā gěi wǒ.", "Chụp màn hình cái thông báo lỗi gửi tui."],
+      ["浏览器", "liúlǎnqì", "danh từ", "trình duyệt", "换个浏览器试试。", "Huàn gè liúlǎnqì shìshi.", "Đổi trình duyệt khác thử coi."],
+      ["内存", "nèicún", "danh từ", "bộ nhớ (điện thoại, máy tính)", "手机内存满了，全是猫的照片。", "Shǒujī nèicún mǎn le, quán shì māo de zhàopiàn.", "Điện thoại đầy bộ nhớ rồi, toàn hình mèo."]
+    ]},
+    { "pack": "ja-topic", "level": "TECH", "rows": [
+      ["アップロード", "appurōdo", "danh từ / động từ (する)", "tải lên", "写真をアップロードしてください。", "Shashin o appurōdo shite kudasai.", "Up hình lên giùm nha."],
+      ["スクショ", "sukusho", "danh từ", "ảnh chụp màn hình (nói tắt)", "エラー画面のスクショを送って。", "Erā gamen no sukusho o okutte.", "Chụp màn hình lỗi gửi tui coi."],
+      ["ブラウザ", "burauza", "danh từ", "trình duyệt", "別のブラウザで開いてみて。", "Betsu no burauza de hiraite mite.", "Thử mở bằng trình duyệt khác coi."],
+      ["容量", "ようりょう · yōryō", "danh từ", "dung lượng", "スマホの容量が猫の動画でいっぱいだ。", "Sumaho no yōryō ga neko no dōga de ippai da.", "Dung lượng điện thoại đầy nhóc video mèo."]
+    ]},
+    { "pack": "ja-core", "level": "N3", "rows": [
+      ["黙る", "だまる · damaru", "động từ", "im lặng, nín thinh", "困ると、弟はすぐ黙る。", "Komaru to, otōto wa sugu damaru.", "Hễ bí là thằng em im re liền."],
+      ["遠慮", "えんりょ · enryo", "danh từ / động từ (する)", "ngại, khách sáo", "遠慮しないで、たくさん食べてね。", "Enryo shinaide, takusan tabete ne.", "Đừng khách sáo, ăn nhiều vô nha."],
+      ["習慣", "しゅうかん · shūkan", "danh từ", "thói quen, tập quán", "寝る前にスマホを見る習慣をやめたい。", "Neru mae ni sumaho o miru shūkan o yametai.", "Tui muốn bỏ cái tật lướt điện thoại trước khi ngủ."],
+      ["支度", "したく · shitaku", "danh từ / động từ (する)", "sửa soạn, chuẩn bị", "早く支度しないと遅れるよ。", "Hayaku shitaku shinai to okureru yo.", "Không lo sửa soạn lẹ là trễ đó."]
+    ]},
+    { "pack": "en-exam", "level": "C1", "rows": [
+      ["prone", "/prəʊn/", "adj", "dễ bị, hay mắc (prone to …)", "I'm prone to forgetting new words if I skip a day.", "Bỏ một bữa là tui dễ quên chữ mới lắm."],
+      ["endeavour", "/ɪnˈdev.ər/", "n, v", "sự nỗ lực; cố gắng", "Learning a language is a long endeavour.", "Học ngoại ngữ là cả một hành trình nỗ lực dài hơi."],
+      ["exert", "/ɪɡˈzɜːt/", "v", "dùng, gây (sức ép, ảnh hưởng, quyền lực)", "The cat exerts total control over the sofa.", "Con mèo nắm trọn quyền kiểm soát cái ghế sofa."],
+      ["refrain", "/rɪˈfreɪn/", "v", "kiềm chế, tránh (refrain from …)", "Please refrain from using your phone during the exam.", "Trong giờ thi làm ơn đừng xài điện thoại."]
+    ]},
+    { "pack": "zh-hsk", "level": "HSK4", "rows": [
+      ["推迟", "tuīchí", "động từ", "hoãn, dời lại", "会议推迟到下周一了。", "Huìyì tuīchí dào xià zhōuyī le.", "Cuộc họp dời qua thứ hai tuần sau rồi."],
+      ["拒绝", "jùjué", "động từ", "từ chối", "猫拒绝吃新买的猫粮。", "Māo jùjué chī xīn mǎi de māoliáng.", "Con mèo nhất quyết không ăn bịch hạt mới mua."],
+      ["养成", "yǎngchéng", "động từ", "tạo thành, hình thành (thói quen)", "每天学五个词，慢慢养成习惯。", "Měitiān xué wǔ gè cí, mànmàn yǎngchéng xíguàn.", "Mỗi ngày học năm chữ, từ từ thành thói quen."],
+      ["随便", "suíbiàn", "tính từ / phó từ", "tuỳ ý, sao cũng được; qua loa", "「你想吃什么？」「随便。」", "“Nǐ xiǎng chī shénme?” “Suíbiàn.”", "“Muốn ăn gì?” “Sao cũng được.”"]
+    ]}
+  ],
+  "lines": {
+    "idle_tap": ["Chọt tui hoài. Chữ thì không thấy chọt."],
+    "life_phone": ["Lướt nữa đi. Chữ tự bay vô chắc."],
+    "ui_skip": ["Né nữa hả. Mai nó vẫn chờ đó."],
+    "pause_back": ["Về rồi hả. Tưởng trốn luôn."]
+  }
+}
