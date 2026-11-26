@@ -1,0 +1,412 @@
+{
+  "d": "2026-11-27",
+  "note": "Bơm N2 (14 chữ, mỏng nhất lộ trình), HSK 5 và Starters đang mỏng, xoay vòng sang hai chủ đề mỏng nhất là Tài chính và Xin việc (16 chữ) cho cả 3 thứ tiếng.",
+  "add": [
+    {
+      "pack": "ja-core",
+      "level": "N2",
+      "rows": [
+        [
+          "焦る",
+          "あせる · aseru",
+          "động từ",
+          "cuống, nóng ruột, hấp tấp",
+          "前の日に焦るより、毎日少しずつ覚えよう。",
+          "Mae no hi ni aseru yori, mainichi sukoshi zutsu oboeyō.",
+          "Thay vì sát ngày mới cuống, mỗi ngày học chút chút đi."
+        ],
+        [
+          "甘える",
+          "あまえる · amaeru",
+          "động từ",
+          "làm nũng, dựa dẫm (vào lòng tốt người khác)",
+          "猫が膝の上で甘えてくる。",
+          "Neko ga hiza no ue de amaete kuru.",
+          "Con mèo leo lên đùi làm nũng."
+        ],
+        [
+          "うっかり",
+          "うっかり · ukkari",
+          "phó từ / động từ (する)",
+          "lỡ, sơ ý, đãng trí",
+          "うっかり猫のご飯を忘れた。",
+          "Ukkari neko no gohan o wasureta.",
+          "Lỡ quên cho mèo ăn mất tiêu."
+        ],
+        [
+          "だらしない",
+          "だらしない · darashinai",
+          "tính từ đuôi i",
+          "lôi thôi, bê bối, lè phè",
+          "休みの日はついだらしなくなる。",
+          "Yasumi no hi wa tsui darashinaku naru.",
+          "Ngày nghỉ là lại lè phè bê bối."
+        ]
+      ]
+    },
+    {
+      "pack": "zh-hsk",
+      "level": "HSK5",
+      "rows": [
+        [
+          "不耐烦",
+          "bú nàifán",
+          "tính từ",
+          "mất kiên nhẫn, sốt ruột",
+          "猫等饭等得不耐烦了。",
+          "Māo děng fàn děng de bú nàifán le.",
+          "Con mèo chờ cơm tới hết kiên nhẫn luôn."
+        ],
+        [
+          "沉默",
+          "chénmò",
+          "động từ / tính từ",
+          "im lặng, lặng thinh",
+          "老师问谁没写作业，大家都沉默了。",
+          "Lǎoshī wèn shéi méi xiě zuòyè, dàjiā dōu chénmò le.",
+          "Cô hỏi ai chưa làm bài, cả lớp im re."
+        ],
+        [
+          "糊涂",
+          "hútu",
+          "tính từ",
+          "lơ mơ, hồ đồ, lẫn",
+          "我真糊涂，又忘了带钥匙。",
+          "Wǒ zhēn hútu, yòu wàng le dài yàoshi.",
+          "Tui lơ mơ quá, lại quên mang chìa khoá."
+        ],
+        [
+          "发愁",
+          "fāchóu",
+          "động từ",
+          "rầu, lo lắng",
+          "别发愁了，先背十个单词。",
+          "Bié fāchóu le, xiān bèi shí ge dāncí.",
+          "Đừng rầu nữa, thuộc mười chữ trước đi."
+        ]
+      ]
+    },
+    {
+      "pack": "en-yle",
+      "level": "STARTERS",
+      "rows": [
+        [
+          "frog",
+          "/frɒɡ/",
+          "n",
+          "con ếch",
+          "The frog jumped into the pond.",
+          "Con ếch nhảy cái tõm xuống ao."
+        ],
+        [
+          "doll",
+          "/dɒl/",
+          "n",
+          "búp bê",
+          "My sister has a doll with red shoes.",
+          "Em gái tui có con búp bê mang giày đỏ."
+        ],
+        [
+          "giraffe",
+          "/dʒəˈrɑːf/",
+          "n",
+          "hươu cao cổ",
+          "The giraffe is eating leaves from the tree.",
+          "Con hươu cao cổ đang ăn lá trên cây."
+        ],
+        [
+          "sofa",
+          "/ˈsəʊ.fə/",
+          "n",
+          "ghế sofa, ghế dài",
+          "The cat is sleeping on the sofa again.",
+          "Con mèo lại nằm ngủ trên ghế sofa nữa rồi."
+        ]
+      ]
+    },
+    {
+      "pack": "en-topic",
+      "level": "FIN",
+      "rows": [
+        [
+          "retained earnings",
+          "/rɪˌteɪnd ˈɜː.nɪŋz/",
+          "n",
+          "lợi nhuận giữ lại (lợi nhuận chưa phân phối)",
+          "We keep part of the profit as retained earnings to buy new machines.",
+          "Tụi mình giữ lại một phần lời để mua máy mới."
+        ],
+        [
+          "impairment",
+          "/ɪmˈpeə.mənt/",
+          "n",
+          "tổn thất do suy giảm giá trị (tài sản)",
+          "The old warehouse lost value, so we booked an impairment.",
+          "Cái kho cũ mất giá rồi nên phải ghi nhận tổn thất suy giảm giá trị."
+        ],
+        [
+          "working capital",
+          "/ˌwɜː.kɪŋ ˈkæp.ɪ.təl/",
+          "n",
+          "vốn lưu động",
+          "Slow-paying customers are eating up our working capital.",
+          "Khách trả tiền chậm đang ngốn hết vốn lưu động của tụi mình."
+        ],
+        [
+          "cost of sales",
+          "/ˌkɒst əv ˈseɪlz/",
+          "n",
+          "giá vốn hàng bán",
+          "Cost of sales went up because coffee beans got more expensive.",
+          "Giá vốn hàng bán tăng vì hạt cà phê lên giá."
+        ],
+        [
+          "bank statement",
+          "/ˈbæŋk ˌsteɪt.mənt/",
+          "n",
+          "sao kê ngân hàng",
+          "Check every line on the bank statement before you close the month.",
+          "Dò từng dòng trên sao kê ngân hàng rồi mới khoá sổ tháng nha."
+        ]
+      ]
+    },
+    {
+      "pack": "zh-topic",
+      "level": "FIN",
+      "rows": [
+        [
+          "应付账款",
+          "yìngfù zhàngkuǎn",
+          "danh từ",
+          "khoản phải trả (người bán)",
+          "这个月的应付账款下周五前要付清。",
+          "Zhège yuè de yìngfù zhàngkuǎn xià zhōuwǔ qián yào fùqīng.",
+          "Khoản phải trả tháng này phải trả dứt trước thứ Sáu tuần sau."
+        ],
+        [
+          "折旧",
+          "zhéjiù",
+          "danh từ / động từ",
+          "khấu hao",
+          "这台电脑按三年计提折旧。",
+          "Zhè tái diànnǎo àn sān nián jìtí zhéjiù.",
+          "Cái máy tính này trích khấu hao trong ba năm."
+        ],
+        [
+          "毛利",
+          "máolì",
+          "danh từ",
+          "lãi gộp, lợi nhuận gộp",
+          "咖啡的毛利比蛋糕高多了。",
+          "Kāfēi de máolì bǐ dàngāo gāo duō le.",
+          "Lãi gộp của cà phê cao hơn bánh kem nhiều."
+        ],
+        [
+          "审计",
+          "shěnjì",
+          "danh từ / động từ",
+          "kiểm toán",
+          "审计师明天来查账，别再拖了。",
+          "Shěnjìshī míngtiān lái cházhàng, bié zài tuō le.",
+          "Mai kiểm toán viên tới kiểm sổ, đừng có dây dưa nữa."
+        ],
+        [
+          "对账",
+          "duìzhàng",
+          "động từ",
+          "đối chiếu sổ sách, đối soát",
+          "月底要跟银行对账。",
+          "Yuèdǐ yào gēn yínháng duìzhàng.",
+          "Cuối tháng phải đối chiếu sổ với ngân hàng."
+        ]
+      ]
+    },
+    {
+      "pack": "ja-topic",
+      "level": "FIN",
+      "rows": [
+        [
+          "減価償却",
+          "げんかしょうきゃく · genka shōkyaku",
+          "danh từ / động từ (する)",
+          "khấu hao",
+          "パソコンは四年で減価償却します。",
+          "Pasokon wa yonen de genka shōkyaku shimasu.",
+          "Máy tính thì khấu hao trong bốn năm."
+        ],
+        [
+          "売掛金",
+          "うりかけきん · urikakekin",
+          "danh từ",
+          "khoản phải thu (khách hàng)",
+          "売掛金がまだ回収できていない。",
+          "Urikakekin ga mada kaishū dekite inai.",
+          "Khoản phải thu vẫn chưa thu về được."
+        ],
+        [
+          "買掛金",
+          "かいかけきん · kaikakekin",
+          "danh từ",
+          "khoản phải trả (người bán)",
+          "買掛金は月末にまとめて払います。",
+          "Kaikakekin wa getsumatsu ni matomete haraimasu.",
+          "Khoản phải trả thì cuối tháng trả gộp một lần."
+        ],
+        [
+          "監査",
+          "かんさ · kansa",
+          "danh từ / động từ (する)",
+          "kiểm toán",
+          "来週監査が入るから、書類を準備して。",
+          "Raishū kansa ga hairu kara, shorui o junbi shite.",
+          "Tuần sau có kiểm toán vô, lo chuẩn bị giấy tờ đi."
+        ],
+        [
+          "粗利",
+          "あらり · arari",
+          "danh từ",
+          "lãi gộp",
+          "この商品は粗利が薄い。",
+          "Kono shōhin wa arari ga usui.",
+          "Món hàng này lãi gộp mỏng lắm."
+        ]
+      ]
+    },
+    {
+      "pack": "en-topic",
+      "level": "JOB",
+      "rows": [
+        [
+          "job description",
+          "/ˈdʒɒb dɪˌskrɪp.ʃən/",
+          "n",
+          "bản mô tả công việc (JD)",
+          "Read the job description before you apply, not after.",
+          "Đọc mô tả công việc trước khi nộp nha, đừng nộp rồi mới đọc."
+        ],
+        [
+          "recruiter",
+          "/rɪˈkruː.tər/",
+          "n",
+          "người tuyển dụng, headhunter",
+          "A recruiter called me about a marketing role.",
+          "Có người bên tuyển dụng gọi tui về một vị trí marketing."
+        ],
+        [
+          "full-time",
+          "/ˌfʊl ˈtaɪm/",
+          "adj",
+          "toàn thời gian",
+          "Is this job full-time or part-time?",
+          "Việc này làm toàn thời gian hay bán thời gian vậy?"
+        ],
+        [
+          "background check",
+          "/ˈbæk.ɡraʊnd ˌtʃek/",
+          "n",
+          "kiểm tra lý lịch",
+          "The company will run a background check before sending the offer.",
+          "Công ty sẽ kiểm tra lý lịch rồi mới gửi thư mời nhận việc."
+        ]
+      ]
+    },
+    {
+      "pack": "zh-topic",
+      "level": "JOB",
+      "rows": [
+        [
+          "面试官",
+          "miànshìguān",
+          "danh từ",
+          "người phỏng vấn",
+          "面试官问我为什么想离开上一家公司。",
+          "Miànshìguān wèn wǒ wèishénme xiǎng líkāi shàng yì jiā gōngsī.",
+          "Người phỏng vấn hỏi sao tui muốn nghỉ công ty cũ."
+        ],
+        [
+          "跳槽",
+          "tiàocáo",
+          "động từ",
+          "nhảy việc",
+          "他一年跳槽了三次。",
+          "Tā yì nián tiàocáo le sān cì.",
+          "Ảnh nhảy việc ba lần trong một năm."
+        ],
+        [
+          "全职",
+          "quánzhí",
+          "tính từ",
+          "toàn thời gian",
+          "这份工作是全职的吗？",
+          "Zhè fèn gōngzuò shì quánzhí de ma?",
+          "Việc này làm toàn thời gian hả?"
+        ],
+        [
+          "投简历",
+          "tóu jiǎnlì",
+          "cụm động từ",
+          "nộp CV, rải hồ sơ",
+          "别光刷手机，快去投简历。",
+          "Bié guāng shuā shǒujī, kuài qù tóu jiǎnlì.",
+          "Đừng có lướt điện thoại hoài, đi nộp CV lẹ đi."
+        ]
+      ]
+    },
+    {
+      "pack": "ja-topic",
+      "level": "JOB",
+      "rows": [
+        [
+          "面接官",
+          "めんせつかん · mensetsukan",
+          "danh từ",
+          "người phỏng vấn",
+          "面接官に長所を聞かれた。",
+          "Mensetsukan ni chōsho o kikareta.",
+          "Bị người phỏng vấn hỏi điểm mạnh của mình."
+        ],
+        [
+          "転職",
+          "てんしょく · tenshoku",
+          "danh từ / động từ (する)",
+          "chuyển việc, đổi chỗ làm",
+          "来年、転職しようと思っている。",
+          "Rainen, tenshoku shiyō to omotte iru.",
+          "Tui tính sang năm chuyển việc."
+        ],
+        [
+          "正社員",
+          "せいしゃいん · seishain",
+          "danh từ",
+          "nhân viên chính thức",
+          "契約社員から正社員になった。",
+          "Keiyaku shain kara seishain ni natta.",
+          "Từ nhân viên hợp đồng lên nhân viên chính thức rồi."
+        ],
+        [
+          "書類選考",
+          "しょるいせんこう · shorui senkō",
+          "danh từ",
+          "vòng sàng lọc hồ sơ",
+          "書類選考に通ったら、次は面接です。",
+          "Shorui senkō ni tōttara, tsugi wa mensetsu desu.",
+          "Qua vòng hồ sơ thì tới phỏng vấn."
+        ]
+      ]
+    }
+  ],
+  "lines": {
+    "nag_new": [
+      "Mở app ra rồi lướt. Hay ghê."
+    ],
+    "forgot": [
+      "'{w}' đó. Mới học hôm qua mà."
+    ],
+    "done": [
+      "Xong rồi. Mai đừng trốn."
+    ],
+    "life_phone": [
+      "Để điện thoại xuống. Chữ hổng tự học."
+    ]
+  }
+}
