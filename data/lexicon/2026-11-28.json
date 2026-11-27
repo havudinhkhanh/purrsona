@@ -1,0 +1,428 @@
+{
+  "d": "2026-11-28",
+  "note": "Bơm N1, N2, HSK 6 và Movers đang mỏng nhất lộ trình, xoay vòng sang hai chủ đề mỏng nhất là Thương mại và Bán hàng (16 chữ) cho cả 3 thứ tiếng.",
+  "add": [
+    {
+      "pack": "ja-core",
+      "level": "N1",
+      "rows": [
+        [
+          "横着",
+          "おうちゃく · ōchaku",
+          "danh từ / tính từ đuôi na (する)",
+          "làm biếng đi tắt, lười bỏ công",
+          "横着して単語を飛ばすと、あとで困るよ。",
+          "Ōchaku shite tango o tobasu to, ato de komaru yo.",
+          "Làm biếng nhảy cóc chữ là lát nữa khổ đó."
+        ],
+        [
+          "粘り強い",
+          "ねばりづよい · nebarizuyoi",
+          "tính từ đuôi i",
+          "bền bỉ, lì, kiên trì",
+          "猫はネズミを粘り強く待っている。",
+          "Neko wa nezumi o nebarizuyoku matte iru.",
+          "Con mèo lì lợm ngồi rình con chuột."
+        ],
+        [
+          "心得る",
+          "こころえる · kokoroeru",
+          "động từ",
+          "hiểu rõ, nắm vững (cách làm)",
+          "うちの猫は甘え方を心得ている。",
+          "Uchi no neko wa amaekata o kokoroete iru.",
+          "Con mèo nhà tui rành cách làm nũng lắm."
+        ],
+        [
+          "煩わしい",
+          "わずらわしい · wazurawashii",
+          "tính từ đuôi i",
+          "phiền phức, rườm rà",
+          "通知が多すぎて煩わしい。",
+          "Tsūchi ga ōsugite wazurawashii.",
+          "Thông báo nhiều quá, phiền muốn xỉu."
+        ]
+      ]
+    },
+    {
+      "pack": "ja-core",
+      "level": "N2",
+      "rows": [
+        [
+          "夜更かし",
+          "よふかし · yofukashi",
+          "danh từ (する)",
+          "thức khuya",
+          "夜更かしすると、朝起きられない。",
+          "Yofukashi suru to, asa okirarenai.",
+          "Thức khuya là sáng dậy hổng nổi."
+        ],
+        [
+          "気軽",
+          "きがる · kigaru",
+          "tính từ đuôi na",
+          "thoải mái, không ngại ngần",
+          "分からないことは気軽に聞いてね。",
+          "Wakaranai koto wa kigaru ni kiite ne.",
+          "Chỗ nào không hiểu cứ hỏi thoải mái nha."
+        ],
+        [
+          "徹夜",
+          "てつや · tetsuya",
+          "danh từ (する)",
+          "thức trắng đêm",
+          "試験の前に徹夜するのはやめよう。",
+          "Shiken no mae ni tetsuya suru no wa yameyō.",
+          "Thôi đừng thức trắng đêm trước bữa thi nữa."
+        ],
+        [
+          "手間",
+          "てま · tema",
+          "danh từ",
+          "công sức, sự lích kích tốn thời gian",
+          "この料理は手間がかかる。",
+          "Kono ryōri wa tema ga kakaru.",
+          "Món này làm lích kích, tốn công lắm."
+        ]
+      ]
+    },
+    {
+      "pack": "zh-hsk",
+      "level": "HSK6",
+      "rows": [
+        [
+          "唠叨",
+          "láodao",
+          "động từ",
+          "càm ràm, lải nhải",
+          "我妈每天都唠叨我早点睡。",
+          "Wǒ mā měitiān dōu láodao wǒ zǎo diǎn shuì.",
+          "Mẹ tui ngày nào cũng càm ràm bắt ngủ sớm."
+        ],
+        [
+          "疏忽",
+          "shūhu",
+          "động từ / danh từ",
+          "sơ suất, lơ đễnh",
+          "一时疏忽，我把猫关在门外了。",
+          "Yìshí shūhu, wǒ bǎ māo guān zài mén wài le.",
+          "Sơ ý một cái, tui nhốt con mèo ngoài cửa luôn."
+        ],
+        [
+          "搁置",
+          "gēzhì",
+          "động từ",
+          "gác lại, xếp xó",
+          "这个计划被搁置了半年。",
+          "Zhège jìhuà bèi gēzhì le bàn nián.",
+          "Kế hoạch này bị gác lại nửa năm rồi."
+        ],
+        [
+          "慷慨",
+          "kāngkǎi",
+          "tính từ",
+          "hào phóng, rộng rãi",
+          "他很慷慨，常常请同事喝咖啡。",
+          "Tā hěn kāngkǎi, chángcháng qǐng tóngshì hē kāfēi.",
+          "Ổng hào phóng lắm, hay bao đồng nghiệp cà phê."
+        ]
+      ]
+    },
+    {
+      "pack": "en-yle",
+      "level": "MOVERS",
+      "rows": [
+        [
+          "kangaroo",
+          "/ˌkæŋɡəˈruː/",
+          "n",
+          "con chuột túi",
+          "The baby kangaroo is sleeping in its mum's pocket.",
+          "Con chuột túi con đang ngủ trong túi của mẹ nó."
+        ],
+        [
+          "snail",
+          "/sneɪl/",
+          "n",
+          "con ốc sên",
+          "My cat is watching a snail on the window.",
+          "Con mèo đang ngồi canh con ốc sên trên cửa sổ."
+        ],
+        [
+          "bored",
+          "/bɔːd/",
+          "adj",
+          "chán",
+          "I'm bored. Let's play a word game!",
+          "Chán quá. Chơi trò đoán chữ đi!"
+        ],
+        [
+          "penguin",
+          "/ˈpeŋɡwɪn/",
+          "n",
+          "chim cánh cụt",
+          "Penguins can swim, but they can't fly.",
+          "Chim cánh cụt bơi được mà bay hổng được."
+        ]
+      ]
+    },
+    {
+      "pack": "en-topic",
+      "level": "COMM",
+      "rows": [
+        [
+          "bill of lading",
+          "/ˌbɪl əv ˈleɪdɪŋ/",
+          "n",
+          "vận đơn (B/L)",
+          "Please send us a copy of the bill of lading before the ship arrives.",
+          "Gửi giùm bên tui bản sao vận đơn trước khi tàu cập cảng nha."
+        ],
+        [
+          "lead time",
+          "/ˈliːd taɪm/",
+          "n",
+          "thời gian chờ hàng (từ lúc đặt tới lúc giao)",
+          "The lead time for this order is about four weeks.",
+          "Đơn này phải chờ khoảng bốn tuần mới giao."
+        ],
+        [
+          "customs clearance",
+          "/ˈkʌstəmz ˌklɪərəns/",
+          "n",
+          "thông quan, làm thủ tục hải quan",
+          "Customs clearance took three days because one document was missing.",
+          "Thông quan mất ba ngày vì thiếu một tờ chứng từ."
+        ],
+        [
+          "export",
+          "/ɪkˈspɔːt/",
+          "v",
+          "xuất khẩu",
+          "We export coffee to Japan and Korea.",
+          "Bên tui xuất khẩu cà phê qua Nhật với Hàn."
+        ]
+      ]
+    },
+    {
+      "pack": "zh-topic",
+      "level": "COMM",
+      "rows": [
+        [
+          "提单",
+          "tídān",
+          "danh từ",
+          "vận đơn (B/L)",
+          "货到之前请把提单寄给我们。",
+          "Huò dào zhīqián qǐng bǎ tídān jì gěi wǒmen.",
+          "Trước khi hàng tới, gửi vận đơn cho bên tui nha."
+        ],
+        [
+          "交货期",
+          "jiāohuòqī",
+          "danh từ",
+          "thời hạn giao hàng",
+          "这批货的交货期是下个月十号。",
+          "Zhè pī huò de jiāohuòqī shì xià ge yuè shí hào.",
+          "Lô hàng này hạn giao là mùng 10 tháng sau."
+        ],
+        [
+          "清关",
+          "qīngguān",
+          "động từ",
+          "thông quan",
+          "文件不全，货物还在等清关。",
+          "Wénjiàn bù quán, huòwù hái zài děng qīngguān.",
+          "Giấy tờ chưa đủ, hàng còn nằm chờ thông quan."
+        ],
+        [
+          "出口",
+          "chūkǒu",
+          "động từ / danh từ",
+          "xuất khẩu",
+          "我们公司主要出口大米。",
+          "Wǒmen gōngsī zhǔyào chūkǒu dàmǐ.",
+          "Công ty tui chủ yếu xuất khẩu gạo."
+        ]
+      ]
+    },
+    {
+      "pack": "ja-topic",
+      "level": "COMM",
+      "rows": [
+        [
+          "船荷証券",
+          "ふなにしょうけん · funani shōken",
+          "danh từ",
+          "vận đơn đường biển (B/L)",
+          "船荷証券のコピーを先に送ってください。",
+          "Funani shōken no kopī o saki ni okutte kudasai.",
+          "Gửi trước giùm bản sao vận đơn nha."
+        ],
+        [
+          "納期",
+          "のうき · nōki",
+          "danh từ",
+          "hạn giao hàng",
+          "納期に間に合うように急いでいます。",
+          "Nōki ni ma ni au yō ni isoide imasu.",
+          "Đang gấp rút cho kịp hạn giao hàng."
+        ],
+        [
+          "通関",
+          "つうかん · tsūkan",
+          "danh từ (する)",
+          "thông quan",
+          "書類が足りなくて、通関に三日かかった。",
+          "Shorui ga tarinakute, tsūkan ni mikka kakatta.",
+          "Thiếu giấy tờ nên thông quan mất ba ngày."
+        ],
+        [
+          "輸出",
+          "ゆしゅつ · yushutsu",
+          "danh từ (する)",
+          "xuất khẩu",
+          "この会社はコーヒーを日本に輸出している。",
+          "Kono kaisha wa kōhī o Nihon ni yushutsu shite iru.",
+          "Công ty này xuất khẩu cà phê qua Nhật."
+        ]
+      ]
+    },
+    {
+      "pack": "en-topic",
+      "level": "SALES",
+      "rows": [
+        [
+          "loyalty program",
+          "/ˈlɔɪəlti ˌprəʊɡræm/",
+          "n",
+          "chương trình khách hàng thân thiết",
+          "Join our loyalty program and get a free drink on every tenth visit.",
+          "Vô chương trình thành viên đi, ghé lần thứ mười được ly nước free."
+        ],
+        [
+          "complaint",
+          "/kəmˈpleɪnt/",
+          "n",
+          "lời phàn nàn, khiếu nại",
+          "We answer every customer complaint within 24 hours.",
+          "Khiếu nại nào của khách bên tui cũng trả lời trong 24 tiếng."
+        ],
+        [
+          "free trial",
+          "/ˌfriː ˈtraɪəl/",
+          "n",
+          "dùng thử miễn phí",
+          "The app has a seven-day free trial.",
+          "App này cho xài thử free bảy ngày."
+        ],
+        [
+          "bestseller",
+          "/ˌbestˈselə(r)/",
+          "n",
+          "món bán chạy nhất",
+          "This cat bed is our bestseller this month.",
+          "Cái ổ mèo này là món bán chạy nhất tháng này của tiệm."
+        ]
+      ]
+    },
+    {
+      "pack": "zh-topic",
+      "level": "SALES",
+      "rows": [
+        [
+          "积分",
+          "jīfēn",
+          "danh từ / động từ",
+          "điểm tích luỹ; tích điểm",
+          "买东西可以积分，积满一百分换礼物。",
+          "Mǎi dōngxi kěyǐ jīfēn, jī mǎn yìbǎi fēn huàn lǐwù.",
+          "Mua đồ được tích điểm, đủ 100 điểm đổi quà."
+        ],
+        [
+          "投诉",
+          "tóusù",
+          "động từ / danh từ",
+          "khiếu nại",
+          "客户投诉送货太慢。",
+          "Kèhù tóusù sònghuò tài màn.",
+          "Khách khiếu nại giao hàng chậm quá."
+        ],
+        [
+          "试用",
+          "shìyòng",
+          "động từ",
+          "dùng thử",
+          "这个软件可以免费试用七天。",
+          "Zhège ruǎnjiàn kěyǐ miǎnfèi shìyòng qī tiān.",
+          "Phần mềm này cho xài thử free bảy ngày."
+        ],
+        [
+          "爆款",
+          "bàokuǎn",
+          "danh từ",
+          "mẫu hot, hàng bán chạy",
+          "这款猫窝是我们店的爆款。",
+          "Zhè kuǎn māowō shì wǒmen diàn de bàokuǎn.",
+          "Mẫu ổ mèo này là hàng hot của tiệm tui."
+        ]
+      ]
+    },
+    {
+      "pack": "ja-topic",
+      "level": "SALES",
+      "rows": [
+        [
+          "口コミ",
+          "くちコミ · kuchikomi",
+          "danh từ",
+          "truyền miệng, đánh giá của khách",
+          "口コミで新しいお客さんが増えた。",
+          "Kuchikomi de atarashii okyakusan ga fueta.",
+          "Nhờ khách truyền miệng mà khách mới tăng lên."
+        ],
+        [
+          "クレーム",
+          "kurēmu",
+          "danh từ",
+          "phàn nàn, khiếu nại (của khách)",
+          "お客様からクレームが来た。",
+          "Okyakusama kara kurēmu ga kita.",
+          "Có khách gọi tới phàn nàn."
+        ],
+        [
+          "無料体験",
+          "むりょうたいけん · muryō taiken",
+          "danh từ",
+          "trải nghiệm / dùng thử miễn phí",
+          "まずは一週間の無料体験からどうぞ。",
+          "Mazu wa isshūkan no muryō taiken kara dōzo.",
+          "Mời mình xài thử free một tuần trước nha."
+        ],
+        [
+          "接客",
+          "せっきゃく · sekkyaku",
+          "danh từ (する)",
+          "tiếp khách, phục vụ khách",
+          "あの店は接客がとても丁寧だ。",
+          "Ano mise wa sekkyaku ga totemo teinei da.",
+          "Tiệm đó tiếp khách chu đáo lắm."
+        ]
+      ]
+    }
+  ],
+  "lines": {
+    "nag_new": [
+      "Chữ mới nằm chờ. {sen} lướt gì hoài?"
+    ],
+    "ui_skip": [
+      "Né nữa hả {sen}. Tui ghi sổ."
+    ],
+    "idle_tap": [
+      "Chọc tui hoài. Chọc chữ đi."
+    ],
+    "life_phone": [
+      "Lướt xong chưa? Chữ chờ mốc meo rồi."
+    ]
+  }
+}
